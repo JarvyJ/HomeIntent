@@ -1,0 +1,36 @@
+{#-
+  This file was automatically generated - do not edit
+-#}
+{% macro render(nav_item, path, level) %}
+  {% set class = "md-nav__item" %}
+  {% if nav_item.active %}
+    {% set class = class ~ " md-nav__item--active" %}
+  {% endif %}
+  {% if nav_item.children %}
+    {% if "navigation.sections" in features and level == 1 + (
+      "navigation.tabs" in features
+    ) %}
+      {% set class = class ~ " md-nav__item--section" %}
+    {% endif %}
+    <li class="{{ class }} md-nav__item--nested">
+      {% set checked = "checked" if nav_item.active %}
+      
+
+      <nav class="md-nav" aria-label="{{ nav_item.title }}" data-md-level="{{ level }}">
+        <ul class="md-nav__list" data-md-scrollfix>
+          {% for nav_item in nav_item.children|reverse %}
+            {{ render(nav_item, path ~ "_" ~ loop.index, level + 1) }}
+          {% endfor %}
+        </ul>
+      </nav>
+    </li>
+ 
+  {% else %}
+    <li class="{{ class }}">
+      <a href="{{ nav_item.url | url }}" class="md-nav__link">
+        {{ nav_item.url.split("/")[1]|truncate(10, False, "") }} - {{ nav_item.title }}
+      </a>
+    </li>
+  {% endif %}
+{% endmacro %}
+{{ render(nav_item, path, level) }}

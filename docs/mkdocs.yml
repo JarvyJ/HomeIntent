@@ -1,0 +1,46 @@
+site_name: Home Intent
+site_description: Open Source Voice Assistant for Home Assistant
+site_url: https://home-intent.com
+repo_url: https://github.com/***REMOVED***/HomeIntent-Beta
+theme:
+  name: material
+  features:
+  - navigation.tabs
+
+  custom_dir: overrides
+
+  palette:
+    scheme: slate
+    primary: blue
+
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - attr_list
+
+
+
+plugins:
+  - git-revision-date-localized:
+      enable_creation_date: true
+      fallback_to_build_date: true
+  - rss:
+      match_path: "releases/2.*"
+  - search
+  - awesome-pages
+
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/solid/rss
+      link: /feed_rss_created.xml

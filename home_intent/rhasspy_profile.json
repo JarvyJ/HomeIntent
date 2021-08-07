@@ -1,0 +1,35 @@
+{
+    "dialogue": {
+        "system": "rhasspy"
+    },
+    "intent": {
+        "system": "fsticuffs"
+    },
+    "microphone": {
+        "system": "pyaudio"
+    },
+    "sounds": {
+        "aplay": {
+            "device": "default:CARD=USB"
+        },
+        "system": "aplay"
+    },
+    "speech_to_text": {
+        "kaldi": {
+            "language_model_type": "arpa"
+        },
+        "system": "kaldi"
+    },
+    "text_to_speech": {
+        "nanotts": {
+            "language": "en-GB"
+        },
+        "system": "picotts"
+    },
+    "wake": {
+        "porcupine": {
+            "keyword_path": "jarvis_linux.ppn"
+        },
+        "system": "porcupine"
+    }
+}

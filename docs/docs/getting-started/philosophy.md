@@ -1,0 +1,10 @@
+# Philosophy
+We've used a lot of different voice assistants over the years, and they seem to struggle from a few major problems. The first is that the speech-to-text isn't aware of the exact entities in your system and what *you* want to call them. They have to fuzzy match and try to align entities with what's best. This can cause the fun problem of asking to turn on a kitchen light fixture and only one bulb turning on.
+
+The second major issue is that there isn't always an intent that lines up with what you are trying to do. You may want to turn on your A/C's dehumidify function, but that might just not be an option or you have to set it up and configure it yourself. Or it gets the intents confused and does something you didn't really want to have happen...
+
+This is where Home Intent comes in. With its tight integration with Home Assistant and Rhasspy, it knows exactly what entities you have, and what *you* call them (it uses the 'Friendly Name' attribute). It even knows if entities can do certain things and only sets up phrases around it.
+
+With those two major hurdles taken care of, we can focus on the last issue of voice assistants: system confusion. Sometimes they don't hear things carefully enough like "Turn on the kitchen light" can become "Turn on the kitchen white" and now the kitchen light is not the color you set it to. Or "Set timer ninety seconds" can become "Set timer ninety-six hours" because it heard seconds wrong.
+
+These problems are a lot harder to solve, and this is where we're trying to pay attention. We strive to have intent sentences that are exact. A goal of Home Intent is to include phrases that aren't easily confused, which likely means not having every possible iteration of a sentence nor having an intent do too much if it can cause system confusion. We understand that humans are really good at pattern matching and once they figure out a phrase that works, will likely keep using it. 
