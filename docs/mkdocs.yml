@@ -1,7 +1,7 @@
 site_name: Home Intent
 site_description: Open Source Voice Assistant for Home Assistant
-site_url: https://home-intent.com
-repo_url: https://github.com/***REMOVED***/HomeIntent-Beta
+site_url: https://github.com/JarvyJ/HomeIntent
+repo_url: https://github.com/JarvyJ/HomeIntent
 theme:
   name: material
   features:
