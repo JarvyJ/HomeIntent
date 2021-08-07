@@ -1,0 +1,14 @@
+Overview
+
+Intents
+	a bunch of decorators to make writing intent handling easier
+
+HomeIntent
+	a "register" function that holds onto the initialized class instance
+	an initialize method will setup rhasspy, add slots/sentences to rhasspy, and start listening on MQTT for messages
+
+Override things in "config" folder?
+	Sounds
+	rhasspy profile
+	etc
+	custom components section
