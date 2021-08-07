@@ -31,3 +31,7 @@ Currently `prefer_toggle` is only used for the following:
  * switches
 
 ## Example Sentences
+### Lights
+### Shopping List
+### Groups
+### Switches
