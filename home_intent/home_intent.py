@@ -59,7 +59,7 @@ class HomeIntent:
         self.registered_intents.append(RegisteredIntent(class_instance, intents))
 
     def initialize(self):
-        # self._initialize_rhasspy()
+        self._initialize_rhasspy()
         self._write_slots_to_rhasspy()
         self._write_sentences_to_rhasspy()
         self._train()
