@@ -1,6 +1,7 @@
 from functools import partial
 import json
 import logging
+import os
 from typing import NamedTuple
 
 import paho.mqtt.client as mqtt
@@ -68,6 +69,19 @@ class HomeIntent:
     def _initialize_rhasspy(self):
         LOGGER.info("Setting up profile")
         rhasspy_profile = json.load(open("home_intent/rhasspy_profile.json", "r"))
+
+        # TODO: machine_arch will likely be moved somewhere else when it's needed in more places
+        # HACK: I'm not quite sure what I want the behaviour to be, but people should be able to change their profile without
+        # too many consequences.
+        marchine_arch = os.uname().machine
+        if rhasspy_profile["wake"]["porcupine"] and rhasspy_profile["wake"]["porcupine"].get(
+            "keyword_path", ""
+        ).endswith("_linux.ppn"):
+            if marchine_arch.startswith("arm") or marchine_arch == "aarch64":
+                rhasspy_profile["wake"]["porcupine"]["keyword_path"].replace(
+                    "_linux.ppn", "_raspberry-pi.ppn"
+                )
+
         self.rhasspy_api.post("/api/profile", rhasspy_profile)
 
         LOGGER.info("Restarting Rhasspy...")
@@ -124,11 +138,15 @@ class HomeIntent:
         slots = {}
         for slot in payload["slots"]:
             slots[slot["slotName"]] = slot["value"]["value"]
-        LOGGER.debug(intent_name)
+        LOGGER.info(f"Handling intent: {intent_name}")
         LOGGER.debug(slots)
-        response = self.intent_function[intent_name](**slots)
-        if response:
-            self.say(client, response, session_id=payload["sessionId"])
+        try:
+            response = self.intent_function[intent_name](**slots)
+        except Exception as exception:
+            LOGGER.exception(exception)
+        else:
+            if response:
+                self.say(client, response, session_id=payload["sessionId"])
 
     def say(self, client, text, session_id=None, custom_id="self", site_id=None):
         notification = {"text": text}
