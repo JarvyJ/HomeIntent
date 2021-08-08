@@ -24,5 +24,8 @@ This component has the following options:
 ## Example Sentences
 
  * Set timer 90 seconds
- * set time one and half minutes
+ * set timer one and half minutes
  * set timer one hour and thirty minutes
+
+!!! quote "Note"
+    We did try allowing "set timer *for* 30 seconds", but found that the "for" would routintely get confused with a "four" and the timer would be set incorrectly. So it's been removed for now.
