@@ -28,11 +28,11 @@ class Timer:
     @intents.sentences(
         [
             "time = 0..128",
-            "set timer [<time>{days:!int} (day | days)] [<time>{hours:!int} (hour | hours)] [<time>{minutes:!int} (minute | minutes)] [<time>{seconds:!int} (second | seconds)]"
-            "set timer <time>{days:!int} [($partial_time)] (day | days)",
-            "set timer <time>{hours:!int} [($partial_time)] (hour | hours)",
-            "set timer <time>{minutes:!int} [($partial_time)] (minute | minutes)",
-            "set timer <time>{seconds:!int} [($partial_time)] (second | seconds)",
+            "set [a] timer [<time>{days:!int} (day | days)] [<time>{hours:!int} (hour | hours)] [<time>{minutes:!int} (minute | minutes)] [<time>{seconds:!int} (second | seconds)]"
+            "set [a] timer <time>{days:!int} [($partial_time)] (day | days)",
+            "set [a] timer <time>{hours:!int} [($partial_time)] (hour | hours)",
+            "set [a] timer <time>{minutes:!int} [($partial_time)] (minute | minutes)",
+            "set [a] timer <time>{seconds:!int} [($partial_time)] (second | seconds)",
         ]
     )
     def set_timer(
