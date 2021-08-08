@@ -67,7 +67,7 @@ class HomeIntent:
 
     def _initialize_rhasspy(self):
         LOGGER.info("Setting up profile")
-        rhasspy_profile = json.load(open("rhasspy_profile.json", "r"))
+        rhasspy_profile = json.load(open("home_intent/rhasspy_profile.json", "r"))
         self.rhasspy_api.post("/api/profile", rhasspy_profile)
 
         LOGGER.info("Restarting Rhasspy...")
