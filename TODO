@@ -1,4 +1,3 @@
 TODO
-	For slots with 0 entites, disable their sentences
-	Create another metamethod "intents.on_register" where you can programmaticaly enable/disable other intents in the class (or the entire class, maybe with a "intents.disable_all")
-	async mqtt?
+	For slots with 0 entites, disable their sentences?
+	refer to intents by full qualified name.
