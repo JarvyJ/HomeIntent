@@ -10,14 +10,10 @@ from home_intent import HomeIntent, Intents
 intents = Intents(__name__)
 
 
-class TimerSettings(BaseModel):
-    max_time_days: int = 1
-
-
 class Timer:
-    def __init__(self, config: TimerSettings, home_intent: HomeIntent):
-        self.timerssss = []
-        self.max_time_days = timedelta(days=config.max_time_days)
+    def __init__(self, home_intent: HomeIntent):
+        # TODO: keep track of timers and add ability to remove timers
+        self.timers = []
         self.home_intent = home_intent
 
     @intents.dictionary_slots
@@ -31,26 +27,17 @@ class Timer:
     @intents.sentences(
         [
             "time = 0..128",
-            "set timer [<time>{days:!int} (day | days)] [<time>{hours:!int} (hour | hours)] [<time>{minutes:!int} (minute | minutes)] [<time>{seconds:!int} (second | seconds)]",
-            "set timer <time>{days:!int} [($partial_time)] (day | days)",
-            "set timer <time>{hours:!int} [($partial_time)] (hour | hours)",
-            "set timer <time>{minutes:!int} [($partial_time)] (minute | minutes)",
-            "set timer <time>{seconds:!int} [($partial_time)] (second | seconds)",
+            "set timer [(<time>){hours:!int} hours] [(<time>){minutes:!int} minutes] [(<time>){seconds:!int} seconds]",
+            "set timer (<time>){hours:!int} [($partial_time)] hours",
+            "set timer (<time>){minutes:!int} [($partial_time)] minutes",
+            "set timer (<time>){seconds:!int} [($partial_time)] seconds",
         ]
     )
-    def set_timer(
-        self, weeks=None, days=None, hours=None, minutes=None, seconds=None, partial_time=None
-    ):
-        timer_duration = timedelta(
-            weeks=weeks or 0,
-            days=days or 0,
-            hours=hours or 0,
-            minutes=minutes or 0,
-            seconds=seconds or 0,
-        )
+    def set_timer(self, hours=None, minutes=None, seconds=None, partial_time=None):
+        timer_duration = timedelta(hours=hours or 0, minutes=minutes or 0, seconds=seconds or 0,)
         if partial_time:
             timer_duration = timer_duration + get_partial_time_duration(
-                partial_time, weeks, days, hours, minutes, seconds
+                partial_time, hours, minutes, seconds
             )
         human_timer_duration = precisedelta(timer_duration)
         timer = ThreadingTimer(
@@ -64,13 +51,9 @@ class Timer:
         self.home_intent.say(f"Your timer {human_timer_duration} has ended")
 
 
-def get_partial_time_duration(
-    partial_time, weeks=None, days=None, hours=None, minutes=None, seconds=None
-):
+def get_partial_time_duration(partial_time, hours=None, minutes=None, seconds=None):
     partial_of = None
-    if days:
-        partial_of = "days"
-    elif hours:
+    if hours:
         partial_of = "hours"
     elif minutes:
         partial_of = "minutes"
@@ -86,5 +69,4 @@ def get_partial_time_duration(
 
 
 def setup(home_intent: HomeIntent):
-    config = home_intent.get_config(TimerSettings)
-    home_intent.register(Timer(config, home_intent), intents)
+    home_intent.register(Timer(home_intent), intents)
