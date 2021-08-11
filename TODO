@@ -1,3 +1,3 @@
 TODO
 	For slots with 0 entites, disable their sentences?
-	refer to intents by full qualified name.
+	create file loader that checks if a file is in /config/ and then does stuff with it?
