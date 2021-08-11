@@ -19,19 +19,19 @@ class Group:
         self.controllable_entites = slots
         return slots
 
-    @intents.sentences(["toggle the ($group)"])
+    @intents.sentences(["toggle [the] ($group)"])
     def toggle_group(self, group):
         self.ha.api.call_service("homeassistant", "toggle", {"entity_id": group})
         response = self.ha.api.get_entity(group)
         return f"The {response['attributes']['friendly_name']} group has been turned {response['state']}"
 
-    @intents.sentences(["turn on the ($group)"])
+    @intents.sentences(["turn on [the] ($group)"])
     def turn_on_group(self, group):
         self.ha.api.call_service("homeassistant", "turn_on", {"entity_id": group})
         response = self.ha.api.get_entity(group)
         return f"The {response['attributes']['friendly_name']} group has been turned on"
 
-    @intents.sentences(["turn off the ($group)"])
+    @intents.sentences(["turn off [the] ($group)"])
     def turn_off_group(self, group):
         self.ha.api.call_service("homeassistant", "turn_off", {"entity_id": group})
         response = self.ha.api.get_entity(group)

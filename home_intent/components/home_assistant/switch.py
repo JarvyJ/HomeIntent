@@ -17,7 +17,7 @@ class Switch:
         }
         return slots
 
-    @intents.sentences(["toggle the ($switch)", "turn (on | off) the ($switch)"])
+    @intents.sentences(["toggle the ($switch)", "turn (on | off) [the] ($switch)"])
     def toggle_switch(self, switch):
         self.ha.api.call_service("switch", "toggle", {"entity_id": switch})
         response = self.ha.api.get_entity(switch)

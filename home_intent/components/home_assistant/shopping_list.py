@@ -27,7 +27,7 @@ class ShoppingList:
         return f"Checking off {shopping_item} from the shopping list."
 
     @intents.sentences(
-        ["(unmark | uncheck) ($shopping_item) off the [shopping] list",]
+        ["(unmark | uncheck) ($shopping_item) from the [shopping] list",]
     )
     def unmark_item_complete_on_shopping_list(self, shopping_item):
         self.ha.api.call_service("shopping_list", "incomplete_item", {"name": shopping_item})
@@ -41,7 +41,7 @@ class ShoppingList:
         return "Everything has been checked off the shopping list."
 
     @intents.sentences(
-        ["(unmark | uncheck) everything off the [shopping] list",]
+        ["(unmark | uncheck) everything from the [shopping] list",]
     )
     def unmark_everything_complete_on_shopping_list(self):
         self.ha.api.call_service("shopping_list", "incomplete_all")
@@ -49,4 +49,4 @@ class ShoppingList:
 
     @intents.sentences(["[tell me] what is on the [shopping] list"])
     def display_list_items(self):
-        pass
+        return "I can't do that yet..."

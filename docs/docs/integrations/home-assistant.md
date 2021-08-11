@@ -33,5 +33,27 @@ Currently `prefer_toggle` is only used for the following:
 ## Example Sentences
 ### Lights
 ### Shopping List
+Requires the [shopping_list](https://www.home-assistant.io/integrations/shopping_list/) component in Home Assistant
+
+ * Add oreos to the shopping list
+ * Check oreos off the list
+ * Uncheck oreos from the shopping list
+ * Mark bleach off the shopping list
+ * Check everything off the list
+ * Unmark everything from the shopping list
+
+Either Check or mark can be used as well as uncheck or unmark. The word shopping is always optional.
+
 ### Groups
+
+ * Toggle the (basement lights)
+ * Turn on the (basement lights)
+ * Turn off (super cool lights)
+
+The group friendly names are in parenthesis.
+
 ### Switches
+
+ * Turn on the fan
+ * Turn off the plants
+ * toggle basement fan
