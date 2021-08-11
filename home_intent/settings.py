@@ -21,6 +21,9 @@ def json_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
 class RhasspySettings(BaseModel):
     url: AnyHttpUrl = "http://rhasspy:12101"
     mqtt_host: str = "rhasspy"
+    mqtt_port: int = 12183
+    mqtt_username: Optional[str] = None
+    mqtt_password: Optional[str] = None
 
 
 class Settings(BaseSettings):
