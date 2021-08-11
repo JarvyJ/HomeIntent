@@ -1,6 +1,8 @@
 from collections import defaultdict
 from datetime import timedelta
+from threading import Timer as ThreadingTimer
 
+from humanize import precisedelta
 from pydantic import BaseModel
 
 from home_intent import HomeIntent, Intents
@@ -13,9 +15,10 @@ class TimerSettings(BaseModel):
 
 
 class Timer:
-    def __init__(self, config: TimerSettings):
+    def __init__(self, config: TimerSettings, home_intent: HomeIntent):
         self.timerssss = []
         self.max_time_days = timedelta(days=config.max_time_days)
+        self.home_intent = home_intent
 
     @intents.dictionary_slots
     def partial_time(self):
@@ -39,13 +42,26 @@ class Timer:
         self, weeks=None, days=None, hours=None, minutes=None, seconds=None, partial_time=None
     ):
         timer_duration = timedelta(
-            weeks=weeks, days=days, hours=hours, minutes=minutes, seconds=seconds
+            weeks=weeks or 0,
+            days=days or 0,
+            hours=hours or 0,
+            minutes=minutes or 0,
+            seconds=seconds or 0,
         )
         if partial_time:
             timer_duration = timer_duration + get_partial_time_duration(
                 partial_time, weeks, days, hours, minutes, seconds
             )
-        # create_timer(timer_duration)
+        human_timer_duration = precisedelta(timer_duration)
+        timer = ThreadingTimer(
+            timer_duration.total_seconds(), self.complete_timer, (human_timer_duration,),
+        )
+        timer.start()
+        return f"Timer set {human_timer_duration}"
+
+    def complete_timer(self, human_timer_duration: str):
+        self.home_intent.say("BWEEP bip bip BWEEP " * 4)
+        self.home_intent.say(f"Your timer {human_timer_duration} has ended")
 
 
 def get_partial_time_duration(
@@ -71,4 +87,4 @@ def get_partial_time_duration(
 
 def setup(home_intent: HomeIntent):
     config = home_intent.get_config(TimerSettings)
-    home_intent.register(Timer(config), intents)
+    home_intent.register(Timer(config, home_intent), intents)
