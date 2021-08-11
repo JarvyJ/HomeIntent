@@ -8,6 +8,7 @@ import paho.mqtt.client as mqtt
 
 from intents import Intents, get_slots_from_sentences
 from rhasspy_api import RhasspyAPI
+from requests.exceptions import Timeout
 
 LOGGER = logging.getLogger(__name__)
 
@@ -139,7 +140,12 @@ class HomeIntent:
 
     def _train(self):
         LOGGER.info("Training Rhasspy... (can take up to 1m if many devices)")
-        self.rhasspy_api.post("/api/train")
+        try:
+            self.rhasspy_api.post("/api/train", timeout=60)
+        except Timeout as timeout_exception:
+            LOGGER.warning(
+                "Timed out waiting for Rhasspy to train. Moving on, we will likely be okay."
+            )
 
     def _setup_mqtt_and_loop(self):
         self.mqtt_client.message_callback_add("hermes/intent/#", self._handle_intent)

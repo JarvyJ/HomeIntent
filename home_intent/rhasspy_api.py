@@ -33,16 +33,16 @@ class RhasspyAPI:
                 "Ensure it is running and try again!"
             )
 
-    def get(self, url):
-        response = self.session.get(f"{self.base_url}{url}")
+    def get(self, url, *args, **kwargs):
+        response = self.session.get(f"{self.base_url}{url}", *args, **kwargs)
         if response.status_code == 500 and response.text:
             raise RhasspyError(response.text)
         response.raise_for_status()
         if response.headers["content-type"] == "application/json":
             return response.json()
 
-    def post(self, url, body=None):
-        response = self.session.post(f"{self.base_url}{url}", json=body)
+    def post(self, url, body=None, *args, **kwargs):
+        response = self.session.post(f"{self.base_url}{url}", json=body, *args, **kwargs)
         if response.status_code == 500 and response.text:
             raise RhasspyError(response.text)
         response.raise_for_status()
