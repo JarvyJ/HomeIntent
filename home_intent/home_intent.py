@@ -27,6 +27,17 @@ class HomeIntent:
         self.intent_function = {}
         self.settings = settings
         self.rhasspy_api = RhasspyAPI(settings.rhasspy.url)
+        self.mqtt_client = mqtt.Client()
+        self.arch = None
+        uname = os.uname()
+        if uname.machine == "x86_64":
+            self.arch = "x86_64"
+        elif uname.machine.startswith("arm"):
+            self.arch = "arm"
+        elif uname.machine == "aarch64":
+            self.arch = "arm"
+        else:
+            raise ValueError("HomeIntent only runs on x86_64 and armv7/aarch64 architectures")
 
     def get_config(self, settings_object):
         component_name = settings_object.__module__.split(".")[-1]
@@ -68,20 +79,7 @@ class HomeIntent:
 
     def _initialize_rhasspy(self):
         LOGGER.info("Setting up profile")
-        rhasspy_profile = json.load(open("home_intent/rhasspy_profile.json", "r"))
-
-        # TODO: machine_arch will likely be moved somewhere else when it's needed in more places
-        # HACK: I'm not quite sure what I want the behaviour to be, but people should be able to change their profile without
-        # too many consequences.
-        marchine_arch = os.uname().machine
-        if rhasspy_profile["wake"]["porcupine"] and rhasspy_profile["wake"]["porcupine"].get(
-            "keyword_path", ""
-        ).endswith("_linux.ppn"):
-            if marchine_arch.startswith("arm") or marchine_arch == "aarch64":
-                rhasspy_profile["wake"]["porcupine"]["keyword_path"].replace(
-                    "_linux.ppn", "_raspberry-pi.ppn"
-                )
-
+        rhasspy_profile = self._load_rhasspy_profile_file()
         self.rhasspy_api.post("/api/profile", rhasspy_profile)
 
         LOGGER.info("Restarting Rhasspy...")
@@ -89,6 +87,17 @@ class HomeIntent:
 
         LOGGER.info("Downloading profile (can take 30s+ first time)...")
         self.rhasspy_api.post("/api/download-profile")
+
+    def _load_rhasspy_profile_file(self):
+        config_file_path = f"home_intent/default_configs/{self.arch}/rhasspy_profile.json"
+        LOGGER.info(config_file_path)
+        print(os.path.isfile(config_file_path))
+        if os.path.isfile("/config/rhasspy_profile.json"):
+            LOGGER.info("Loading custom rhasspy profile!")
+            config_file_path = "/config/rhasspy_profile.json"
+        else:
+            LOGGER.info(f"Loading default {self.arch} rhasspy profile")
+        return json.load(open(config_file_path, "r"))
 
     def _write_slots_to_rhasspy(self):
         all_slots = {}
@@ -122,15 +131,18 @@ class HomeIntent:
         self.rhasspy_api.post("/api/train")
 
     def _setup_mqtt_and_loop(self):
-        # I had some old notes about how the mqtt_client can't be in a class.
-        # It might've been a python 2.7 problem however.
-        # Maybe I'll go back and play with it, but it's working for now
-        mqtt_client = mqtt.Client()
-        mqtt_client.message_callback_add("hermes/intent/#", self._handle_intent)
-        mqtt_client.connect(self.settings.rhasspy.mqtt_host, 12183, 60)
-        mqtt_client.subscribe("hermes/intent/#")
+        self.mqtt_client.message_callback_add("hermes/intent/#", self._handle_intent)
+        if self.settings.rhasspy.mqtt_username and self.settings.rhasspy.mqtt_password:
+            self.mqtt_client.username_pw_set(
+                username=self.settings.rhasspy.mqtt_username,
+                password=self.settings.rhasspy.mqtt_password,
+            )
+        self.mqtt_client.connect(
+            self.settings.rhasspy.mqtt_host, self.settings.rhasspy.mqtt_port, 60
+        )
+        self.mqtt_client.subscribe("hermes/intent/#")
         LOGGER.info("Waiting to handle intents!")
-        mqtt_client.loop_forever()
+        self.mqtt_client.loop_forever()
 
     def _handle_intent(self, client, userdata, message):
         payload = json.loads(message.payload)
@@ -146,15 +158,15 @@ class HomeIntent:
             LOGGER.exception(exception)
         else:
             if response:
-                self.say(client, response, session_id=payload["sessionId"])
+                self._say(client, response, session_id=payload["sessionId"])
 
-    def say(self, client, text, session_id=None, custom_id="self", site_id=None):
-        notification = {"text": text}
+    def _say(self, client, text, session_id):
+        notification = {"text": text, "siteId": "default"}
         if session_id:
             print("Using the session manager to close the session")
             notification["sessionId"] = session_id
             client.publish("hermes/dialogueManager/endSession", json.dumps(notification))
-        else:
-            notification["id"] = custom_id
-            notification["siteId"] = site_id
-            client.publish("hermes/tts/say", json.dumps(notification))
+
+    def say(self, text):
+        notification = {"text": text, "siteId": "default"}
+        self.mqtt_client.publish("hermes/tts/say", json.dumps(notification))
