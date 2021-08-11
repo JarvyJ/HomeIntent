@@ -63,7 +63,7 @@ class HomeIntent:
             # I may get rid of it in the future.
             LOGGER.debug(sentence)
             LOGGER.debug(intents.all_sentences[sentence])
-            self.intent_function[sentence] = partial(
+            self.intent_function[f"{intents.name}.{sentence}"] = partial(
                 intents.all_sentences[sentence].func, class_instance
             )
 
@@ -104,10 +104,19 @@ class HomeIntent:
         for registered_intent in self.registered_intents:
             LOGGER.info(f"Getting slots for {registered_intent.intent.name}")
             for slot in registered_intent.intent.all_slots:
-                LOGGER.info(f"Getting slots for {slot}")
+
+                LOGGER.info(f"Getting slot values for {slot}")
+
+                if slot in all_slots:
+                    raise HomeIntentException(
+                        f"The slot {slot} in {registered_intent.intent.name} is already"
+                        "in Home Intent. Please rename the slot to avoid conflict."
+                    )
+
                 slot_values = registered_intent.intent.all_slots[slot](
                     registered_intent.class_instance
                 )
+
                 all_slots[slot] = slot_values
 
         LOGGER.info("Updating all slots in Rhasspy")
@@ -121,7 +130,9 @@ class HomeIntent:
             for (sentence_name, sentence,) in registered_intent.intent.all_sentences.items():
                 # the rhasspy API does '\n' for newlines
                 sentences_string = "\n".join(sentence.sentences)
-                sentences.append(f"[{sentence_name}]\n{sentences_string}")
+                sentences.append(
+                    f"[{registered_intent.intent.name}.{sentence_name}]\n{sentences_string}"
+                )
 
         LOGGER.info("Updating all sentences in Rhasspy...")
         self.rhasspy_api.post("/api/sentences", {"sentences.ini": "\n".join(sentences)})

@@ -81,6 +81,10 @@ def conditionally_remove_intents(self):
         intents.disable_all_intents()
 ```
 
+## On Slots and Sentences
+One thing that is currently a little odd is that slot names (either regular or dictionary) have to be unique across Home Intent. Technically slots can be used across multiple intents. Sentences, on the other hand, do **not** need to be unique across Home Intent.
+
+You will get a runtime error if multiple slots are found with the same name.
 
 ## `HomeIntent` object
 An instantiated `HomeIntent` object gets passed in to the `setup` function when setting up components.
