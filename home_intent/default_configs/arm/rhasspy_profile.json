@@ -21,7 +21,7 @@
         "system": "kaldi"
     },
     "text_to_speech": {
-        "nanotts": {
+        "picotts": {
             "language": "en-GB"
         },
         "system": "picotts"
