@@ -38,6 +38,8 @@ class Light:
     @intents.sentences(["(set | change | make) the ($light) [light] [to] ($color)"])
     def change_color(self, light, color):
         self.ha.api.call_service("light", "turn_on", {"entity_id": light, "color_name": color})
+        response = self.ha.api.get_entity(light)
+        return f"I've set the {response['attributes']['friendly_name']} to {color}"
 
     @intents.sentences(
         [
@@ -50,6 +52,8 @@ class Light:
             "turn_on",
             {"entity_id": light, "color_name": color, "brightness_pct": brightness},
         )
+        response = self.ha.api.get_entity(light)
+        return f"I've set the {response['attributes']['friendly_name']} to {color} at {brightness}% brightness"
 
     @intents.sentences(
         [
@@ -60,6 +64,8 @@ class Light:
         self.ha.api.call_service(
             "light", "turn_on", {"entity_id": light, "brightness_pct": brightness}
         )
+        response = self.ha.api.get_entity(light)
+        return f"I've set the {response['attributes']['friendly_name']} to {brightness}% brightness"
 
     # currently large number ranges throw a lot of things off. So no Kelvin for now! Maybe in the future!
     # @intents.sentences(
