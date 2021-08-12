@@ -163,12 +163,20 @@ class HomeIntent:
                 username=self.settings.rhasspy.mqtt_username,
                 password=self.settings.rhasspy.mqtt_password,
             )
+        self.mqtt_client.on_connect = self._on_connect
         self.mqtt_client.connect(
             self.settings.rhasspy.mqtt_host, self.settings.rhasspy.mqtt_port, 60
         )
-        self.mqtt_client.subscribe("hermes/intent/#")
         LOGGER.info("Waiting to handle intents!")
         self.mqtt_client.loop_forever()
+
+    def _on_connect(self, client, userdata, flags, rc):
+        LOGGER.info("Connected to MQTT. This happens when the Rhasspy MQTT starts (or restarts)")
+        if rc == 0:
+            LOGGER.info("Subscribed to intent messages: hermes/intent/#")
+            client.subscribe("hermes/intent/#")
+        else:
+            LOGGER.error(f"Failed to connect to MQTT. Return Code: {rc}")
 
     def _handle_intent(self, client, userdata, message):
         payload = json.loads(message.payload)
