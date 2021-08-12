@@ -79,15 +79,24 @@ class HomeIntent:
         self._setup_mqtt_and_loop()
 
     def _initialize_rhasspy(self):
-        LOGGER.info("Setting up profile")
+        LOGGER.info("Checking profile")
         rhasspy_profile = self._load_rhasspy_profile_file()
-        self.rhasspy_api.post("/api/profile", rhasspy_profile)
+        installed_profile = self.rhasspy_api.get("/api/profile?layers=profile")
+        if rhasspy_profile != installed_profile:
+            LOGGER.info("Installing profile")
+            self.rhasspy_api.post("/api/profile", rhasspy_profile)
 
-        LOGGER.info("Restarting Rhasspy...")
-        self.rhasspy_api.post("/api/restart")
+            LOGGER.info("Restarting Rhasspy...")
+            self.rhasspy_api.post("/api/restart")
+        else:
+            LOGGER.info("Rhasspy profile matches Home Intent profile, moving on!")
 
-        LOGGER.info("Downloading profile (can take 30s+ first time)...")
-        self.rhasspy_api.post("/api/download-profile")
+        profile_meta = self.rhasspy_api.get("/api/profiles")
+        if not profile_meta["downloaded"]:
+            LOGGER.info("Downloading profile (can take 30s+ first time)...")
+            self.rhasspy_api.post("/api/download-profile")
+        else:
+            LOGGER.info("Profile is up to date, nothing to download")
 
     def _load_rhasspy_profile_file(self):
         config_file_path = f"home_intent/default_configs/{self.arch}/rhasspy_profile.json"
