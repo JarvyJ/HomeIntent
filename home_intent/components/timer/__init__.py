@@ -44,7 +44,7 @@ class Timer:
             timer_duration.total_seconds(), self.complete_timer, (human_timer_duration,),
         )
         timer.start()
-        return f"Timer set {human_timer_duration}"
+        return f"Setting timer {human_timer_duration}"
 
     def complete_timer(self, human_timer_duration: str):
         self.home_intent.say("BWEEP bip bip BWEEP " * 4)
