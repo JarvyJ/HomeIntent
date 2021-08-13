@@ -50,7 +50,14 @@ def add_item_to_shopping_list(self, shopping_item):
     return f"Adding {shopping_item} to the shopping list."
 ```
 
-In the example `shopping_item` is expected to be passed in to the `add_item_to_shopping_list` based on the sentence.
+In the example `shopping_item` is expected to be passed in to the `add_item_to_shopping_list` based on the sentence. If a string is returned from the method, it will be spoken by Home Intent. For consistency and simplicity, all sentences that perform an action should start with a gerund. Examples:
+
+ * Adding oreos to the shopping list
+ * Setting the kitchen light to red
+ * Turning on the bedroom light
+
+and we're still figuring out how sentences that return state information should work, as very few of these are currently implemented.
+
 
 ### `@intents.on_event("register")` - NOT YET IMPLEMENTED
 This method registers a callback method that will be executed after the slot methods have been executed. It can come in handy for disabling an intent if there are no slots to execute on, which can help the overall experience as a sentence that can't do anything shouldn't be registered in Rhasspy. To aid in disabling intents, there are two helper methods `intents.disable_intent` and `intents.disable_all`.
