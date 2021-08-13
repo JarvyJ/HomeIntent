@@ -9,9 +9,6 @@
         "system": "pyaudio"
     },
     "sounds": {
-        "aplay": {
-            "device": "default:CARD=USB"
-        },
         "system": "aplay"
     },
     "speech_to_text": {

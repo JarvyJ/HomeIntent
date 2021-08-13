@@ -1,5 +1,6 @@
 nav:
   - installation.md
+  - rhasspy-config.md
   - customization.md
   - microphones.md
   - philosophy.md
