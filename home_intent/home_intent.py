@@ -107,7 +107,44 @@ class HomeIntent:
             config_file_path = "/config/rhasspy_profile.json"
         else:
             LOGGER.info(f"Loading default {self.arch} rhasspy profile")
-        return json.load(open(config_file_path, "r"))
+        rhasspy_config = json.load(open(config_file_path, "r"))
+        rhasspy_config.update(self._add_sounds_microphone_device())
+        return rhasspy_config
+
+    def _add_sounds_microphone_device(self):
+        microphone_devices = self.rhasspy_api.get("/api/microphones")
+        sounds_devices = self.rhasspy_api.get("/api/speakers")
+
+        microphone_sounds_config = {}
+
+        if not self.settings.rhasspy.microphone_device:
+            LOGGER.info(
+                "Microphone not set, using default microphone\n"
+                "\nThese are the attached microphones (I think the default has an asterisk):\n"
+                f"{json.dumps(microphone_devices, indent=True)}\n"
+                "\nTo configure a microphone, set 'microphone_device' to the corresponding number "
+                "above in the 'rhasspy' section in '/config/config.yaml'\n"
+            )
+        else:
+            microphone_sounds_config["microphone"] = {
+                "pyaudio": {"device": self.settings.rhasspy.microphone_device}
+            }
+
+        if not self.settings.rhasspy.sounds_device:
+            LOGGER.warning(
+                "Sounds device not set, using sysdefault sound device\n"
+                "These are the attached sounds devices:\n"
+                f"{json.dumps(sounds_devices, indent=True)}\n"
+                "\nTo configure a sounds device, set 'sounds_device' to the corresponding "
+                "key (ex: default:CARD=Headphones) above in the 'rhasspy' section "
+                "in '/config/config.yaml'. You probably want one of the 'default' devices. "
+                "The plughw ones can have a fun chipmunk effect!\n"
+            )
+        else:
+            microphone_sounds_config["sounds"] = {
+                "aplay": {"device": self.settings.rhasspy.microphone_device}
+            }
+        return microphone_sounds_config
 
     def _write_slots_to_rhasspy(self):
         all_slots = {}
