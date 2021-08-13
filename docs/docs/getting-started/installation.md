@@ -24,7 +24,7 @@ services:
       command: --user-profiles /profiles --profile en
   
   home_intent:
-    image: "ghcr.io/jarvyj/homeintent:main"
+    image: "ghcr.io/jarvyj/homeintent:latest"
     restart: unless-stopped
     volumes:
       - "/PATH_TO_CONFIG/config:/config"
