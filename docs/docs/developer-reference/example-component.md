@@ -1,5 +1,5 @@
 # Example Component
-Let's take a look at a simplified example component and break it down.
+Here's an example component (`timer/__init__.py`) and how it works.
 
 ```python
 from collections import defaultdict
@@ -106,7 +106,7 @@ The `intents.dictionary_slots` expects a `Dict[str, str]` to be returned. There 
 The sentence function (`set_timer`) is what gets called when a matching sentence is spoken to the voice assistant. These all get published to Rhasspy's [sentences.ini](https://rhasspy.readthedocs.io/en/latest/training/#sentencesini) file and use its syntax. Home Intent will parse the sentences defined in the decorator and pull out the slots and tags. Slots are defined with `($slot_name)` and tags are defined by `{tag_name}`. The slot names need to be defined in the same `Intents` object and are referred to by the method name. These are what get passed to the method to perform an action.
 
 
-### Setup
+## Setup
 
 ```python
 class TimerSettings(BaseModel):
@@ -124,3 +124,6 @@ This function gets called when loading from `config.yaml`, as long as the compon
 The `home_intent.get_config` function will load the `TimerSettings` from `config.yaml` and pass back the [pydantic](https://pydantic-docs.helpmanual.io/) model that can be used for initialization. This is only required if the custom component requires any settings passed in from the user.
 
 The `home_intent.register` function will keep track of the instantiated object and associated intents. When the the register function is called, the slots and sentences are verified, and a bit later on in the Home Intent setup all the slot functions are called to get the slot values.
+
+## Conventions
+All builtin intents will follow the folder importing structure, so `components/<component_name>/__init__.py`. This keeps the components directory in the codebase easy to navigate and allows us to add meta information later if needed.
