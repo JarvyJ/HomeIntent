@@ -118,32 +118,39 @@ class HomeIntent:
         microphone_sounds_config = {}
 
         if not self.settings.rhasspy.microphone_device:
-            LOGGER.info(
-                "Microphone not set, using default microphone\n"
-                "\nThese are the attached microphones (I think the default has an asterisk):\n"
-                f"{json.dumps(microphone_devices, indent=True)}\n"
-                "\nTo configure a microphone, set 'microphone_device' to the corresponding number "
-                "above in the 'rhasspy' section in '/config/config.yaml'\n"
-            )
+            LOGGER.info("Microphone not set, using default microphone\n")
         else:
+            LOGGER.info(f"Using {self.settings.rhasspy.microphone_device} for pyaudio device")
             microphone_sounds_config["microphone"] = {
                 "pyaudio": {"device": self.settings.rhasspy.microphone_device}
             }
 
+        # Figure we should always show this so people can switch without unsetting first.
+        LOGGER.info(
+            "\nThese are the attached microphones (I think the default has an asterisk):\n"
+            f"{json.dumps(microphone_devices, indent=True)}\n"
+            "\nTo configure a microphone, set 'microphone_device' to the corresponding number "
+            "above in the 'rhasspy' section in '/config/config.yaml'\n"
+        )
+
         if not self.settings.rhasspy.sounds_device:
-            LOGGER.warning(
-                "Sounds device not set, using sysdefault sound device\n"
-                "These are the attached sounds devices:\n"
-                f"{json.dumps(sounds_devices, indent=True)}\n"
-                "\nTo configure a sounds device, set 'sounds_device' to the corresponding "
-                "key (ex: default:CARD=Headphones) above in the 'rhasspy' section "
-                "in '/config/config.yaml'. You probably want one of the 'default' devices. "
-                "The plughw ones can have a fun chipmunk effect!\n"
-            )
+            LOGGER.warning("Sounds device not set, using sysdefault sound device\n")
         else:
+            LOGGER.info(f"Using {self.settings.rhasspy.sounds_device} for aplay device")
             microphone_sounds_config["sounds"] = {
-                "aplay": {"device": self.settings.rhasspy.microphone_device}
+                "aplay": {"device": self.settings.rhasspy.sounds_device}
             }
+
+        # Same reason for displaying as above.
+        LOGGER.info(
+            "These are the attached sounds devices:\n"
+            f"{json.dumps(sounds_devices, indent=True)}\n"
+            "\nTo configure a sounds device, set 'sounds_device' to the corresponding "
+            "key (ex: default:CARD=Headphones) above in the 'rhasspy' section "
+            "in '/config/config.yaml'. You probably want one of the 'default' devices. "
+            "The plughw ones can have a fun chipmunk effect!\n"
+        )
+
         return microphone_sounds_config
 
     def _write_slots_to_rhasspy(self):
