@@ -131,3 +131,4 @@ dmypy.json
 config/
 docker-compose.yaml
 test/
+rhasspy/

@@ -7,7 +7,7 @@ from typing import NamedTuple
 import paho.mqtt.client as mqtt
 
 from intents import Intents, get_slots_from_sentences
-from rhasspy_api import RhasspyAPI
+from rhasspy_api import RhasspyAPI, RhasspyError
 from requests.exceptions import Timeout
 
 LOGGER = logging.getLogger(__name__)
@@ -108,7 +108,17 @@ class HomeIntent:
         else:
             LOGGER.info(f"Loading default {self.arch} rhasspy profile")
         rhasspy_config = json.load(open(config_file_path, "r"))
-        rhasspy_config.update(self._add_sounds_microphone_device())
+        try:
+            microphone_sounds_config = self._add_sounds_microphone_device()
+        except RhasspyError:
+            LOGGER.info("Installing profile for first boot")
+            self.rhasspy_api.post("/api/profile", rhasspy_config)
+
+            LOGGER.info("Restarting Rhasspy...")
+            self.rhasspy_api.post("/api/restart")
+            microphone_sounds_config = self._add_sounds_microphone_device()
+
+        rhasspy_config.update(microphone_sounds_config)
         return rhasspy_config
 
     def _add_sounds_microphone_device(self):
@@ -116,14 +126,8 @@ class HomeIntent:
         sounds_devices = self.rhasspy_api.get("/api/speakers")
 
         microphone_sounds_config = {}
-
-        if not self.settings.rhasspy.microphone_device:
-            LOGGER.info("Microphone not set, using default microphone\n")
-        else:
-            LOGGER.info(f"Using {self.settings.rhasspy.microphone_device} for pyaudio device")
-            microphone_sounds_config["microphone"] = {
-                "pyaudio": {"device": self.settings.rhasspy.microphone_device}
-            }
+        config_microphone_device = self.settings.rhasspy.microphone_device
+        config_sounds_device = self.settings.rhasspy.sounds_device
 
         # Figure we should always show this so people can switch without unsetting first.
         LOGGER.info(
@@ -132,14 +136,6 @@ class HomeIntent:
             "\nTo configure a microphone, set 'microphone_device' to the corresponding number "
             "above in the 'rhasspy' section in '/config/config.yaml'\n"
         )
-
-        if not self.settings.rhasspy.sounds_device:
-            LOGGER.warning("Sounds device not set, using sysdefault sound device\n")
-        else:
-            LOGGER.info(f"Using {self.settings.rhasspy.sounds_device} for aplay device")
-            microphone_sounds_config["sounds"] = {
-                "aplay": {"device": self.settings.rhasspy.sounds_device}
-            }
 
         # Same reason for displaying as above.
         LOGGER.info(
@@ -150,6 +146,28 @@ class HomeIntent:
             "in '/config/config.yaml'. You probably want one of the 'default' devices. "
             "The plughw ones can have a fun chipmunk effect!\n"
         )
+
+        if not config_microphone_device:
+            LOGGER.info("Microphone not set, using default microphone\n")
+        else:
+            LOGGER.info(f"Using {config_microphone_device} for pyaudio device")
+            if config_microphone_device not in microphone_devices:
+                raise HomeIntentException(
+                    f"Microphone device {config_microphone_device} not found in microphone devices list above."
+                )
+            microphone_sounds_config["microphone"] = {
+                "pyaudio": {"device": config_microphone_device}
+            }
+
+        if not config_sounds_device:
+            LOGGER.warning("Sounds device not set, using sysdefault sound device\n")
+        else:
+            LOGGER.info(f"Using {config_sounds_device} for aplay device")
+            if config_sounds_device not in sounds_devices:
+                raise HomeIntentException(
+                    f"Sounds device {config_sounds_device} not found in sounds devices list above."
+                )
+            microphone_sounds_config["sounds"] = {"aplay": {"device": config_sounds_device}}
 
         return microphone_sounds_config
 
