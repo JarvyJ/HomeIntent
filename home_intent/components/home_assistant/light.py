@@ -33,13 +33,13 @@ class Light:
     def toggle_light(self, light):
         self.ha.api.call_service("light", "toggle", {"entity_id": light})
         response = self.ha.api.get_entity(light)
-        return f"The {response['attributes']['friendly_name']} light has been turned {response['state']}"
+        return f"Turning {response['state']} the {response['attributes']['friendly_name']} light"
 
     @intents.sentences(["(set | change | make) the ($light) [light] [to] ($color)"])
     def change_color(self, light, color):
         self.ha.api.call_service("light", "turn_on", {"entity_id": light, "color_name": color})
         response = self.ha.api.get_entity(light)
-        return f"I've set the {response['attributes']['friendly_name']} to {color}"
+        return f"Setting the {response['attributes']['friendly_name']} to {color}"
 
     @intents.sentences(
         [
@@ -53,7 +53,7 @@ class Light:
             {"entity_id": light, "color_name": color, "brightness_pct": brightness},
         )
         response = self.ha.api.get_entity(light)
-        return f"I've set the {response['attributes']['friendly_name']} to {color} at {brightness}% brightness"
+        return f"Setting the {response['attributes']['friendly_name']} to {color} at {brightness}% brightness"
 
     @intents.sentences(
         [
@@ -65,7 +65,7 @@ class Light:
             "light", "turn_on", {"entity_id": light, "brightness_pct": brightness}
         )
         response = self.ha.api.get_entity(light)
-        return f"I've set the {response['attributes']['friendly_name']} to {brightness}% brightness"
+        return f"Setting the {response['attributes']['friendly_name']} to {brightness}% brightness"
 
     # currently large number ranges throw a lot of things off. So no Kelvin for now! Maybe in the future!
     # @intents.sentences(
