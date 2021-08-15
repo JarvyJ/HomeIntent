@@ -2,7 +2,7 @@ from functools import partial
 import json
 import logging
 import os
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 import paho.mqtt.client as mqtt
 
@@ -109,23 +109,23 @@ class HomeIntent:
             LOGGER.info(f"Loading default {self.arch} rhasspy profile")
         rhasspy_config = json.load(open(config_file_path, "r"))
         try:
-            microphone_sounds_config = self._add_sounds_microphone_device()
+            self._add_sounds_microphone_device(rhasspy_config)
         except RhasspyError:
             LOGGER.info("Installing profile for first boot")
             self.rhasspy_api.post("/api/profile", rhasspy_config)
 
             LOGGER.info("Restarting Rhasspy...")
             self.rhasspy_api.post("/api/restart")
-            microphone_sounds_config = self._add_sounds_microphone_device()
+            self._add_sounds_microphone_device(rhasspy_config)
 
-        rhasspy_config.update(microphone_sounds_config)
+        LOGGER.debug(json.dumps(rhasspy_config, indent=True))
+
         return rhasspy_config
 
-    def _add_sounds_microphone_device(self):
+    def _add_sounds_microphone_device(self, rhasspy_config):
         microphone_devices = self.rhasspy_api.get("/api/microphones")
         sounds_devices = self.rhasspy_api.get("/api/speakers")
 
-        microphone_sounds_config = {}
         config_microphone_device = self.settings.rhasspy.microphone_device
         config_sounds_device = self.settings.rhasspy.sounds_device
 
@@ -155,9 +155,17 @@ class HomeIntent:
                 raise HomeIntentException(
                     f"Microphone device {config_microphone_device} not found in microphone devices list above."
                 )
-            microphone_sounds_config["microphone"] = {
-                "pyaudio": {"device": config_microphone_device}
-            }
+            if "microphone" in rhasspy_config:
+                if "pyaudio" in rhasspy_config["microphone"]:
+                    rhasspy_config["microphone"]["pyaudio"]["device"] = config_microphone_device
+                else:
+                    rhasspy_config["microphone"].update(
+                        {"pyaudio": {"device": config_microphone_device}}
+                    )
+            else:
+                LOGGER.warning(
+                    "No microphone section in rhasspy_profile.json to add microphone device"
+                )
 
         if not config_sounds_device:
             LOGGER.warning("Sounds device not set, using sysdefault sound device\n")
@@ -167,9 +175,13 @@ class HomeIntent:
                 raise HomeIntentException(
                     f"Sounds device {config_sounds_device} not found in sounds devices list above."
                 )
-            microphone_sounds_config["sounds"] = {"aplay": {"device": config_sounds_device}}
-
-        return microphone_sounds_config
+            if "sounds" in rhasspy_config:
+                if "aplay" in rhasspy_config["sounds"]:
+                    rhasspy_config["sounds"]["aplay"]["device"] = config_sounds_device
+                else:
+                    rhasspy_config["sounds"].update({"aplay": {"device": config_sounds_device}})
+            else:
+                LOGGER.warning("No sounds section in rhasspy_profile.json to add sounds device")
 
     def _write_slots_to_rhasspy(self):
         all_slots = {}

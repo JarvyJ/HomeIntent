@@ -24,12 +24,12 @@ class RhasspyAPI:
         self.session.mount("http://", HTTPAdapter(max_retries=retries))
         self.session.mount("https://", HTTPAdapter(max_retries=retries))
 
-        LOGGER.info("Trying to connect to Rhasspy...")
+        LOGGER.info(f"Trying to connect to Rhasspy at {url}")
         try:
             self.get("/api/version")
         except requests.exceptions.ConnectionError as error:
             raise Exception(
-                f"Unable to connect to rhasspy server at {url} - "
+                f"Unable to connect to Rhasspy server at {url} - "
                 "Ensure it is running and try again!"
             )
 
