@@ -5,12 +5,12 @@ import os
 from typing import NamedTuple, Optional
 
 import paho.mqtt.client as mqtt
+from requests.exceptions import Timeout
 
+from audio_config import AudioConfig
+from intent_handler import IntentHandler
 from intents import Intents, get_slots_from_sentences
 from rhasspy_api import RhasspyAPI, RhasspyError
-from requests.exceptions import Timeout
-from intent_handler import IntentHandler
-from audio_config import AudioConfig
 
 LOGGER = logging.getLogger(__name__)
 
