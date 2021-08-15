@@ -102,7 +102,7 @@ When Home Intent starts it will verify sentences and log out Rhasspy's microphon
 !!!note
     For the sounds devices, you likely want one of the "default" devices. However, the `plughw` can sometimes make a fun chipmunk effect!
 
-From the output above, you could change the microphone/speaker in the `rhasspy` [config section](/getting-started/rhasspy-config) in `config.yaml`. It uses the 'key' as the identifier:
+From the output above, you could change the microphone/speaker in the `rhasspy` config section in `config.yaml`. It uses the 'key' as the identifier:
 
 ```yaml
 rhasspy:
