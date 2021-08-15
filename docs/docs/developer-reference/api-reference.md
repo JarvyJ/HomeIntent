@@ -59,7 +59,7 @@ In the example `shopping_item` is expected to be passed in to the `add_item_to_s
 and we're still figuring out how sentences that return state information should work, as very few of these are currently implemented.
 
 
-### `@intents.on_event("register")` - NOT YET IMPLEMENTED
+### `@intents.on_event("register_sentences")`
 This method registers a callback method that will be executed after the slot methods have been executed. It can come in handy for disabling an intent if there are no slots to execute on, which can help the overall experience as a sentence that can't do anything shouldn't be registered in Rhasspy. To aid in disabling intents, there are two helper methods `intents.disable_intent` and `intents.disable_all`.
 
 !!!note "System Integrations"
@@ -74,18 +74,23 @@ This method registers a callback method that will be executed after the slot met
 #### `intents.disable_intent(method)`
 Disables a specific intent method. Takes in the actual method and will stop it from being registered in Rhasspy.
 
+Example:
+```python
+@intents.on_event("register_sentences")
+def conditionally_remove_intents(self):
+    if len(self.controllable_entites) == 0:
+        intents.disable_intent(self.toggle_group)
+```
+
 #### `intents.disable_all()`
 Disables the entire intent. Can come in handy if there are no slots associated.
 
 Example:
 ```python
-@intents.on_event("register")
+@intents.on_event("register_sentences")
 def conditionally_remove_intents(self):
-    if len(self.controllable_entites) == 0:
-        intents.disable_intent(self.toggle_group)
-
     if len(self.all_entities) == 0:
-        intents.disable_all_intents()
+        intents.disable_all()
 ```
 
 ## On Slots and Sentences

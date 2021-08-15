@@ -24,6 +24,7 @@ class Intents:
         self.name = name
         self.all_slots = {}
         self.all_sentences = {}
+        self.events = {"register_sentences": []}
 
     def dictionary_slots(self, func):
         LOGGER.debug(f"Registering {func.__name__}")
@@ -47,8 +48,6 @@ class Intents:
         return wrapper
 
     def sentences(self, sentences):
-        # sentence_slots = get_slots_from_sentences(sentences)
-
         def inner(func):
             check_if_args_in_sentence_slots(sentences, func)
             self.all_sentences[func.__name__] = Sentence(sentences, func)
@@ -61,6 +60,28 @@ class Intents:
             return wrapper
 
         return inner
+
+    def on_event(self, event):
+        if event != "register_sentences":
+            raise IntentException(
+                "Currently you can only register events during 'register_sentences'"
+            )
+
+        def inner(func):
+            @wraps(func)
+            def wrapper(*arg, **kwargs):
+                return func(*arg, **kwargs)
+
+            self.events[event].append(func)
+            return wrapper
+
+        return inner
+
+    def disable_intent(self, sentence_func: Callable):
+        del self.all_sentences[sentence_func.__name__]
+
+    def disable_all(self):
+        self.all_sentences = {}
 
 
 def get_slots_from_sentences(sentences: List[str]):
