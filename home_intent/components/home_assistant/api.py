@@ -20,7 +20,7 @@ class HomeAssistantAPI:
             self.get("/api/")
         except requests.exceptions.ConnectionError as error:
             raise Exception(
-                f"Unable to connect to rhasspy server at {url} - "
+                f"Unable to connect to Home Assistant server at {url} - "
                 "Ensure it is running and try again!"
             )
         # TODO: add session auto retry logic from urllib3
