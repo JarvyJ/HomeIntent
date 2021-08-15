@@ -51,6 +51,7 @@ class HomeIntent:
 
     def register(self, class_instance, intents: Intents):
         LOGGER.info(f"Verifying sentences' slots for {intents.name}...")
+
         for sentence in intents.all_sentences:
             sentence_slots = get_slots_from_sentences(intents.all_sentences[sentence].sentences)
             for slot in sentence_slots:
@@ -211,6 +212,14 @@ class HomeIntent:
         sentences = []
         for registered_intent in self.registered_intents:
             LOGGER.info(f"Getting sentences for {registered_intent.intent.name}")
+
+            # HACK: the slot values still get registered but Rhasspy wont try to learn them
+            # if they aren't used in any sentences. I should have a more advanced state system,
+            # but this should do for now.
+            for register_func in registered_intent.intent.events["register_sentences"]:
+                LOGGER.info(f"Running register func: {register_func}")
+                register_func(registered_intent.class_instance)
+
             for (sentence_name, sentence,) in registered_intent.intent.all_sentences.items():
                 # the rhasspy API does '\n' for newlines
                 sentences_string = "\n".join(sentence.sentences)
