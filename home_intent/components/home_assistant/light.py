@@ -29,9 +29,29 @@ class Light:
         # The original colors came from here:
         # self.light_service["services"]["turn_on"]["fields"]["color_name"]["selector"]["select"]["options"]
 
+    @intents.on_event("register_sentences")
+    def handle_prefer_toggle(self):
+        if self.ha.prefer_toggle:
+            intents.disable_intent(self.turn_on)
+            intents.disable_intent(self.turn_off)
+        else:
+            intents.disable_intent(self.toggle_light)
+
     @intents.sentences(["toggle the ($light) [light]", "turn (on|off) the ($light) [light]"])
     def toggle_light(self, light):
         self.ha.api.call_service("light", "toggle", {"entity_id": light})
+        response = self.ha.api.get_entity(light)
+        return f"Turning {response['state']} the {response['attributes']['friendly_name']} light"
+
+    @intents.sentences(["turn on the ($light) [light]"])
+    def turn_on(self, light):
+        self.ha.api.call_service("light", "turn_on", {"entity_id": light})
+        response = self.ha.api.get_entity(light)
+        return f"Turning {response['state']} the {response['attributes']['friendly_name']} light"
+
+    @intents.sentences(["turn off the ($light) [light]"])
+    def turn_off(self, light):
+        self.ha.api.call_service("light", "turn_off", {"entity_id": light})
         response = self.ha.api.get_entity(light)
         return f"Turning {response['state']} the {response['attributes']['friendly_name']} light"
 
@@ -66,23 +86,3 @@ class Light:
         )
         response = self.ha.api.get_entity(light)
         return f"Setting the {response['attributes']['friendly_name']} to {brightness}% brightness"
-
-    # currently large number ranges throw a lot of things off. So no Kelvin for now! Maybe in the future!
-    # @intents.sentences(
-    #     [
-    #         "(set | change | make | turn on) the ($light) [light] to (2000..6500,100){kelvin} [K] [kelvin]"
-    #     ]
-    # )
-    # def change_kelvin(self, light, kelvin):
-    #     self.ha.api.call_service("light", "turn_on", {"entity_id": light, "kelvin": kelvin})
-
-    # @intents.sentences(
-    #     [
-    #         "(set | change | make | turn on) the ($light) [light] to (2000..6500,100){kelvin} [K] [kelvin] "
-    #         "[at] (0..100){brightness} [percent] [brightness]"
-    #     ]
-    # )
-    # def change_kelvin_brightness(self, light, kelvin, brightness):
-    #     self.ha.api.call_service(
-    #         "light", "turn_on", {"entity_id": light, "kelvin": kelvin, "brightness_pct": brightness}
-    #     )
