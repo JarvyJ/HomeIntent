@@ -9,6 +9,8 @@ import paho.mqtt.client as mqtt
 from intents import Intents, get_slots_from_sentences
 from rhasspy_api import RhasspyAPI, RhasspyError
 from requests.exceptions import Timeout
+from intent_handler import IntentHandler
+from audio_config import AudioConfig
 
 LOGGER = logging.getLogger(__name__)
 
@@ -30,6 +32,9 @@ class HomeIntent:
         self.rhasspy_api = RhasspyAPI(settings.rhasspy.url)
         self.mqtt_client = mqtt.Client()
         self.arch = None
+        self.intent_handler = IntentHandler(self.mqtt_client, self.settings, self.intent_function)
+        self.audio_config = AudioConfig(self.rhasspy_api, self.settings)
+
         uname = os.uname()
         if uname.machine == "x86_64":
             self.arch = "x86_64"
@@ -61,8 +66,6 @@ class HomeIntent:
                         f"Ensure there is a slot method with the name '{slot}' in the class {intents.name}"
                     )
 
-            # TODO: this lambda setup no longer really requires keeping the class instance in RegisteredIntent.
-            # I may get rid of it in the future.
             LOGGER.debug(sentence)
             LOGGER.debug(intents.all_sentences[sentence])
             self.intent_function[f"{intents.name}.{sentence}"] = partial(
@@ -70,6 +73,8 @@ class HomeIntent:
             )
 
         LOGGER.info("Sentences look good!")
+        # while I am using a partial here, I keep track of the instantiated class instance for the
+        # register_sentences callback
         self.registered_intents.append(RegisteredIntent(class_instance, intents))
 
     def initialize(self):
@@ -77,7 +82,7 @@ class HomeIntent:
         self._write_slots_to_rhasspy()
         self._write_sentences_to_rhasspy()
         self._train()
-        self._setup_mqtt_and_loop()
+        self.intent_handler.setup_mqtt_and_loop()
 
     def _initialize_rhasspy(self):
         LOGGER.info("Checking profile")
@@ -110,79 +115,18 @@ class HomeIntent:
             LOGGER.info(f"Loading default {self.arch} rhasspy profile")
         rhasspy_config = json.load(open(config_file_path, "r"))
         try:
-            self._add_sounds_microphone_device(rhasspy_config)
+            self.audio_config.add_sounds_microphone_device(rhasspy_config)
         except RhasspyError:
             LOGGER.info("Installing profile for first boot")
             self.rhasspy_api.post("/api/profile", rhasspy_config)
 
             LOGGER.info("Restarting Rhasspy...")
             self.rhasspy_api.post("/api/restart")
-            self._add_sounds_microphone_device(rhasspy_config)
+            self.audio_config.add_sounds_microphone_device(rhasspy_config)
 
         LOGGER.debug(json.dumps(rhasspy_config, indent=True))
 
         return rhasspy_config
-
-    def _add_sounds_microphone_device(self, rhasspy_config):
-        microphone_devices = self.rhasspy_api.get("/api/microphones")
-        sounds_devices = self.rhasspy_api.get("/api/speakers")
-
-        config_microphone_device = self.settings.rhasspy.microphone_device
-        config_sounds_device = self.settings.rhasspy.sounds_device
-
-        # Figure we should always show this so people can switch without unsetting first.
-        LOGGER.info(
-            "\nThese are the attached microphones (I think the default has an asterisk):\n"
-            f"{json.dumps(microphone_devices, indent=True)}\n"
-            "\nTo configure a microphone, set 'microphone_device' to the corresponding number "
-            "above in the 'rhasspy' section in '/config/config.yaml'\n"
-        )
-
-        # Same reason for displaying as above.
-        LOGGER.info(
-            "These are the attached sounds devices:\n"
-            f"{json.dumps(sounds_devices, indent=True)}\n"
-            "\nTo configure a sounds device, set 'sounds_device' to the corresponding "
-            "key (ex: default:CARD=Headphones) above in the 'rhasspy' section "
-            "in '/config/config.yaml'. You probably want one of the 'default' devices. "
-            "The plughw ones can have a fun chipmunk effect!\n"
-        )
-
-        if not config_microphone_device:
-            LOGGER.info("Microphone not set, using default microphone\n")
-        else:
-            LOGGER.info(f"Using {config_microphone_device} for pyaudio device")
-            if config_microphone_device not in microphone_devices:
-                raise HomeIntentException(
-                    f"Microphone device {config_microphone_device} not found in microphone devices list above."
-                )
-            if "microphone" in rhasspy_config:
-                if "pyaudio" in rhasspy_config["microphone"]:
-                    rhasspy_config["microphone"]["pyaudio"]["device"] = config_microphone_device
-                else:
-                    rhasspy_config["microphone"].update(
-                        {"pyaudio": {"device": config_microphone_device}}
-                    )
-            else:
-                LOGGER.warning(
-                    "No microphone section in rhasspy_profile.json to add microphone device"
-                )
-
-        if not config_sounds_device:
-            LOGGER.warning("Sounds device not set, using sysdefault sound device\n")
-        else:
-            LOGGER.info(f"Using {config_sounds_device} for aplay device")
-            if config_sounds_device not in sounds_devices:
-                raise HomeIntentException(
-                    f"Sounds device {config_sounds_device} not found in sounds devices list above."
-                )
-            if "sounds" in rhasspy_config:
-                if "aplay" in rhasspy_config["sounds"]:
-                    rhasspy_config["sounds"]["aplay"]["device"] = config_sounds_device
-                else:
-                    rhasspy_config["sounds"].update({"aplay": {"device": config_sounds_device}})
-            else:
-                LOGGER.warning("No sounds section in rhasspy_profile.json to add sounds device")
 
     def _write_slots_to_rhasspy(self):
         all_slots = {}
@@ -238,51 +182,6 @@ class HomeIntent:
             LOGGER.warning(
                 "Timed out waiting for Rhasspy to train. Moving on, we will likely be okay."
             )
-
-    def _setup_mqtt_and_loop(self):
-        self.mqtt_client.message_callback_add("hermes/intent/#", self._handle_intent)
-        if self.settings.rhasspy.mqtt_username and self.settings.rhasspy.mqtt_password:
-            self.mqtt_client.username_pw_set(
-                username=self.settings.rhasspy.mqtt_username,
-                password=self.settings.rhasspy.mqtt_password,
-            )
-        self.mqtt_client.on_connect = self._on_connect
-        self.mqtt_client.connect(
-            self.settings.rhasspy.mqtt_host, self.settings.rhasspy.mqtt_port, 60
-        )
-        LOGGER.info("Waiting to handle intents!")
-        self.mqtt_client.loop_forever()
-
-    def _on_connect(self, client, userdata, flags, rc):
-        LOGGER.info("Connected to MQTT. This happens when the Rhasspy MQTT starts (or restarts)")
-        if rc == 0:
-            LOGGER.info("Subscribed to intent messages: hermes/intent/#")
-            client.subscribe("hermes/intent/#")
-        else:
-            LOGGER.error(f"Failed to connect to MQTT. Return Code: {rc}")
-
-    def _handle_intent(self, client, userdata, message):
-        payload = json.loads(message.payload)
-        intent_name = payload["intent"]["intentName"]
-        slots = {}
-        for slot in payload["slots"]:
-            slots[slot["slotName"]] = slot["value"]["value"]
-        LOGGER.info(f"Handling intent: {intent_name}")
-        LOGGER.debug(slots)
-        try:
-            response = self.intent_function[intent_name](**slots)
-        except Exception as exception:
-            LOGGER.exception(exception)
-        else:
-            if response:
-                self._say(client, response, session_id=payload["sessionId"])
-
-    def _say(self, client, text, session_id):
-        notification = {"text": text, "siteId": "default"}
-        if session_id:
-            print("Using the session manager to close the session")
-            notification["sessionId"] = session_id
-            client.publish("hermes/dialogueManager/endSession", json.dumps(notification))
 
     def say(self, text):
         notification = {"text": text, "siteId": "default"}

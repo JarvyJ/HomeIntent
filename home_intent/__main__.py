@@ -64,7 +64,8 @@ def _load_custom_components(custom_components: set, home_intent: HomeIntent):
             integration = importlib.import_module(custom_component)
         except ModuleNotFoundError:
             raise HomeIntentImportException(
-                f"Unable to load custom component '{custom_component}' from /config/custom_components"
+                f"Unable to load custom component '{custom_component}' from /config/custom_components. "
+                "Ensure the filename and config value match up."
             )
         else:
             integration.setup(home_intent)
