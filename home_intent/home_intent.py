@@ -2,7 +2,8 @@ from functools import partial
 import json
 import logging
 import os
-from typing import NamedTuple, Optional
+from pathlib import PosixPath
+from typing import NamedTuple
 
 import paho.mqtt.client as mqtt
 from requests.exceptions import Timeout
@@ -56,6 +57,11 @@ class HomeIntent:
 
     def register(self, class_instance, intents: Intents):
         LOGGER.info(f"Verifying sentences' slots for {intents.name}...")
+
+        customization_filestem = "/".join(intents.name.split(".")[1:])
+        customization_file = PosixPath(f"/config/customization/{customization_filestem}.yaml")
+        if customization_file.is_file():
+            intents.handle_customization(customization_file, class_instance)
 
         for sentence in intents.all_sentences:
             sentence_slots = get_slots_from_sentences(intents.all_sentences[sentence].sentences)
