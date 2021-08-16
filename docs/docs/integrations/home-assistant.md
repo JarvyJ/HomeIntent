@@ -33,6 +33,11 @@ Currently `prefer_toggle` is only used for the following:
 ## Example Sentences
 ### Lights
 
+ * Turn on the kitchen light
+ * Set the master bedroom light to 80% brightness
+ * Make the den red
+ * Change the bathroom light to blue
+
 A full list of colors can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/components/home_assistant/colors.txt).
 
 ### Shopping List
