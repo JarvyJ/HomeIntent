@@ -2,7 +2,7 @@ from functools import wraps
 import inspect
 import logging
 import re
-from typing import Callable, List, NamedTuple
+from typing import Callable, List, NamedTuple, Union
 
 LOGGER = logging.getLogger(__name__)
 # we'll likely have to get more sophisticated than regexes eventually
@@ -77,8 +77,11 @@ class Intents:
 
         return inner
 
-    def disable_intent(self, sentence_func: Callable):
-        del self.all_sentences[sentence_func.__name__]
+    def disable_intent(self, sentence_func: Union[Callable, str]):
+        if isinstance(sentence_func, str):
+            del self.all_sentences[sentence_func]
+        else:
+            del self.all_sentences[sentence_func.__name__]
 
     def disable_all(self):
         self.all_sentences = {}

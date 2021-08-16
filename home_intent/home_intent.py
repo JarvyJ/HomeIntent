@@ -38,11 +38,13 @@ class SentenceAlias(BaseModel, extra=Extra.forbid):
 class SentenceCustomization(BaseModel, extra=Extra.forbid):
     sentences: Optional[SentenceModification]
     alias: Optional[List[SentenceAlias]]
+    disable: bool = False
 
 
 class Customization(BaseModel, extra=Extra.forbid):
     slots: Optional[Dict[str, SlotCustomization]]
     intents: Optional[Dict[str, SentenceCustomization]]
+    disable_all: bool = False
 
 
 class HomeIntentException(Exception):
@@ -98,6 +100,8 @@ class HomeIntent:
             if component_customization.intents:
                 for intent, customization in component_customization.intents.items():
                     if intent in intents.all_sentences:
+                        if customization.disable:
+                            intents.disable_intent(intent)
                         if customization.sentences:
                             if customization.sentences.add:
                                 intents.all_sentences[intent].sentences.extend(
@@ -118,6 +122,8 @@ class HomeIntent:
                         raise HomeIntentException(
                             f"'{intent}'' not in intent sentences: {intents.all_sentences.keys()}"
                         )
+            if component_customization.disable_all:
+                intents.disable_all()
 
         for sentence in intents.all_sentences:
             sentence_slots = get_slots_from_sentences(intents.all_sentences[sentence].sentences)
