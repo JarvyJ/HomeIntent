@@ -2,8 +2,8 @@ from functools import partial
 import json
 import logging
 import os
-from typing import NamedTuple
 from pathlib import PosixPath
+from typing import NamedTuple
 
 import paho.mqtt.client as mqtt
 from requests.exceptions import Timeout
@@ -12,39 +12,8 @@ from audio_config import AudioConfig
 from intent_handler import IntentHandler
 from intents import Intents, get_slots_from_sentences
 from rhasspy_api import RhasspyAPI, RhasspyError
-from typing import Optional, List, Union, Dict
-import yaml
-from pydantic import BaseModel, Extra
-
 
 LOGGER = logging.getLogger(__name__)
-
-
-class SlotCustomization(BaseModel, extra=Extra.forbid):
-    add: Optional[List[Union[str, Dict[str, str]]]]
-    remove: Optional[List[str]]
-
-
-class SentenceModification(BaseModel, extra=Extra.forbid):
-    add: Optional[List[str]]
-    remove: Optional[List[str]]
-
-
-class SentenceAlias(BaseModel, extra=Extra.forbid):
-    sentence: str
-    slots: Dict[str, str]
-
-
-class SentenceCustomization(BaseModel, extra=Extra.forbid):
-    sentences: Optional[SentenceModification]
-    alias: Optional[List[SentenceAlias]]
-    disable: bool = False
-
-
-class Customization(BaseModel, extra=Extra.forbid):
-    slots: Optional[Dict[str, SlotCustomization]]
-    intents: Optional[Dict[str, SentenceCustomization]]
-    disable_all: bool = False
 
 
 class HomeIntentException(Exception):
@@ -92,38 +61,7 @@ class HomeIntent:
         customization_filestem = "/".join(intents.name.split(".")[1:])
         customization_file = PosixPath(f"/config/customization/{customization_filestem}.yaml")
         if customization_file.is_file():
-            LOGGER.info(f"Loading customization file {customization_file}")
-            customization_yaml = yaml.load(
-                customization_file.read_text("utf-8"), Loader=yaml.SafeLoader
-            )
-            component_customization = Customization(**customization_yaml)
-            if component_customization.intents:
-                for intent, customization in component_customization.intents.items():
-                    if intent in intents.all_sentences:
-                        if customization.disable:
-                            intents.disable_intent(intent)
-                        if customization.sentences:
-                            if customization.sentences.add:
-                                intents.all_sentences[intent].sentences.extend(
-                                    customization.sentences.add
-                                )
-                            if customization.sentences.remove:
-                                for sentence_to_remove in customization.sentences.remove:
-                                    if (
-                                        sentence_to_remove
-                                        in intents.all_sentences[intent].sentences
-                                    ):
-                                        intents.all_sentences[intent].sentences.remove(
-                                            sentence_to_remove
-                                        )
-                                    else:
-                                        LOGGER.warning(f"'{sentence_to_remove}' not in {intent} ")
-                    else:
-                        raise HomeIntentException(
-                            f"'{intent}'' not in intent sentences: {intents.all_sentences.keys()}"
-                        )
-            if component_customization.disable_all:
-                intents.disable_all()
+            intents.handle_cusotmization(customization_file)
 
         for sentence in intents.all_sentences:
             sentence_slots = get_slots_from_sentences(intents.all_sentences[sentence].sentences)

@@ -1,8 +1,12 @@
 from functools import wraps
 import inspect
 import logging
+from pathlib import PosixPath
 import re
-from typing import Callable, List, NamedTuple, Union
+from typing import Callable, Dict, List, NamedTuple, Optional, Union
+
+from pydantic import BaseModel, Extra
+import yaml
 
 LOGGER = logging.getLogger(__name__)
 # we'll likely have to get more sophisticated than regexes eventually
@@ -12,6 +16,33 @@ TAG_REGEX = re.compile(r"""{([a-z_]*)}""")
 
 class IntentException(Exception):
     pass
+
+
+class SlotCustomization(BaseModel, extra=Extra.forbid):
+    add: Optional[List[Union[str, Dict[str, str]]]]
+    remove: Optional[List[str]]
+
+
+class SentenceModification(BaseModel, extra=Extra.forbid):
+    add: Optional[List[str]]
+    remove: Optional[List[str]]
+
+
+class SentenceAlias(BaseModel, extra=Extra.forbid):
+    sentence: str
+    slots: Dict[str, str]
+
+
+class SentenceCustomization(BaseModel, extra=Extra.forbid):
+    sentences: Optional[SentenceModification]
+    alias: Optional[List[SentenceAlias]]
+    disable: bool = False
+
+
+class Customization(BaseModel, extra=Extra.forbid):
+    slots: Optional[Dict[str, SlotCustomization]]
+    intents: Optional[Dict[str, SentenceCustomization]]
+    disable_all: bool = False
 
 
 class Sentence(NamedTuple):
@@ -24,6 +55,7 @@ class Intents:
         self.name = name
         self.all_slots = {}
         self.all_sentences = {}
+        self.slot_modifications = {}
         self.events = {"register_sentences": []}
 
     def dictionary_slots(self, func):
@@ -32,7 +64,34 @@ class Intents:
         @wraps(func)
         def wrapper(*arg, **kwargs):
             slot_dictionary = func(*arg, **kwargs)
-            return [f"{x}{{{func.__name__}:{slot_dictionary[x]}}}" for x in slot_dictionary]
+            non_dictionary_additions = []
+            if func.__name__ in self.slot_modifications:
+                if self.slot_modifications[func.__name__].remove:
+                    for slots_to_remove in self.slot_modifications[func.__name__].remove:
+                        if slots_to_remove in slot_dictionary:
+                            del slot_dictionary[slots_to_remove]
+                        else:
+                            LOGGER.warning(
+                                f"'{slots_to_remove}' not in slot list for {func.__name__}"
+                            )
+
+                if self.slot_modifications[func.__name__].add:
+                    for slot_addition in self.slot_modifications[func.__name__].add:
+
+                        if isinstance(slot_addition, str):
+                            if slot_addition in slot_dictionary:
+                                del slot_dictionary[slot_addition]
+                            non_dictionary_additions.append(f"{slot_addition}{{{func.__name__}}}")
+
+                        elif isinstance(slot_addition, dict):
+                            synonyms, value = next(iter(slot_addition.items()))
+                            if synonyms in slot_dictionary:
+                                del slot_dictionary[synonyms]
+                            slot_dictionary[synonyms] = value
+
+            slot_list = [f"{x}{{{func.__name__}:{slot_dictionary[x]}}}" for x in slot_dictionary]
+            slot_list.extend(non_dictionary_additions)
+            return slot_list
 
         self.all_slots[func.__name__] = wrapper
         return wrapper
@@ -42,14 +101,43 @@ class Intents:
 
         @wraps(func)
         def wrapper(*arg, **kwargs):
-            return [f"{x}{{{func.__name__}}}" for x in func(*arg, **kwargs)]
+            slot_values = set(func(*arg, **kwargs))
+            synonmym_values = []
+            if func.__name__ in self.slot_modifications:
+                if self.slot_modifications[func.__name__].remove:
+                    for slots_to_remove in self.slot_modifications[func.__name__].remove:
+                        if slots_to_remove in slot_values:
+                            slot_values.remove(slots_to_remove)
+                        else:
+                            LOGGER.warning(
+                                f"'{slots_to_remove}' not in slot list for {func.__name__}"
+                            )
+
+                if self.slot_modifications[func.__name__].add:
+                    for slot_addition in self.slot_modifications[func.__name__].add:
+
+                        if isinstance(slot_addition, str):
+                            if slot_addition in slot_values:
+                                slot_values.remove(slot_addition)
+                            slot_values.add(slot_addition)
+
+                        elif isinstance(slot_addition, dict):
+                            synonyms, value = next(iter(slot_addition.items()))
+                            if synonyms in slot_values:
+                                slot_values.remove(synonyms)
+                            synonmym_values.append(f"{synonyms}{{{func.__name__}:{value}}}")
+
+            slot_list = [f"{x}{{{func.__name__}}}" for x in slot_values]
+            slot_list.extend(synonmym_values)
+
+            return slot_list
 
         self.all_slots[func.__name__] = wrapper
         return wrapper
 
     def sentences(self, sentences):
         def inner(func):
-            check_if_args_in_sentence_slots(sentences, func)
+            _check_if_args_in_sentence_slots(sentences, func)
             self.all_sentences[func.__name__] = Sentence(sentences, func)
 
             @wraps(func)
@@ -86,8 +174,50 @@ class Intents:
     def disable_all(self):
         self.all_sentences = {}
 
+    def handle_cusotmization(self, customization_file: PosixPath):
+        LOGGER.info(f"Loading customization file {customization_file}")
+        customization_yaml = yaml.load(
+            customization_file.read_text("utf-8"), Loader=yaml.SafeLoader
+        )
+        component_customization = Customization(**customization_yaml)
+        if component_customization.disable_all:
+            self.disable_all()
 
-def get_slots_from_sentences(sentences: List[str]):
+        if component_customization.intents:
+            for intent, customization in component_customization.intents.items():
+                if intent in self.all_sentences:
+                    self._customize_intents(intent, customization)
+                else:
+                    raise IntentException(
+                        f"'{intent}'' not in intent sentences: {self.all_sentences.keys()}"
+                    )
+
+        if component_customization.slots:
+            for slot, customization in component_customization.slots.items():
+                if slot in self.all_slots:
+                    self.slot_modifications[slot] = customization
+                else:
+                    raise IntentException(f"'{slot}' not associated with {self.name}")
+
+    def _customize_intents(
+        self, intent: str, customization: SentenceCustomization,
+    ):
+        if customization.disable:
+            self.disable_intent(intent)
+
+        if customization.sentences:
+            if customization.sentences.add:
+                self.all_sentences[intent].sentences.extend(customization.sentences.add)
+
+            if customization.sentences.remove:
+                for sentence_to_remove in customization.sentences.remove:
+                    if sentence_to_remove in self.all_sentences[intent].sentences:
+                        self.all_sentences[intent].sentences.remove(sentence_to_remove)
+                    else:
+                        LOGGER.warning(f"'{sentence_to_remove}' not in {intent} ")
+
+
+def _get_slots_from_sentences(sentences: List[str]):
     sentence_slots = set()
     for sentence in sentences:
         sentence_slots.update((SLOT_REGEX.findall(sentence)))
@@ -95,7 +225,7 @@ def get_slots_from_sentences(sentences: List[str]):
     return sentence_slots
 
 
-def get_tags_from_sentences(sentences: List[str]):
+def _get_tags_from_sentences(sentences: List[str]):
     sentence_tags = set()
     for sentence in sentences:
         sentence_tags.update(TAG_REGEX.findall(sentence))
@@ -103,9 +233,9 @@ def get_tags_from_sentences(sentences: List[str]):
     return sentence_tags
 
 
-def check_if_args_in_sentence_slots(sentences, func):
-    sentence_slots = get_slots_from_sentences(sentences)
-    sentence_tags = get_tags_from_sentences(sentences)
+def _check_if_args_in_sentence_slots(sentences, func):
+    sentence_slots = _get_slots_from_sentences(sentences)
+    sentence_tags = _get_tags_from_sentences(sentences)
 
     argument_spec = inspect.getfullargspec(func)
 

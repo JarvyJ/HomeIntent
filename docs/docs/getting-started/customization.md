@@ -1,4 +1,4 @@
-# Customization - NOT YET IMPLEMENTED
+# Customization
 Users have the ability to further customize intents to provide a better experience for their individual needs. It can be useful to remove unused intents (especially if they false trigger) or modify slots (like custom shopping list items).
 
 There are plans on having a UI to help with customizations, but currently it is handled with YAML files in `/config/customizations/<component_name>.yaml` where component name matches the intent that you are trying to modify.
@@ -64,7 +64,7 @@ intents:
 Create a sentence that kicks off multiple intents. This way you can kickoff multiple intents with a single phrase. -->
 
 ## Full Example
-This file could be used as `/config/customizations/home_assistant.shopping_list.yaml`
+This file could be used as `/config/customizations/home_assistant/shopping_list.yaml`
 
 ```yaml
 slots:
