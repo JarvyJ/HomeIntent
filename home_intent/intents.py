@@ -1,4 +1,4 @@
-from functools import wraps
+from functools import wraps, partial, partialmethod
 import inspect
 import logging
 from pathlib import PosixPath
@@ -29,8 +29,8 @@ class SentenceModification(BaseModel, extra=Extra.forbid):
 
 
 class SentenceAlias(BaseModel, extra=Extra.forbid):
-    sentence: str
-    slots: Dict[str, str]
+    sentences: List[str]
+    slots: Optional[Dict[str, str]]
 
 
 class SentenceCustomization(BaseModel, extra=Extra.forbid):
@@ -174,7 +174,7 @@ class Intents:
     def disable_all(self):
         self.all_sentences = {}
 
-    def handle_cusotmization(self, customization_file: PosixPath):
+    def handle_customization(self, customization_file: PosixPath, class_instance):
         LOGGER.info(f"Loading customization file {customization_file}")
         customization_yaml = yaml.load(
             customization_file.read_text("utf-8"), Loader=yaml.SafeLoader
@@ -186,7 +186,7 @@ class Intents:
         if component_customization.intents:
             for intent, customization in component_customization.intents.items():
                 if intent in self.all_sentences:
-                    self._customize_intents(intent, customization)
+                    self._customize_intents(intent, customization, class_instance)
                 else:
                     raise IntentException(
                         f"'{intent}'' not in intent sentences: {self.all_sentences.keys()}"
@@ -199,9 +199,7 @@ class Intents:
                 else:
                     raise IntentException(f"'{slot}' not associated with {self.name}")
 
-    def _customize_intents(
-        self, intent: str, customization: SentenceCustomization,
-    ):
+    def _customize_intents(self, intent: str, customization: SentenceCustomization, class_instance):
         if customization.disable:
             self.disable_intent(intent)
 
@@ -216,8 +214,19 @@ class Intents:
                     else:
                         LOGGER.warning(f"'{sentence_to_remove}' not in {intent} ")
 
+        if customization.alias:
+            for count, alias in enumerate(customization.alias):
+                sentences = alias.sentences
+                funcname = f"{intent}.alias_function.{count}"
 
-def _get_slots_from_sentences(sentences: List[str]):
+                # alright, this is some insanity. We get the alias' intent func dynamically
+                # and then populate its arguments, then re-inject it into the class with a new name
+                alias_function = partial(getattr(class_instance, intent).__func__, **alias.slots)
+                setattr(class_instance, funcname, alias_function)
+                self.all_sentences[funcname] = Sentence(sentences, alias_function)
+
+
+def get_slots_from_sentences(sentences: List[str]):
     sentence_slots = set()
     for sentence in sentences:
         sentence_slots.update((SLOT_REGEX.findall(sentence)))
@@ -234,7 +243,7 @@ def _get_tags_from_sentences(sentences: List[str]):
 
 
 def _check_if_args_in_sentence_slots(sentences, func):
-    sentence_slots = _get_slots_from_sentences(sentences)
+    sentence_slots = get_slots_from_sentences(sentences)
     sentence_tags = _get_tags_from_sentences(sentences)
 
     argument_spec = inspect.getfullargspec(func)

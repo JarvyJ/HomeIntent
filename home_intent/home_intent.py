@@ -61,7 +61,7 @@ class HomeIntent:
         customization_filestem = "/".join(intents.name.split(".")[1:])
         customization_file = PosixPath(f"/config/customization/{customization_filestem}.yaml")
         if customization_file.is_file():
-            intents.handle_cusotmization(customization_file)
+            intents.handle_customization(customization_file, class_instance)
 
         for sentence in intents.all_sentences:
             sentence_slots = get_slots_from_sentences(intents.all_sentences[sentence].sentences)
