@@ -32,6 +32,9 @@ Currently `prefer_toggle` is only used for the following:
 
 ## Example Sentences
 ### Lights
+
+A full list of colors can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/components/home_assistant/colors.txt).
+
 ### Shopping List
 Requires the [shopping_list](https://www.home-assistant.io/integrations/shopping_list/) component in Home Assistant
 
@@ -42,7 +45,7 @@ Requires the [shopping_list](https://www.home-assistant.io/integrations/shopping
  * Check everything off the list
  * Unmark everything from the shopping list
 
-Either Check or mark can be used as well as uncheck or unmark. The word shopping is always optional.
+Either Check or mark can be used as well as uncheck or unmark. The word shopping is always optional. A full list of shopping items can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/components/home_assistant/shopping_items.txt).
 
 ### Groups
 
