@@ -3,6 +3,15 @@ Users have the ability to further customize intents to provide a better experien
 
 There are plans on having a UI to help with customizations, but currently it is handled with YAML files in `/config/customizations/<component_name>.yaml` where component name matches the intent that you are trying to modify.
 
+The Home Assistant component is made up of multiple intents, so they follow a slightly different structure: `/config/customizations/home_assistant/<component_name>.yaml`
+
+Example customization filenames:
+
+ * `/config/customizations/timer.yaml`
+ * `/config/customizations/home_assistant/shopping_list.yaml`
+
+When loaded correctly, you should see a `Loading customization file /config/customization/home_assistant/shopping_list.yaml` in the logs.
+
 ## Slots
 
 ### Adding and removing custom words to slots
@@ -35,7 +44,7 @@ Under an `intents` top level config, should be the intent method name (as found 
 
 ```yaml
 intents:
-  add_item:
+  add_item_to_shopping_list:
     disable: true
 ```
 
@@ -43,7 +52,7 @@ intents:
 Similar to slots, intent sentences can be added or removed. Ensure that any tags or slot names needed for the intent are present.
 ```yaml
 intents:
-  add_item:
+  add_item_to_shopping_list:
     sentences:
       add:
         - "include ($shopping_item) on the shopping list"
@@ -51,13 +60,16 @@ intents:
         - "add ($shopping_item) to the [shopping] list"
 ```
 
-### Sentence aliasing with slot entities
+### Intent aliasing with slot entities
+Entire intent aliases can also be created that are pre-populated with slot items.
 ```yaml
 intents:
-  add_item:
+  add_item_to_shopping_list:
     alias:
-      - sentence: "I want bacon"
-        shopping_item: "bacon"
+      - sentences: 
+        - "I want bacon"
+        slots:
+          shopping_item: "bacon"
 ```
 
 <!-- ## Full Automation
@@ -77,7 +89,7 @@ slots:
       - beans
       
 intents:
-  add_item:
+  add_item_to_shopping_list:
     sentences:
       add:
         - "add ($shopping_item) to the list"

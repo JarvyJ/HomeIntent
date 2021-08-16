@@ -221,7 +221,12 @@ class Intents:
 
                 # alright, this is some insanity. We get the alias' intent func dynamically
                 # and then populate its arguments, then re-inject it into the class with a new name
-                alias_function = partial(getattr(class_instance, intent).__func__, **alias.slots)
+                if alias.slots:
+                    alias_function = partial(
+                        getattr(class_instance, intent).__func__, **alias.slots
+                    )
+                else:
+                    alias_function = getattr(class_instance, intent).__func__
                 setattr(class_instance, funcname, alias_function)
                 self.all_sentences[funcname] = Sentence(sentences, alias_function)
 
