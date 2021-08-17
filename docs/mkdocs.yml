@@ -37,7 +37,6 @@ plugins:
   - search
   - awesome-pages
 
-
 extra_css:
   - stylesheets/extra.css
 
@@ -45,3 +44,6 @@ extra:
   social:
     - icon: fontawesome/solid/rss
       link: https://github.com/JarvyJ/HomeIntent/releases.atom
+
+  version:
+    provider: mike

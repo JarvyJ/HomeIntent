@@ -21,6 +21,9 @@ This component has the following options:
 !!! note "Maximum Number of Days"
     It is currently set to 1 as Home Intent restarts daily. Once auto reloading of configuration is in, we will change the default to 30 days.
 
+### Customization
+The timer components can be customized using the [customization json](/getting-started/customization/) with the filename `/config/customizations/timer.md`. The alarm sound can be changed by placing a wav file at `/config/timer/alarm.wav`.
+
 ## Example Sentences
 
  * Set timer 90 seconds

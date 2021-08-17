@@ -10,7 +10,7 @@ Example customization filenames:
  * `/config/customizations/timer.yaml`
  * `/config/customizations/home_assistant/shopping_list.yaml`
 
-When loaded correctly, you should see a `Loading customization file /config/customization/home_assistant/shopping_list.yaml` in the logs.
+When loaded correctly, you should see a `Loading customization file /config/customizations/home_assistant/shopping_list.yaml` in the logs.
 
 ## Slots
 

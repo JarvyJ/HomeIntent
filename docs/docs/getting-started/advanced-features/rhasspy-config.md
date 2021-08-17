@@ -12,7 +12,6 @@ Home Intent uses custom beep sound effects for interaction. You can override the
  * Beep high: `/config/beep-high.wav`
  * Beep low: `/config/beep-low.wav`
  * Error: `/config/error.wav`
- * Alarm: `/config/alarm.wav` (for when timers go off)
 
 
 ## Connecting to an external Rhasspy instance
