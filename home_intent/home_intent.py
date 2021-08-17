@@ -124,7 +124,7 @@ class HomeIntent:
             self.rhasspy_api.post("/api/restart")
             self.audio_config.add_sounds_microphone_device(rhasspy_config)
 
-        LOGGER.debug(json.dumps(rhasspy_config, indent=True))
+        LOGGER.info(json.dumps(rhasspy_config, indent=True))
 
         return rhasspy_config
 
@@ -186,3 +186,10 @@ class HomeIntent:
     def say(self, text):
         notification = {"text": text, "siteId": "default"}
         self.mqtt_client.publish("hermes/tts/say", json.dumps(notification))
+
+    def play_audio_file(self, filename: str, site_id="default"):
+        audio_file = get_file(filename)
+        self.mqtt_client.publish(
+            f"hermes/audioServer/{site_id}/playBytes/homeintent_audio",
+            payload=audio_file.read_bytes(),
+        )

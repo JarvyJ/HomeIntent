@@ -6,6 +6,15 @@ Setting up the `microphone_device` and `sounds_device` is described in the [audi
 ## Rhasspy web interface
 The Rhasspy web interface can be accessed at `http://localhost:12101` by default. It can be useful for debugging to see how things are configured.
 
+## Home Intent Sound Effects (Beeps)
+Home Intent uses custom beep sound effects for interaction. You can override them with your own beep sounds by adding the sound files to your config folder.
+
+ * Beep high: `/config/beep-high.wav`
+ * Beep low: `/config/beep-low.wav`
+ * Error: `/config/error.wav`
+ * Alarm: `/config/alarm.wav` (for when timers go off)
+
+
 ## Connecting to an external Rhasspy instance
 Home Intent manages Rhasspy via the REST API and interacts with the intents via MQTT. The default configuration is setup to use docker-compose, however, if Home Intent is pointed at the Rhasspy URL and MQTT server that Rhasspy uses it can interact with the external system.
 
@@ -22,6 +31,11 @@ This can also be helpful for doing local development on Home Intent itself.
 | mqtt_password     | External MQTT password                                  |                            |
 | microphone_device | The pyaudio device number representing the microphone   |                            |
 | sounds_device     | The aplay device identifier for playing back sounds     |                            |
+| homeintent_beeps  | Whether to use homeintent beeps (True) or Rhasspy beeps | `True`                     |
+
+!!!note
+    To use Home Intent beeps, Rhasspy and Home Intent need to be running in the same container.
+    So, if you have separate Rhasspy and Home Intent instances, the Home Intent beeps will not work and should be set to `False`.
 
 Example:
 ```yaml
