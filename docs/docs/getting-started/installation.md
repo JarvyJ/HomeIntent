@@ -4,34 +4,29 @@
 Home Intent currently is designed to run in a docker container running on a Raspberry Pi 3B or 4 (armv7/arm64). We also offer a "server" build (amd64). Future installation options may be available in the future.
 
 ## Installation
-Home Intent runs alongside Rhasspy to function. As such it is easy to get it started with a `docker-compose.yaml` file that runs both Home Intent and Rhasspy:
+It is easy to get it started with a `docker-compose.yaml` file that runs Home Intent:
 
 ```docker-compose
-version: "3"
+version: "3.9"
 
 services:
-  rhasspy:
-      image: "rhasspy/rhasspy"
-      container_name: rhasspy
+  homeintent:
+      image: "ghcr.io/jarvyj/homeintent:main"
+      container_name: homeintent
       restart: unless-stopped
       volumes:
           - "/PATH_TO_CONFIG/rhasspy:/profiles"
+          - "/PATH_TO_CONFIG/config:/config"
           - "/etc/localtime:/etc/localtime:ro"
       ports:
           - "12101:12101"
       devices:
           - "/dev/snd:/dev/snd"
       command: --user-profiles /profiles --profile en
-  
-  home_intent:
-    image: "ghcr.io/jarvyj/homeintent:latest"
-    restart: unless-stopped
-    volumes:
-      - "/PATH_TO_CONFIG/config:/config"
-    depends_on:
-      - rhasspy
 
 ```
+
+The `/profiles` directory is where Rhasspy stores its configs/downloads.
 
 In your config folder, all you need to do is add a `config.yaml`, pointing to your Home Assistant URL and a "Long Lived Access" (bearer) token you can get from your [Home Assistant profile page](https://homeintent.jarvy.io/integrations/home-assistant/#getting-a-bearer-token):
 
