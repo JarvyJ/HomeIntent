@@ -1,6 +1,4 @@
-from pathlib import Path
-
-from home_intent import Intents
+from home_intent import Intents, get_file
 
 intents = Intents(__name__)
 
@@ -22,7 +20,7 @@ class Light:
 
     @intents.dictionary_slots
     def color(self):
-        color_file = Path("home_intent/components/home_assistant/colors.txt")
+        color_file = get_file("home_assistant/colors.txt")
         colors = color_file.read_text().strip().split("\n")
         return {color: color.replace(" ", "") for color in colors}
 

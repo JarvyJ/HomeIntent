@@ -26,7 +26,7 @@ services:
 
 ```
 
-The `/profiles` directory is where Rhasspy stores its configs/downloads.
+The `/profiles` directory is where Rhasspy stores its configs/downloads. The ports expose the Rhasspy web interface, which is useful during debugging and for advanced users.
 
 In your config folder, all you need to do is add a `config.yaml`, pointing to your Home Assistant URL and a "Long Lived Access" (bearer) token you can get from your [Home Assistant profile page](https://homeintent.jarvy.io/integrations/home-assistant/#getting-a-bearer-token):
 
