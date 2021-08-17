@@ -44,4 +44,4 @@ extra_css:
 extra:
   social:
     - icon: fontawesome/solid/rss
-      link: /feed_rss_created.xml
+      link: https://github.com/JarvyJ/HomeIntent/releases.atom

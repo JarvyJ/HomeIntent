@@ -47,7 +47,7 @@ class Timer:
         return f"Setting timer {human_timer_duration}"
 
     def complete_timer(self, human_timer_duration: str):
-        self.home_intent.say("BWEEP bip bip BWEEP " * 4)
+        self.home_intent.play_audio_file("alarm.wav")
         self.home_intent.say(f"Your timer {human_timer_duration} has ended")
 
 

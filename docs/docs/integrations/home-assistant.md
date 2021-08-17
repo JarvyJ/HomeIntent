@@ -30,6 +30,16 @@ Currently `prefer_toggle` is only used for the following:
  * lights
  * switches
 
+### Customization
+The various Home Assistant sub components can be customized further using [customization json](/getting-started/customization/) if desired. These are the respective filenames:
+
+ * Lights: `/config/customizations/home_assistant/lights.yaml`
+ * Switches: `/config/customizations/home_assistant/switches.yaml`
+ * Groups: `/config/customizations/home_assistant/groups.yaml`
+ * Shopping List: `/config/customizations/home_assistant/shopping_list.yaml`
+
+A custom defined list of light colors can be placed in `/config/home_assistant/colors.txt` and the default shopping items can be replaced with `/config/home_assistant/shopping_items.txt`.
+
 ## Example Sentences
 ### Lights
 
@@ -38,7 +48,7 @@ Currently `prefer_toggle` is only used for the following:
  * Make the den red
  * Change the bathroom light to blue
 
-A full list of colors can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/components/home_assistant/colors.txt).
+A full list of colors can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/colors.txt).
 
 ### Shopping List
 Requires the [shopping_list](https://www.home-assistant.io/integrations/shopping_list/) component in Home Assistant
@@ -50,7 +60,7 @@ Requires the [shopping_list](https://www.home-assistant.io/integrations/shopping
  * Check everything off the list
  * Unmark everything from the shopping list
 
-Either Check or mark can be used as well as uncheck or unmark. The word shopping is always optional. A full list of shopping items can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/components/home_assistant/shopping_items.txt).
+Either Check or mark can be used as well as uncheck or unmark. The word shopping is always optional. A full list of shopping items can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/shopping_items.txt).
 
 ### Groups
 
