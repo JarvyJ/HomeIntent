@@ -60,7 +60,7 @@ class HomeIntent:
         LOGGER.info(f"Verifying sentences' slots for {intents.name}...")
 
         customization_filestem = "/".join(intents.name.split(".")[1:])
-        customization_file = PosixPath(f"/config/customization/{customization_filestem}.yaml")
+        customization_file = PosixPath(f"/config/customizations/{customization_filestem}.yaml")
         if customization_file.is_file():
             intents.handle_customization(customization_file, class_instance)
 
