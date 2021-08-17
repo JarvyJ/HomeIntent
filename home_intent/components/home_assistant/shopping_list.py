@@ -1,6 +1,4 @@
-from pathlib import Path
-
-from home_intent import Intents
+from home_intent import Intents, get_file
 
 intents = Intents(__name__)
 
@@ -11,7 +9,7 @@ class ShoppingList:
 
     @intents.slots
     def shopping_item(self):
-        item_file = Path("home_intent/components/home_assistant/shopping_items.txt")
+        item_file = get_file("home_assistant/shopping_items.txt")
         return item_file.read_text().strip().split("\n")
 
     @intents.sentences(["add ($shopping_item) to the [shopping] list"])
