@@ -1,4 +1,4 @@
-FROM rhasspy/rhasspy
+FROM rhasspy/rhasspy:2.5.11
 
 WORKDIR /usr/src/app
 
