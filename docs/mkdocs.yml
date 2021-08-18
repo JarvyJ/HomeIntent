@@ -7,15 +7,30 @@ theme:
   name: material
   features:
   - navigation.tabs
+  - navigation.instant
 
   custom_dir: overrides
 
   palette:
-    scheme: slate
-    primary: blue
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: green
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: green
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
 
   icon:
     repo: fontawesome/brands/github
+
+  logo: img/home-intent-white.svg
+  favicon: img/home-intent-white.svg
 
 markdown_extensions:
   - admonition
