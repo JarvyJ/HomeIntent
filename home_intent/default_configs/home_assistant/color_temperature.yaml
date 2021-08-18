@@ -1,0 +1,6 @@
+color_temperature:
+  warm white: 2200
+  soft white: 2700
+  bright white: 3000
+  cool white: 4000
+  daylight: 5000
