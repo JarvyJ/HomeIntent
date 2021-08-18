@@ -82,7 +82,6 @@ light slate grey
 light steel blue
 light yellow
 lime green
-lime
 linen
 magenta
 maroon
