@@ -5,7 +5,9 @@
 Home Intent is an open source locally hosted intent handler. Using [Rhasspy](https://rhasspy.readthedocs.io) and integrating with [Home Assistant](https://www.home-assistant.io/) it functions as an easy-to-use voice assistant for your home.
 
 Check out [https://homeintent.jarvy.io](https://homeintent.jarvy.io) for documentation.
+
 For discussions/support, go to [Github Discussions](https://github.com/JarvyJ/HomeIntent/discussions).
+
 Issues are in the issue tracker!
 
 ## Ideology
