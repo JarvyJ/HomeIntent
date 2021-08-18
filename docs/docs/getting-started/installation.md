@@ -22,7 +22,6 @@ services:
           - "12101:12101"
       devices:
           - "/dev/snd:/dev/snd"
-      command: --user-profiles /profiles --profile en
 
 ```
 

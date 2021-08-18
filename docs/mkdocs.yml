@@ -1,5 +1,5 @@
 site_name: Home Intent
-site_description: Open Source Voice Assistant for Home Assistant
+site_description: A Voice Assistant for Your Home
 site_url: https://homeintent.jarvy.io
 repo_url: https://github.com/JarvyJ/HomeIntent
 edit_uri: ""
@@ -7,15 +7,31 @@ theme:
   name: material
   features:
   - navigation.tabs
+  - navigation.instant
+  - navigation.sections
 
   custom_dir: overrides
 
   palette:
-    scheme: slate
-    primary: blue
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: green
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: green
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
 
   icon:
     repo: fontawesome/brands/github
+
+  logo: img/home-intent-white.svg
+  favicon: img/home-intent-white.svg
 
 markdown_extensions:
   - admonition
@@ -26,14 +42,7 @@ markdown_extensions:
       emoji_generator: !!python/name:materialx.emoji.to_svg
   - attr_list
 
-
-
 plugins:
-  - git-revision-date-localized:
-      enable_creation_date: true
-      fallback_to_build_date: true
-  - rss:
-      match_path: "releases/2.*"
   - search
   - awesome-pages
 
@@ -42,8 +51,8 @@ extra_css:
 
 extra:
   social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/JarvyJ/HomeIntent
+
     - icon: fontawesome/solid/rss
       link: https://github.com/JarvyJ/HomeIntent/releases.atom
-
-  version:
-    provider: mike

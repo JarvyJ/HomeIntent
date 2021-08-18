@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+  {{ super() }}
+
+  <style>
+    .hero-text {
+      width: 40%;
+      float: left;
+    }
+
+    .hero-img {
+      width: 40%;
+      float: left;
+      text-align: center;
+      margin-left: 4em;
+      margin-top: -5em;
+    }
+
+    @media (max-width: 576px) { 
+      .hero-text {
+        width: 100%;
+      }
+
+      .hero-img {
+        width: 100%;
+        margin: 0;
+      }
+
+     }
+  </style>
+
+  <div class="hero-text">
+    <p>Home Intent is a privacy focused, local voice assistant designed around <em>you</em>. Connect it to Home Assistant and be up and running in minutes!</p>
+    <p><a class="md-button md-button--primary" href="/getting-started/installation">Get Started</a></p>
+  </div>
+
+  <div class="hero-img">
+      <p class="hero-img__p" style="display: none;">
+        <img alt="kitchen graphic" src="/img/kitchen.png">
+        <em>Jarvis, set timer 10 minutes</em>
+      </p>
+      <p class="hero-img__p" style="display: none;">
+        <img alt="living room graphic" src="/img/living-room.png">
+        <em>Jarvis, turn off the living room light</em>
+      </p>
+      <p class="hero-img__p" style="display: none;">
+        <img alt="living room graphic" src="/img/office.png">
+        <em>Jarvis, turn on the office fan</em>
+      </p>
+  </div>
+
+  <script type="text/javascript">
+    var images = document.querySelectorAll(".hero-img__p");
+    images[Math.floor(Math.random() * images.length)].style.display = "block";
+  </script>
+{% endblock %}

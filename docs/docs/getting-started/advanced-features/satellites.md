@@ -1,4 +1,7 @@
-# Satellites - NOT YET IMPLEMENTED
+# Satellites - NYI
+
+_NOTE: Satellites are **Not Yet Implemented**_
+
 Rhasspy supports satellites, so there can be one main instance that handles all the intents and other "satellite" instances that will listen for the wake word and stream audio.
 
 As always, Home Intent wants to make configuring setups as easy as possible. We still need to look into and try out how we'd want this to work. There are MQTT options as well as remote rhasspy options, with options to run on an [ESP32](https://github.com/Romkabouter/ESP32-Rhasspy-Satellite), or Raspberry Pis. A while back, we even tried a Pi Zero W that seemed to do okay!
