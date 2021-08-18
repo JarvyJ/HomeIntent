@@ -1,5 +1,4 @@
 nav:
-  - api-reference.md
-  - customization-dev-reference.md
   - example-component.md
-  - ROADMAP.md
+  - customization-dev-reference.md
+  - API Reference: api-reference
