@@ -38,7 +38,7 @@ The various Home Assistant sub components can be customized further using [custo
  * Groups: `/config/customizations/home_assistant/groups.yaml`
  * Shopping List: `/config/customizations/home_assistant/shopping_list.yaml`
 
-A custom defined list of light colors can be placed in `/config/home_assistant/colors.txt` and the default shopping items can be replaced with `/config/home_assistant/shopping_items.txt`.
+A custom defined list of light colors can be placed in `/config/home_assistant/colors.txt` and the default shopping items can be replaced with `/config/home_assistant/shopping_items.txt`. A custom list of color temperatures can be defined at `/config/home_assistant/color_temperature.yaml` in the format of the [default values](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/color_temperature.yaml).
 
 ## Example Sentences
 ### Lights
@@ -47,8 +47,10 @@ A custom defined list of light colors can be placed in `/config/home_assistant/c
  * Set the master bedroom light to 80% brightness
  * Make the den red
  * Change the bathroom light to blue
+ * Make the kitchen daylight
+ * set the kitchen to amber
 
-A full list of colors can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/colors.txt).
+A full list of colors can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/colors.txt) and [color temperatures](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/color_temperature.yaml).
 
 ### Shopping List
 Requires the [shopping_list](https://www.home-assistant.io/integrations/shopping_list/) component in Home Assistant

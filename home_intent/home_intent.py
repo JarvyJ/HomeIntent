@@ -124,7 +124,7 @@ class HomeIntent:
             self.rhasspy_api.post("/api/restart")
             self.audio_config.add_sounds_microphone_device(rhasspy_config)
 
-        LOGGER.info(json.dumps(rhasspy_config, indent=True))
+        LOGGER.debug(json.dumps(rhasspy_config, indent=True))
 
         return rhasspy_config
 
