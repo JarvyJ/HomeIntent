@@ -189,6 +189,8 @@ class HomeIntent:
 
     def play_audio_file(self, filename: str, site_id="default"):
         audio_file = get_file(filename)
+        if audio_file.suffix != ".wav":
+            raise HomeIntentException("play_audio_file currently only supports playing .wav files!")
         self.mqtt_client.publish(
             f"hermes/audioServer/{site_id}/playBytes/homeintent_audio",
             payload=audio_file.read_bytes(),
