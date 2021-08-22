@@ -12,9 +12,6 @@
         "system": "aplay"
     },
     "speech_to_text": {
-        "kaldi": {
-            "language_model_type": "arpa"
-        },
         "system": "kaldi"
     },
     "text_to_speech": {
