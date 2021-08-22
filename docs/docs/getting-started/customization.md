@@ -1,7 +1,7 @@
 # Customization
 Users have the ability to further customize intents to provide a better experience for their individual needs. It can be useful to remove unused intents (especially if they false trigger) or modify slots (like custom shopping list items).
 
-There are plans on having a UI to help with customizations, but currently it is handled with YAML files in `/config/customizations/<component_name>.yaml` where component name matches the intent that you are trying to modify. For now, to get the names, you will have to take a look at the [source](https://github.com/JarvyJ/HomeIntent/tree/main/home_intent/components) to get all the function names.
+There are plans on having a UI to help with customizations, but currently it is handled with YAML files in `/config/customizations/<component_name>.yaml` where component name matches the intent that you are trying to modify. For now, to get the names,  you will have to take a look at the [source](https://github.com/JarvyJ/HomeIntent/tree/main/home_intent/components) to get all the function names. And for beta functionality we've called them out in the docs.
 
 The Home Assistant component is made up of multiple intents, so they follow a slightly different structure: `/config/customizations/home_assistant/<component_name>.yaml`
 
@@ -33,7 +33,7 @@ slots:
 ## Sentences/Intents
 
 ### Enabling or disabling specific intents
-A couple of intents are disabled by default (if we are still testing them) or they cause a lot of issues OOTB, and can be enabled in config.
+A couple of intents are disabled by default (if they are in beta) or they cause a lot of issues OOTB, and can be enabled in config.
 ```yaml
 intents:
   change_color_temperature:

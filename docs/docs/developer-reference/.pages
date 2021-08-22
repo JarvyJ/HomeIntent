@@ -1,4 +1,5 @@
 nav:
   - example-component.md
+  - additional-homeintent-config.md
   - customization-dev-reference.md
   - API Reference: api-reference

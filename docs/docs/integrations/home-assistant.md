@@ -48,7 +48,9 @@ A custom defined list of light colors can be placed in `/config/home_assistant/c
  * Make the den red
  * Change the bathroom light to blue
  * Make the kitchen daylight
- * set the kitchen to amber
+    * [:octicons-beaker-24: BETA](http://localhost:8000/getting-started/customization/) - Intent name: `change_color_temperature`
+ * set the kitchen to warm white at 80% brightness
+    * [:octicons-beaker-24: BETA](http://localhost:8000/getting-started/customization/) - Intent name: `change_color_temperature_brightness`
 
 A full list of colors can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/colors.txt) and [color temperatures](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/color_temperature.yaml).
 
