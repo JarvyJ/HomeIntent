@@ -81,7 +81,9 @@ class Intents:
                         if isinstance(slot_addition, str):
                             if slot_addition in slot_dictionary:
                                 del slot_dictionary[slot_addition]
-                            non_dictionary_additions.append(f"{slot_addition}{{{func.__name__}}}")
+                            non_dictionary_additions.append(
+                                f"{_sanitize_slot(slot_addition)}{{{func.__name__}}}"
+                            )
 
                         elif isinstance(slot_addition, dict):
                             synonyms, value = next(iter(slot_addition.items()))
@@ -89,7 +91,10 @@ class Intents:
                                 del slot_dictionary[synonyms]
                             slot_dictionary[synonyms] = value
 
-            slot_list = [f"{x}{{{func.__name__}:{slot_dictionary[x]}}}" for x in slot_dictionary]
+            slot_list = [
+                f"{_sanitize_slot(x)}{{{func.__name__}:{slot_dictionary[x]}}}"
+                for x in slot_dictionary
+            ]
             slot_list.extend(non_dictionary_additions)
             return slot_list
 
@@ -125,9 +130,11 @@ class Intents:
                             synonyms, value = next(iter(slot_addition.items()))
                             if synonyms in slot_values:
                                 slot_values.remove(synonyms)
-                            synonmym_values.append(f"{synonyms}{{{func.__name__}:{value}}}")
+                            synonmym_values.append(
+                                f"{_sanitize_slot(synonyms)}{{{func.__name__}:{value}}}"
+                            )
 
-            slot_list = [f"{x}{{{func.__name__}}}" for x in slot_values]
+            slot_list = [f"{_sanitize_slot(x)}{{{func.__name__}}}" for x in slot_values]
             slot_list.extend(synonmym_values)
 
             return slot_list
@@ -229,6 +236,10 @@ class Intents:
                     alias_function = getattr(class_instance, intent).__func__
                 setattr(class_instance, funcname, alias_function)
                 self.all_sentences[funcname] = Sentence(sentences, alias_function)
+
+
+def _sanitize_slot(slot_name: str):
+    return "".join(x if x.isalnum() else " " for x in slot_name)
 
 
 def get_slots_from_sentences(sentences: List[str]):
