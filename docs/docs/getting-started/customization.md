@@ -32,20 +32,27 @@ slots:
 
 ## Sentences/Intents
 
-### Disabling all intents in a component
-To disable an entire component, add `disable_all` to the top level of the yaml file.
-
+### Enabling or disabling specific intents
+A couple of intents are disabled by default (if we are still testing them) or they cause a lot of issues OOTB, and can be enabled in config.
 ```yaml
-disable_all: true
+intents:
+  change_color_temperature:
+    enable: true
 ```
 
-### Disabling specific intents
-Under an `intents` top level config, should be the intent method name (as found in the python class) with `disable` set to `true`.
+On the other hand, any intent you don't want can be disabled by setting `enable` to `false`.
 
 ```yaml
 intents:
   add_item_to_shopping_list:
-    disable: true
+    enable: false
+```
+
+### Enabling or disabling all intents in a component
+You can also enable or disable everything at the top level instead of on an individual basis using `enable_all`.
+
+```yaml
+enable_all: false # to stop all intents from triggering related to the component
 ```
 
 ### Adding and removing sentences to intents
