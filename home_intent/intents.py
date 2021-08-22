@@ -1,9 +1,10 @@
+from dataclasses import dataclass
 from functools import wraps, partial, partialmethod
 import inspect
 import logging
 from pathlib import PosixPath
 import re
-from typing import Callable, Dict, List, NamedTuple, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Extra
 import yaml
@@ -36,18 +37,22 @@ class SentenceAlias(BaseModel, extra=Extra.forbid):
 class SentenceCustomization(BaseModel, extra=Extra.forbid):
     sentences: Optional[SentenceModification]
     alias: Optional[List[SentenceAlias]]
-    disable: bool = False
+    enable: Optional[bool] = None
 
 
 class Customization(BaseModel, extra=Extra.forbid):
     slots: Optional[Dict[str, SlotCustomization]]
     intents: Optional[Dict[str, SentenceCustomization]]
-    disable_all: bool = False
+    enable_all: Optional[bool] = None
 
 
-class Sentence(NamedTuple):
+@dataclass
+class Sentence:
     sentences: List[str]
     func: Callable
+    disabled: bool = False
+    disabled_reason: str = None
+    beta: bool = False
 
 
 class Intents:
@@ -156,6 +161,32 @@ class Intents:
 
         return inner
 
+    def beta(self, func):
+        self.all_sentences[func.__name__].disabled = True
+        self.all_sentences[func.__name__].beta = True
+        self.all_sentences[func.__name__].disabled_reason = "BETA"
+
+        def inner(func):
+            @wraps(func)
+            def wrapper(*arg, **kwargs):
+                return func(*arg, **kwargs)
+
+            return wrapper
+
+        return inner
+
+    def default_disable(self, reason: str):
+        def inner(func):
+            @wraps(func)
+            def wrapper(*arg, **kwargs):
+                return func(*arg, **kwargs)
+
+            self.all_sentences[func.__name__].disabled_reason = reason
+            self.all_sentences[func.__name__].disabled = True
+            return wrapper
+
+        return inner
+
     def on_event(self, event):
         if event != "register_sentences":
             raise IntentException(
@@ -174,12 +205,22 @@ class Intents:
 
     def disable_intent(self, sentence_func: Union[Callable, str]):
         if isinstance(sentence_func, str):
-            del self.all_sentences[sentence_func]
+            self.all_sentences[sentence_func].disabled = True
         else:
-            del self.all_sentences[sentence_func.__name__]
+            self.all_sentences[sentence_func.__name__].disabled = True
+
+    def enable_intent(self, sentence_func: Union[Callable, str]):
+        if isinstance(sentence_func, str):
+            self.all_sentences[sentence_func].disabled = False
+        else:
+            self.all_sentences[sentence_func.__name__].disabled = False
 
     def disable_all(self):
         self.all_sentences = {}
+
+    def enable_all(self):
+        for _, sentence in self.all_sentences:
+            sentence.disabled = False
 
     def handle_customization(self, customization_file: PosixPath, class_instance):
         LOGGER.info(f"Loading customization file {customization_file}")
@@ -187,8 +228,11 @@ class Intents:
             customization_file.read_text("utf-8"), Loader=yaml.SafeLoader
         )
         component_customization = Customization(**customization_yaml)
-        if component_customization.disable_all:
-            self.disable_all()
+        if component_customization.enable_all is not None:
+            if component_customization.enable_all is True:
+                self.enable_all()
+            elif component_customization.enable_all is False:
+                self.disable_all()
 
         if component_customization.intents:
             for intent, customization in component_customization.intents.items():
@@ -207,8 +251,11 @@ class Intents:
                     raise IntentException(f"'{slot}' not associated with {self.name}")
 
     def _customize_intents(self, intent: str, customization: SentenceCustomization, class_instance):
-        if customization.disable:
-            self.disable_intent(intent)
+        if customization.enable is not None:
+            if customization.enable is True:
+                self.enable_intent(intent)
+            elif customization.enable is False:
+                self.disable_intent(intent)
 
         if customization.sentences:
             if customization.sentences.add:

@@ -26,11 +26,17 @@ class RhasspySettings(BaseModel):
     mqtt_password: Optional[str] = None
     microphone_device: Optional[str] = None
     sounds_device: Optional[str] = None
-    homeintent_beeps: bool = True
+
+
+class HomeIntentSettings(BaseModel):
+    beeps: bool = True
+    enable_beta: bool = False
+    enable_all: bool = False
 
 
 class Settings(BaseSettings):
     rhasspy: RhasspySettings = RhasspySettings()
+    home_intent: HomeIntentSettings = HomeIntentSettings()
 
     class Config:
         env_file_encoding = "utf-8"

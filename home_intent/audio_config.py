@@ -25,7 +25,7 @@ class AudioConfig:
         _log_out_audio_config(microphone_devices, sounds_devices)
         _setup_microphone_device(config_microphone_device, microphone_devices, rhasspy_config)
         _setup_sounds_device(config_sounds_device, sounds_devices, rhasspy_config)
-        if self.settings.rhasspy.homeintent_beeps:
+        if self.settings.home_intent.beeps:
             _setup_beeps(rhasspy_config)
 
 
