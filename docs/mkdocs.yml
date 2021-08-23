@@ -5,12 +5,12 @@ repo_url: https://github.com/JarvyJ/HomeIntent
 edit_uri: ""
 theme:
   name: material
+  custom_dir: overrides/
+
   features:
   - navigation.tabs
   - navigation.instant
   - navigation.sections
-
-  custom_dir: overrides
 
   palette:
     - media: "(prefers-color-scheme: light)"
@@ -56,3 +56,4 @@ extra:
 
     - icon: fontawesome/solid/rss
       link: https://github.com/JarvyJ/HomeIntent/releases.atom
+
