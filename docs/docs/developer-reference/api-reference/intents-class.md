@@ -70,11 +70,14 @@ This method registers a callback method that will be executed after the slot met
 ### `intents.disable_intent(method)`
 Disables a specific intent method. Takes in the actual method and will stop it from being registered in Rhasspy.
 
+!!!note "On Disabling"
+    By default any intent which have slots with no value will be disabled automatically in Rhasspy via Home Intent. This is to make writing components with specific features easier.
+
 Example:
 ```python
 @intents.on_event("register_sentences")
 def conditionally_remove_intents(self):
-    if len(self.controllable_entites) == 0:
+    if reason_to_disable:
         intents.disable_intent(self.toggle_group)
 ```
 
@@ -85,7 +88,7 @@ Example:
 ```python
 @intents.on_event("register_sentences")
 def conditionally_remove_intents(self):
-    if len(self.all_entities) == 0:
+    if reason_to_disable:
         intents.disable_all()
 ```
 

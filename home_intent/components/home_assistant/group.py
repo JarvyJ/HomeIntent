@@ -19,11 +19,6 @@ class Group:
         self.controllable_entites = slots
         return slots
 
-    @intents.on_event("register_sentences")
-    def on_register(self):
-        if len(self.controllable_entites) == 0:
-            intents.disable_all()
-
     @intents.sentences(["toggle [the] ($group)"])
     def toggle_group(self, group):
         self.ha.api.call_service("homeassistant", "toggle", {"entity_id": group})

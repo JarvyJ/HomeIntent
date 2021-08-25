@@ -50,6 +50,7 @@ class Customization(BaseModel, extra=Extra.forbid):
 class Sentence:
     sentences: List[str]
     func: Callable
+    slots: List[str]
     disabled: bool = False
     disabled_reason: str = None
     beta: bool = False
@@ -69,12 +70,15 @@ class Intents:
         @wraps(func)
         def wrapper(*arg, **kwargs):
             slot_dictionary = func(*arg, **kwargs)
+            reverse_slot_dictionary = {v: k for (k, v) in slot_dictionary.items()}
             non_dictionary_additions = []
             if func.__name__ in self.slot_modifications:
                 if self.slot_modifications[func.__name__].remove:
                     for slots_to_remove in self.slot_modifications[func.__name__].remove:
                         if slots_to_remove in slot_dictionary:
                             del slot_dictionary[slots_to_remove]
+                        elif slots_to_remove in reverse_slot_dictionary:
+                            del slot_dictionary[reverse_slot_dictionary[slots_to_remove]]
                         else:
                             LOGGER.warning(
                                 f"'{slots_to_remove}' not in slot list for {func.__name__}"
@@ -149,8 +153,8 @@ class Intents:
 
     def sentences(self, sentences):
         def inner(func):
-            _check_if_args_in_sentence_slots(sentences, func)
-            self.all_sentences[func.__name__] = Sentence(sentences, func)
+            sentence_slots = _check_if_args_in_sentence_slots(sentences, func)
+            self.all_sentences[func.__name__] = Sentence(sentences, func, sentence_slots)
 
             @wraps(func)
             def wrapper(*arg, **kwargs):
@@ -282,14 +286,15 @@ class Intents:
                 else:
                     alias_function = getattr(class_instance, intent).__func__
                 setattr(class_instance, funcname, alias_function)
-                self.all_sentences[funcname] = Sentence(sentences, alias_function)
+                sentence_slots = _get_slots_from_sentences(sentences)
+                self.all_sentences[funcname] = Sentence(sentences, alias_function, sentence_slots)
 
 
 def _sanitize_slot(slot_name: str):
     return "".join(x if x.isalnum() else " " for x in slot_name)
 
 
-def get_slots_from_sentences(sentences: List[str]):
+def _get_slots_from_sentences(sentences: List[str]):
     sentence_slots = set()
     for sentence in sentences:
         sentence_slots.update((SLOT_REGEX.findall(sentence)))
@@ -306,7 +311,7 @@ def _get_tags_from_sentences(sentences: List[str]):
 
 
 def _check_if_args_in_sentence_slots(sentences, func):
-    sentence_slots = get_slots_from_sentences(sentences)
+    sentence_slots = _get_slots_from_sentences(sentences)
     sentence_tags = _get_tags_from_sentences(sentences)
 
     argument_spec = inspect.getfullargspec(func)
@@ -335,3 +340,5 @@ def _check_if_args_in_sentence_slots(sentences, func):
                     f"Make sure the sentence decorator includes a {{{arg}}} or "
                     "remove it as an argument."
                 )
+
+    return sentence_slots
