@@ -176,6 +176,7 @@ class HomeIntent:
         self.rhasspy_api.post("/api/sentences", {"sentences.ini": "\n".join(sentences)})
 
     def _sentence_slots_have_value(self, sentence: Sentence) -> bool:
+        # NOTE: all([]) will also return True, so intents without slots will not break
         return all(len(self.all_slots[slot]) > 0 for slot in sentence.slots)
 
     def _train(self):
