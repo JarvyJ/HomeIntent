@@ -30,6 +30,7 @@ class Cover:
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
             if SupportedFeatures.SUPPORT_OPEN in self.cover_feautres[x["entity_id"]]
+            or SupportedFeatures.SUPPORT_OPEN_TILT in self.cover_features[x["entity_id"]]
         }
         return slots
 
@@ -39,6 +40,7 @@ class Cover:
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
             if SupportedFeatures.SUPPORT_CLOSE in self.cover_feautres[x["entity_id"]]
+            or SupportedFeatures.SUPPORT_CLOSE_TILT in self.cover_features[x["entity_id"]]
         }
         return slots
 
@@ -48,6 +50,7 @@ class Cover:
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
             if SupportedFeatures.SUPPORT_SET_POSITION in self.cover_feautres[x["entity_id"]]
+            or if SupportedFeatures.SUPPORT_SET_TILT_POSITION in self.cover_feautres[x["entity_id"]]
         }
         return slots
 
@@ -57,6 +60,7 @@ class Cover:
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
             if SupportedFeatures.SUPPORT_STOP in self.cover_feautres[x["entity_id"]]
+            or SupportedFeatures.SUPPORT_STOP_TILT in self.cover_features[x['entity_id']]
         }
         return slots
 
@@ -87,29 +91,70 @@ class Cover:
         }
         return slots
 
-    @intents.dictionary_slots
-    def cover_stop_tilt(self):
-        slots = {
-            f"{x['attributes'].get('friendly_name')}": x["entity_id"]
-            for x in self.entities
-            if SupportedFeatures.SUPPORT_STOP_TILT in self.cover_feautres[x["entity_id"]]
-        }
+    @intents.slots
+    def cover_positions(self):
+        slots = [
+            "(0..100)",
+            "(half|half way):50",
+        ]
         return slots
 
-    @intents.sentences(["lock [the] ($lock) [lock]"])
-    def lock_the_lock(self, lock):
-        self.ha.api.call_service("homeassistant", "lock", {"entity_id": lock})
-        response = self.ha.api.get_entity(lock)
-        return f"Locking the {response['attributes']['friendly_name']} lock"
+    @intents.sentences(["open [the] ($cover_open)"])
+    def open_cover(self, cover_open):
+        if SupportedFeatures.SUPPORT_OPEN in self.cover_features[cover_open]:
+            self.ha.api.call_service("homeassistant", "open_cover", {"entity_id": cover_open})
+        elif SupportedFeatures.SUPPORT_OPEN_TILT in self.cover_features[cover_open]:
+            self.ha.api.call_service("homeassistant", "open_cover_tilt", {"entity_id": cover_open})
+        response = self.ha.api.get_entity(cover_open)
+        return f"Opening the {response['attributes']['friendly_name']}"
 
-    @intents.sentences(["unlock [the] ($lock) [lock]"])
-    def unlock_the_lock(self, lock):
-        self.ha.api.call_service("homeassistant", "unlock", {"entity_id": lock})
-        response = self.ha.api.get_entity(lock)
-        return f"Unlocking on the {response['attributes']['friendly_name']} lock"
+    @intents.sentences(["close [the] ($cover_close)"])
+    def close_cover(self, cover_close):
+        if SupportedFeatures.SUPPORT_CLOSE in self.cover_features[cover_close]:
+            self.ha.api.call_service("homeassistant", "close_cover", {"entity_id": cover_close})
+        elif SupportedFeatures.SUPPORT_CLOSE_TILT in self.cover_features[cover_close]:
+            self.ha.api.call_service("homeassistant", "close_cover_tilt", {"entity_id": cover_close})
+        response = self.ha.api.get_entity(cover_close)
+        return f"Closing the {response['attributes']['friendly_name']} lock"
 
-    @intents.sentences(["open [the] ($openable_lock) [lock]"])
-    def open_the_lock(self, openable_lock):
-        self.ha.api.call_service("homeassistant", "open", {"entity_id": openable_lock})
-        response = self.ha.api.get_entity(openable_lock)
-        return f"Turning off the {response['attributes']['friendly_name']} lock"
+    @intents.sentences(["stop [the] ($cover_stop)"])
+    def stop_cover(self, cover_stop):
+        if SupportedFeatures.SUPPORT_STOP in self.cover_features[cover_stop]:
+            self.ha.api.call_service("homeassistant", "stop_cover", {"entity_id": cover_stop})
+        if SupportedFeatures.SUPPORT_STOP_TILT in self.cover_features[cover_stop]:
+            self.ha.api.call_service("homeassistant", "stop_cover_tilt", {"entity_id": cover_stop})
+        response = self.ha.api.get_entity(cover_stop)
+        return f"Stopping the {response['attributes']['friendly_name']}"
+
+    @intents.sentences(["tilt open [the] ($cover_open_tilt)"])
+    def open_cover_tilt(self, cover_open_tilt):
+        self.ha.api.call_service("homeassistant", "open_cover_tilt", {"entity_id": cover_open_tilt})
+        response = self.ha.api.get_entity(cover_open_tilt)
+        return f"Opening the {response['attributes']['friendly_name']}"
+
+    @intents.sentences(["tilt close [the] ($cover_close_tilt)"])
+    def close_cover_tilt(self, cover_close_tilt):
+        self.ha.api.call_service("homeassistant", "close_cover_tilt", {"entity_id": cover_close_tilt})
+        response = self.ha.api.get_entity(cover_close_tilt)
+        return f"Closing the {response['attributes']['friendly_name']} lock"
+
+    @intents.sentences([
+        "(set|change|make) [the] ($cover_set_position) position [to] ($cover_positions) [percent]",
+        "(open|close) [the] ($cover_set_position) [to] ($cover_positions) [percent]"
+    ])
+    def close_cover_tilt(self, cover_set_position, cover_positions):
+        if SupportedFeatures.SUPPORT_SET_POSITION:
+            self.ha.api.call_service("homeassistant", "set_cover_position", {"entity_id": cover_close_tilt, "position": cover_positions})
+        elif SupportedFeatures.SUPPORT_SET_TILT_POSITION:
+            self.ha.api.call_service("homeassistant", "set_cover_tilt_position", {"entity_id": cover_close_tilt, "position": cover_positions})
+        response = self.ha.api.get_entity(cover_set_position)
+        return f"Setting the {response['attributes']['friendly_name']} to {cover_positions}%"
+
+    @intents.sentences([
+        "(set|change|make) [the] ($cover_set_position) tilt position [to] ($cover_positions) [percent]",
+        "tilt (open|close) [the] ($cover_set_tilt_position) [to] ($cover_positions) [percent]"
+    ])
+    def close_cover_tilt(self, cover_set_tilt_position, cover_positions):
+        self.ha.api.call_service("homeassistant", "set_cover_tilt_position", {"entity_id": cover_set_tilt_position, "position": cover_positions})
+        response = self.ha.api.get_entity(cover_set_tilt_position)
+        return f"Setting the {response['attributes']['friendly_name']} to {cover_positions}%"
