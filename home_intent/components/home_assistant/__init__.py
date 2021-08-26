@@ -1,6 +1,6 @@
 from pydantic import AnyHttpUrl, BaseModel
 
-from . import group, light, shopping_list, switch
+from . import fan, group, light, lock, remote, shopping_list, switch
 from .api import HomeAssistantAPI
 
 
@@ -25,7 +25,19 @@ def setup(home_intent):
     config = home_intent.get_config(HomeAssistantSettings)
     home_assistant_component = HomeAssistantComponent(config)
 
+    if "fan" in home_assistant_component.domains:
+        home_intent.register(fan.Fan(home_assistant_component), fan.intents)
+
     home_intent.register(group.Group(home_assistant_component), group.intents)
+
+    if "light" in home_assistant_component.domains:
+        home_intent.register(light.Light(home_assistant_component), light.intents)
+
+    if "lock" in home_assistant_component.domains:
+        home_intent.register(lock.Lock(home_assistant_component), lock.intents)
+
+    if "remote" in home_assistant_component.domains:
+        home_intent.register(remote.Remote(home_assistant_component), remote.intents)
 
     if "shopping_list" in home_assistant_component.domains:
         home_intent.register(
@@ -34,6 +46,3 @@ def setup(home_intent):
 
     if "switch" in home_assistant_component.domains:
         home_intent.register(switch.Switch(home_assistant_component), switch.intents)
-
-    if "light" in home_assistant_component.domains:
-        home_intent.register(light.Light(home_assistant_component), light.intents)

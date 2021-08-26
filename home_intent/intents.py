@@ -151,8 +151,10 @@ class Intents:
         self.all_slots[func.__name__] = wrapper
         return wrapper
 
-    def sentences(self, sentences):
+    def sentences(self, sentences: List[str]):
         def inner(func):
+            if not isinstance(sentences, list):
+                raise IntentException(f"The sentences decorator expects a list for {func}")
             sentence_slots = _check_if_args_in_sentence_slots(sentences, func)
             self.all_sentences[func.__name__] = Sentence(sentences, func, sentence_slots)
 
