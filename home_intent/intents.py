@@ -11,7 +11,7 @@ import yaml
 
 LOGGER = logging.getLogger(__name__)
 # we'll likely have to get more sophisticated than regexes eventually
-SLOT_REGEX = re.compile(r"\(\$([a-z_]*)\)")
+SLOT_REGEX = re.compile(r"\(\$([a-z_]*)")
 TAG_REGEX = re.compile(r"""{([a-z_]*)}""")
 
 
@@ -296,7 +296,9 @@ class Intents:
 
 def _sanitize_slot(slot_name: str):
     # okay, maybe a regex would be better at this point...
-    return "".join(x if x.isalnum() or x in ("(", ")", "|", "[", "]") else " " for x in slot_name)
+    return "".join(
+        x if x.isalnum() or x in ("(", ")", "|", "[", "]", ".", ":") else " " for x in slot_name
+    )
 
 
 def _get_slots_from_sentences(sentences: List[str]):
