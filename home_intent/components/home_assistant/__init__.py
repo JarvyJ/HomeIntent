@@ -1,6 +1,6 @@
 from pydantic import AnyHttpUrl, BaseModel
 
-from . import fan, group, light, lock, remote, shopping_list, switch
+from . import cover, fan, group, light, lock, remote, shopping_list, switch
 from .api import HomeAssistantAPI
 
 
@@ -24,6 +24,9 @@ def setup(home_intent):
     # only needed if there are additional settings!
     config = home_intent.get_config(HomeAssistantSettings)
     home_assistant_component = HomeAssistantComponent(config)
+
+    if "cover" in home_assistant_component.domains:
+        home_intent.register(cover.Cover(home_assistant_component), cover.intents)
 
     if "fan" in home_assistant_component.domains:
         home_intent.register(fan.Fan(home_assistant_component), fan.intents)
