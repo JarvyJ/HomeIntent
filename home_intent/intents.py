@@ -98,6 +98,8 @@ class Intents:
                             synonyms, value = next(iter(slot_addition.items()))
                             if synonyms in slot_dictionary:
                                 del slot_dictionary[synonyms]
+                            elif value in reverse_slot_dictionary:
+                                del slot_dictionary[reverse_slot_dictionary[value]]
                             slot_dictionary[synonyms] = value
 
             slot_list = [
@@ -291,7 +293,8 @@ class Intents:
 
 
 def _sanitize_slot(slot_name: str):
-    return "".join(x if x.isalnum() else " " for x in slot_name)
+    # okay, maybe a regex would be better at this point...
+    return "".join(x if x.isalnum() or x in ("(", ")", "|", "[", "]") else " " for x in slot_name)
 
 
 def _get_slots_from_sentences(sentences: List[str]):
