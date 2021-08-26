@@ -63,10 +63,6 @@ class Fan:
         }
         return slots
 
-    @intents.slots
-    def fan_direction(self):
-        return ["forward", "reverse"]
-
     @intents.on_event("register_sentences")
     def handle_prefer_toggle(self):
         if self.ha.prefer_toggle:
@@ -128,3 +124,6 @@ class Fan:
             {"entity_id": directional_fan, "direction": forward_or_reverse,},
         )
         return f"Reversing the {response['attributes']['friendly_name']} flow"
+
+    # TODO: set_speed
+    # TODO: increase/decrease speed?
