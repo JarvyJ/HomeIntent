@@ -11,6 +11,9 @@ class SupportedFeatures(IntFlag):
     SUPPORT_PRESET_MODE = auto()
 
 
+FAN_SPEED_LIST = ["off", "low", "medium", "high"]
+
+
 class Fan:
     def __init__(self, home_assistant):
         self.ha = home_assistant
@@ -62,6 +65,20 @@ class Fan:
             in SupportedFeatures(x["attributes"].get("supported_features", 0))
         }
         return slots
+
+    @intents.dictionary_slots
+    def speed_fan(self):
+        slots = {
+            f"{x['attributes'].get('friendly_name')}": x["entity_id"]
+            for x in self.entities
+            if SupportedFeatures.SUPPORT_SET_SPEED
+            in SupportedFeatures(x["attributes"].get("supported_features", 0))
+        }
+        return slots
+
+    @intents.slots
+    def fan_speed(self):
+        return FAN_SPEED_LIST
 
     @intents.on_event("register_sentences")
     def handle_prefer_toggle(self):
@@ -125,5 +142,49 @@ class Fan:
         )
         return f"Reversing the {response['attributes']['friendly_name']} flow"
 
-    # TODO: set_speed
-    # TODO: increase/decrease speed?
+    @intents.sentences(["(set|change|make) the ($speed_fan) [to] ($fan_speed)"])
+    def set_fan_speed(self, speed_fan, fan_speed):
+        self.ha.api.call_service(
+            "fan", "set_speed", {"entity_id": speed_fan, "speed": fan_speed},
+        )
+        response = self.ha.api.get_entity(speed_fan)
+        return f"Setting the {response['attributes']['friendly_name']} to {fan_speed}"
+
+    @intents.sentences(
+        ["increase the ($speed_fan) [fan] speed", "increase the fan speed for ($speed_fan)"]
+    )
+    def increase_fan_speed(self, speed_fan):
+        response = self.ha.api.get_entity(speed_fan)
+        current_fan_speed = response["attributes"]["speed"]
+        # if it's in one of the presets like "auto", this step will fail.
+        # we could just increase it to high, but that would be wild if it was in "sleep"
+        # maybe these two are default disabled and the user can enable them if wanted?
+        current_fan_speed_index = FAN_SPEED_LIST.index(current_fan_speed)
+
+        if current_fan_speed == len(FAN_SPEED_LIST):
+            new_fan_speed = FAN_SPEED_LIST[len(FAN_SPEED_LIST) - 1]
+        else:
+            new_fan_speed = FAN_SPEED_LIST[current_fan_speed_index + 1]
+
+        self.ha.api.call_service(
+            "fan", "set_speed", {"entity_id": speed_fan, "speed": new_fan_speed},
+        )
+        return f"Setting the {response['attributes']['friendly_name']} to {new_fan_speed}"
+
+    @intents.sentences(
+        ["decrease the ($speed_fan) [fan] speed", "decrease the fan speed for ($speed_fan)"]
+    )
+    def decrease_fan_speed(self, speed_fan):
+        response = self.ha.api.get_entity(speed_fan)
+        current_fan_speed = response["attributes"]["speed"]
+        current_fan_speed_index = FAN_SPEED_LIST.index(current_fan_speed)
+
+        if current_fan_speed == 0:
+            new_fan_speed = FAN_SPEED_LIST[0]
+        else:
+            new_fan_speed = FAN_SPEED_LIST[current_fan_speed_index - 1]
+
+        self.ha.api.call_service(
+            "fan", "set_speed", {"entity_id": speed_fan, "speed": new_fan_speed},
+        )
+        return f"Setting the {response['attributes']['friendly_name']} to {new_fan_speed}"

@@ -1,6 +1,11 @@
 from home_intent import Intents
+from enum import IntFlag, auto
 
 intents = Intents(__name__)
+
+
+class SupportedFeatures(IntFlag):
+    SUPPORT_OPEN = auto()
 
 
 class Lock:
@@ -18,7 +23,8 @@ class Lock:
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
-            if x["attributes"].get("supported_features") == 1
+            if SupportedFeatures.SUPPORT_OPEN
+            in SupportedFeatures(x["attributes"].get("supported_features", 0))
         }
         return slots
 
