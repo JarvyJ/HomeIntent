@@ -10,6 +10,10 @@ from home_intent import HomeIntent, Intents
 intents = Intents(__name__)
 
 
+class TimerException(Exception):
+    pass
+
+
 class Timer:
     def __init__(self, home_intent: HomeIntent):
         # TODO: keep track of timers and add ability to remove timers
@@ -35,6 +39,8 @@ class Timer:
     )
     def set_timer(self, hours=None, minutes=None, seconds=None, partial_time=None):
         timer_duration = timedelta(hours=hours or 0, minutes=minutes or 0, seconds=seconds or 0,)
+        if timer_duration == timedelta(0):
+            raise TimerException("Timer has to be set for more than 0 seconds")
         if partial_time:
             timer_duration = timer_duration + get_partial_time_duration(
                 partial_time, hours, minutes, seconds

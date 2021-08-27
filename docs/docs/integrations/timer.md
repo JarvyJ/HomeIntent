@@ -12,15 +12,6 @@ timer:
 
 ```
 
-This component has the following options: 
-
-| Option        | Description                                   | Required/Default |
-|:--------------|:----------------------------------------------|:-----------------|
-| max_time_days | The maximum number of days to set a timer for | 1                |
-
-!!! note "Maximum Number of Days"
-    It is currently set to 1 as Home Intent restarts daily. Once auto reloading of configuration is in, we will change the default to 30 days.
-
 ## Example Sentences
 
  * Set timer 90 seconds
