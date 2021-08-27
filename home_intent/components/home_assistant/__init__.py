@@ -17,10 +17,10 @@ class HomeAssistantComponent:
     def __init__(self, config: HomeAssistantSettings):
         self.api = HomeAssistantAPI(config.url, config.bearer_token)
         self.services = self.api.get("/api/services")
-        self.domains = {x["domain"] for x in self.services}
-        print(self.domains)
         all_entities = self.api.get("/api/states")
         self.entities = [x for x in all_entities if x["entity_id"] not in config.ignore_entities]
+        self.domains = {x["entity_id"].split(".")[0] for x in self.entities}
+        print(self.domains)
         self.prefer_toggle = config.prefer_toggle
 
 

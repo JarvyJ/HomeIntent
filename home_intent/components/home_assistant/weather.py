@@ -10,10 +10,12 @@ class Weather:
     def __init__(self, home_assistant):
         self.ha = home_assistant
         self.entities = [x for x in self.ha.entities if x["entity_id"].startswith("weather.")]
-        self.entity = self.entities[0]  # just going to pick the first weather entity for now
-        self.entity_with_forecast = [
-            x for x in self.entities if x["attribute"].get("forecast") is not None
-        ]
+        self.entity = self.entities[0][
+            "entity_id"
+        ]  # just going to pick the first weather entity for now
+        self.entity_with_forecast = next(
+            x["entity_id"] for x in self.entities if x["attributes"].get("forecast") is not None
+        )
 
     @intents.slots
     def day_of_week(self):
@@ -22,6 +24,7 @@ class Weather:
     @intents.sentences(["what is the temperature (right now|today|outside)"])
     def weather_day(self):
         response = self.ha.api.get_entity(self.entity)
+        print(self.entity)
         return f"The temperature is currently {response['attributes']['temperature']}"
 
     @intents.on_event("register_sentences")
@@ -57,12 +60,14 @@ class Weather:
     )
     def forecast_day(self, day_of_week):
         response = self.ha.api.get_entity(self.entity_with_forecast)
+        return "I can't quite do that right now"
 
     @intents.sentences(
         ["what is the (weather|forecast) [going to be] (on|for) [next] ($day_of_week) night"]
     )
     def forecast_night(self, day_of_week):
         response = self.ha.api.get_entity(self.entity_with_forecast)
+        return "I can't quite do that right now"
 
 
 def _get_forecast(forecast):
