@@ -7,7 +7,6 @@ class Group:
     def __init__(self, home_assistant):
         self.ha = home_assistant
         self.entities = [x for x in self.ha.entities if x["entity_id"].startswith("group.")]
-        self.controllable_entites = {}
 
     @intents.dictionary_slots
     def group(self):
@@ -16,7 +15,6 @@ class Group:
             for x in self.entities
             if x["state"] in ("on", "off")
         }
-        self.controllable_entites = slots
         return slots
 
     @intents.sentences(["toggle [the] ($group)"])
