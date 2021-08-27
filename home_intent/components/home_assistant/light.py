@@ -103,7 +103,6 @@ class Light:
         response = self.ha.api.get_entity(light)
         return f"Setting the {response['attributes']['friendly_name']} to {brightness}% brightness"
 
-    @intents.beta
     @intents.sentences(["(set | change | make) the ($light) [light] [to] ($color_temperature)"])
     def change_color_temperature(self, light, color_temperature):
         self.ha.api.call_service(
@@ -113,7 +112,6 @@ class Light:
         color = self.color_temp_to_name[int(color_temperature)]
         return f"Setting the {response['attributes']['friendly_name']} to {color}"
 
-    @intents.beta
     @intents.sentences(
         [
             "(set | change | make) the ($light) [light] [to] ($color_temperature) [at] (0..100){brightness} [percent] [brightness]"
