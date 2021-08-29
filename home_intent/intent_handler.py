@@ -1,5 +1,6 @@
 import json
 import logging
+import paho.mqtt.client as mqtt
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,8 +33,12 @@ class IntentHandler:
         else:
             LOGGER.error(f"Failed to connect to MQTT. Return Code: {rc}")
 
-    def _handle_intent(self, client, userdata, message):
+    def _handle_intent(self, client, userdata, message: mqtt.MQTTMessage):
         payload = json.loads(message.payload)
+        print(dir(message))
+        print(message.mid)
+        print(message.state)
+        print(message.info)
         intent_name = payload["intent"]["intentName"]
         slots = {}
         for slot in payload["slots"]:
@@ -55,11 +60,18 @@ class IntentHandler:
         client.publish("hermes/dialogueManager/endSession", json.dumps(notification))
 
     def _error(self, client, site_id, session_id, custom_data):
+
+        # I tried a lot of different variations of the following, but none of them quite worked
+        # the "continueSession" got close, but would re-beep for
         notification = {
             "siteId": site_id,
             "sessionId": session_id,
+            "customData": f"{custom_data}",
             "error": f"{custom_data}",
+            "termination": "error",
         }
         print(notification)
-        # client.publish("hermes/dialogueManager/intentNotRecognized", json.dumps(notification))
+        client.publish("hermes/dialogueManager/intentNotRecognized", json.dumps(notification))
+        client.publish("hermes/dialogueManager/sessionEnded", json.dumps(notification))
         client.publish("hermes/error/dialogueManager", json.dumps(notification))
+        client.publish("hermes/error/nlu", json.dumps(notification))  # probably not this one!
