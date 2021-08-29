@@ -2,5 +2,3 @@ nav:
   - example-component.md
   - additional-homeintent-config.md
   - customization-dev-reference.md
-  - General: general-reference
-  - API Reference: api-reference

@@ -2,5 +2,5 @@ nav:
     - Home: index.md
     - Getting Started: getting-started
     - integrations
-    - Developer Reference: developer-reference
+    - Reference: reference
     - GitHub Releases: https://github.com/JarvyJ/HomeIntent/releases
