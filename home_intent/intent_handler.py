@@ -1,5 +1,6 @@
 import json
 import logging
+import paho.mqtt.client as mqtt
 
 LOGGER = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ class IntentHandler:
         else:
             LOGGER.error(f"Failed to connect to MQTT. Return Code: {rc}")
 
-    def _handle_intent(self, client, userdata, message):
+    def _handle_intent(self, client, userdata, message: mqtt.MQTTMessage):
         payload = json.loads(message.payload)
         intent_name = payload["intent"]["intentName"]
         slots = {}
@@ -44,13 +45,23 @@ class IntentHandler:
             response = self.intent_function[intent_name](**slots)
         except Exception as exception:
             LOGGER.exception(exception)
+            self._error(
+                client, payload["siteId"], payload["sessionId"], exception, payload["input"]
+            )
         else:
             if response:
-                self._say(client, response, session_id=payload["sessionId"])
+                self._say(client, response, payload["siteId"], payload["sessionId"])
 
-    def _say(self, client, text, session_id):
-        notification = {"text": text, "siteId": "default"}
-        if session_id:
-            LOGGER.info("Using the session manager to close the session")
-            notification["sessionId"] = session_id
-            client.publish("hermes/dialogueManager/endSession", json.dumps(notification))
+    def _say(self, client, text, site_id, session_id):
+        notification = {"text": text, "siteId": site_id, "sessionId": session_id}
+        LOGGER.info("Using the session manager to close the session")
+        client.publish("hermes/dialogueManager/endSession", json.dumps(notification))
+
+    def _error(self, client, site_id, session_id, custom_data, input_str):
+        notification = {
+            "siteId": site_id,
+            "sessionId": session_id,
+            "customData": f"{custom_data}",
+            "input": input_str,
+        }
+        client.publish("hermes/nlu/intentNotRecognized", json.dumps(notification))
