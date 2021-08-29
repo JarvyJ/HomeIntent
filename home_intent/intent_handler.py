@@ -35,10 +35,6 @@ class IntentHandler:
 
     def _handle_intent(self, client, userdata, message: mqtt.MQTTMessage):
         payload = json.loads(message.payload)
-        print(dir(message))
-        print(message.mid)
-        print(message.state)
-        print(message.info)
         intent_name = payload["intent"]["intentName"]
         slots = {}
         for slot in payload["slots"]:
@@ -49,7 +45,9 @@ class IntentHandler:
             response = self.intent_function[intent_name](**slots)
         except Exception as exception:
             LOGGER.exception(exception)
-            self._error(client, payload["siteId"], payload["sessionId"], exception)
+            self._error(
+                client, payload["siteId"], payload["sessionId"], exception, payload["input"]
+            )
         else:
             if response:
                 self._say(client, response, payload["siteId"], payload["sessionId"])
@@ -59,19 +57,11 @@ class IntentHandler:
         LOGGER.info("Using the session manager to close the session")
         client.publish("hermes/dialogueManager/endSession", json.dumps(notification))
 
-    def _error(self, client, site_id, session_id, custom_data):
-
-        # I tried a lot of different variations of the following, but none of them quite worked
-        # the "continueSession" got close, but would re-beep for
+    def _error(self, client, site_id, session_id, custom_data, input_str):
         notification = {
             "siteId": site_id,
             "sessionId": session_id,
             "customData": f"{custom_data}",
-            "error": f"{custom_data}",
-            "termination": "error",
+            "input": input_str,
         }
-        print(notification)
-        client.publish("hermes/dialogueManager/intentNotRecognized", json.dumps(notification))
-        client.publish("hermes/dialogueManager/sessionEnded", json.dumps(notification))
-        client.publish("hermes/error/dialogueManager", json.dumps(notification))
-        client.publish("hermes/error/nlu", json.dumps(notification))  # probably not this one!
+        client.publish("hermes/nlu/intentNotRecognized", json.dumps(notification))
