@@ -36,6 +36,8 @@ Currently `prefer_toggle` is only used for the following:
 
 
 ## Example Sentences
+A lot of the examples sentences try to follow the same pattern. There is a lot of "turn on"/"turn off", open/close, and in one case lock/unlock for activating/deactivating most things. Specifics around components can be found below (like to change light color or something).
+
 ### Cover
 
  * Open the garage door

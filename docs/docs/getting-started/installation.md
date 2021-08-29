@@ -1,7 +1,9 @@
 # Getting Started
 
 ## Supported Configs
-Home Intent currently is designed to run in a docker container running on a Raspberry Pi 3B or 4 (armv7/arm64). We also offer a "server" build (amd64). Future installation options may be available in the future.
+Home Intent currently is designed to run in a docker container running on a Raspberry Pi 3B or 4 (armv7/arm64). We also offer an amd64 build. This can either be the same machine that runs Home Assistant or a different one.
+
+For now, knowledge on using and setting up docker is required. In the future, different setups for installation will be supported!
 
 ## Installation
 It is easy to get it started with a `docker-compose.yaml` file that runs Home Intent:
