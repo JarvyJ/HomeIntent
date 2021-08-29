@@ -7,7 +7,7 @@ The second issue we currently face is that it works well if the sentences progra
 
 However if it does hear you correctly, and the intents line up, it'll perform the action just fine!
 
-## How are planning to make it better?
+## How are we planning to make it better?
 Newer versions of Rhasspy support some fun options around detecting unknown words, so an intent can still trigger if it gets most of the words right or will fail if the sentence is too far off. It works by adding everyday words to the model so the intent recognizer can better determine if an intent needs to be handled or not. This should help both of the problems above by hopefully allowing some deviation and better recognition overall.
 
 Finally, one of the easier things to change the wakeword sensitivity. Ideally we would have a database that matches up microphones to what sensitivity to use, but that requires a bit of tuning. Maybe this will end up being a Rhasspy setting down the road and we could have an interface to help tune it.
