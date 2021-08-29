@@ -20,6 +20,7 @@ class HomeAssistantComponent:
         all_entities = self.api.get("/api/states")
         self.entities = [x for x in all_entities if x["entity_id"] not in config.ignore_entities]
         self.domains = {x["entity_id"].split(".")[0] for x in self.entities}
+        self.domains.update(x["domain"] for x in self.services)
         print(self.domains)
         self.prefer_toggle = config.prefer_toggle
 
