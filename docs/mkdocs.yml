@@ -3,14 +3,16 @@ site_description: A Voice Assistant for Your Home
 site_url: https://homeintent.jarvy.io
 repo_url: https://github.com/JarvyJ/HomeIntent
 edit_uri: ""
+copyright: '<a href="/reference/how-well-does-it-work/">So, how well does it work?</a>'
 theme:
   name: material
   custom_dir: overrides/
 
   features:
   - navigation.tabs
-  - navigation.instant
   - navigation.sections
+  - navigation.instant
+
 
   palette:
     - media: "(prefers-color-scheme: light)"
