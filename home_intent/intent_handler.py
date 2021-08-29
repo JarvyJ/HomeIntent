@@ -44,13 +44,22 @@ class IntentHandler:
             response = self.intent_function[intent_name](**slots)
         except Exception as exception:
             LOGGER.exception(exception)
+            self._error(client, payload["siteId"], payload["sessionId"], exception)
         else:
             if response:
-                self._say(client, response, session_id=payload["sessionId"])
+                self._say(client, response, payload["siteId"], payload["sessionId"])
 
-    def _say(self, client, text, session_id):
-        notification = {"text": text, "siteId": "default"}
-        if session_id:
-            LOGGER.info("Using the session manager to close the session")
-            notification["sessionId"] = session_id
-            client.publish("hermes/dialogueManager/endSession", json.dumps(notification))
+    def _say(self, client, text, site_id, session_id):
+        notification = {"text": text, "siteId": site_id, "sessionId": session_id}
+        LOGGER.info("Using the session manager to close the session")
+        client.publish("hermes/dialogueManager/endSession", json.dumps(notification))
+
+    def _error(self, client, site_id, session_id, custom_data):
+        notification = {
+            "siteId": site_id,
+            "sessionId": session_id,
+            "error": f"{custom_data}",
+        }
+        print(notification)
+        # client.publish("hermes/dialogueManager/intentNotRecognized", json.dumps(notification))
+        client.publish("hermes/error/dialogueManager", json.dumps(notification))
