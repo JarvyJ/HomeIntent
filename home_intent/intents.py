@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from functools import wraps, partial, partialmethod
+from functools import partial, partialmethod, wraps
 import inspect
 import logging
 from pathlib import PosixPath
@@ -52,16 +52,16 @@ class Sentence:
     func: Callable
     slots: List[str]
     disabled: bool = False
-    disabled_reason: str = None
+    disabled_reason: str = ""
     beta: bool = False
 
 
 class Intents:
     def __init__(self, name):
         self.name = name
-        self.all_slots = {}
-        self.all_sentences = {}
-        self.slot_modifications = {}
+        self.all_slots: Dict[str, Callable] = {}
+        self.all_sentences: Dict[str, Sentence] = {}
+        self.slot_modifications: Dict[str, SlotCustomization] = {}
         self.events = {"register_sentences": []}
 
     def dictionary_slots(self, func):
@@ -170,6 +170,8 @@ class Intents:
         return inner
 
     def beta(self, func):
+        if func.__name__ not in self.all_sentences:
+            raise IntentException("Put the beta decorator above the sentences decorator")
         self.all_sentences[func.__name__].disabled = True
         self.all_sentences[func.__name__].beta = True
         self.all_sentences[func.__name__].disabled_reason = "BETA"
@@ -188,6 +190,11 @@ class Intents:
             @wraps(func)
             def wrapper(*arg, **kwargs):
                 return func(*arg, **kwargs)
+
+            if func.__name__ not in self.all_sentences:
+                raise IntentException(
+                    "Put the default_disable decorator above the sentences decorator"
+                )
 
             self.all_sentences[func.__name__].disabled_reason = reason
             self.all_sentences[func.__name__].disabled = True
@@ -227,7 +234,7 @@ class Intents:
         self.all_sentences = {}
 
     def enable_all(self):
-        for _, sentence in self.all_sentences:
+        for _, sentence in self.all_sentences.items():
             sentence.disabled = False
 
     def handle_customization(self, customization_file: PosixPath, class_instance):

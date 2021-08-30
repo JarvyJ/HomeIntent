@@ -12,9 +12,9 @@ intents:
       remove:
         - "turn off the ($light) [light]"
 
-  turn_on:
-    alias:
-      - sentences: 
-        - "Turn on fitzs light"
-        slots:
-          light: "bedroom"
+  # turn_on:
+  #   alias:
+  #     - sentences: 
+  #       - "Turn on fitzs light"
+  #       slots:
+  #         light: "bedroom"
