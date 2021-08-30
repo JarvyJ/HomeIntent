@@ -1,99 +1,47 @@
 # Customization
-Users have the ability to further customize intents to provide a better experience for their individual needs. It can be useful to remove unused intents (especially if they false trigger) or modify slots (like custom shopping list items).
+There is some simple customization that can be done to make Home Intent work better for you. It's easy to ignore entities you don't want to be voice controlled or setup your own sound effects!
 
-There are plans on having a UI to help with customizations, but currently it is handled with YAML files in `/config/customizations/<component_name>.yaml` where component name matches the intent that you are trying to modify. For now, to get the names, you will have to take a look at the [source](https://github.com/JarvyJ/HomeIntent/tree/main/home_intent/components) to get all the function names.
+## Home Assistant Customization
 
-The Home Assistant component is made up of multiple intents, so they follow a slightly different structure: `/config/customizations/home_assistant/<component_name>.yaml`
+### Ignoring Entities
 
-Example customization filenames:
-
- * `/config/customizations/timer.yaml`
- * `/config/customizations/home_assistant/shopping_list.yaml`
-
-When loaded correctly, you should see a `Loading customization file /config/customizations/home_assistant/shopping_list.yaml` in the logs.
-
-## Slots
-
-### Adding and removing custom words to slots
-Adding new words to the slot list supports all the standard Rhasspy [slot](https://rhasspy.readthedocs.io/en/latest/training/#slots-lists) features like synonyms.
-
-Removal works by reference or exact match. So, to remove a specific entity from Home Assistant, the best option is to list the entity id (for example `light.kitchen`).
+Under the Home Assistant section in `config.yaml` there are two settings objects you can add to ignore entities: `ignore_entities` and `ignore_domains`.
 
 ```yaml
-slots:
-  shopping_item:
-    add:
-      - fruit: apple
-      - (banans|naners|bananas): bananas
-      - baked beans
-    remove:
-      - beans
+home_assistant:
+  url: "https://home-assistant-url:8123"
+  bearer_token: "eyJ0eXAiOiJKV1Q...**THE REST OF THE TOKEN**"
+  ignore_entities:
+  	- light.bedroom_1
+  	- light.bedroom_2
+  ignore_domains:
+  	- remote
 ```
 
-## Sentences/Intents
+`ignore_entities` will just not allow that specific entity in Home Assistant to be voice controlled and `ignore_domains` will block out entire domains from being controlled.
 
-### Disabling all intents in a component
-To disable an entire component, add `disable_all` to the top level of the yaml file.
+These are the list of all the currently supported domains:
 
-```yaml
-disable_all: true
-```
+  * cover
+  * fan
+  * group
+  * light
+  * lock
+  * remote
+  * shopping_list
+  * switch
 
-### Disabling specific intents
-Under an `intents` top level config, should be the intent method name (as found in the python class) with `disable` set to `true`.
+### Overriding Defaults
 
-```yaml
-intents:
-  add_item_to_shopping_list:
-    disable: true
-```
+Home Intent loads color information (list of colors and color temperatures) and shopping items from everyday `txt` and `yaml` files that can be overridden if desired. Instructions on how to do so can be found on the Home Assistant [integration page](/integrations/home-assistant/#advanced-customization)
 
-### Adding and removing sentences to intents
-Similar to slots, intent sentences can be added or removed. Ensure that any tags or slot names needed for the intent are present.
-```yaml
-intents:
-  add_item_to_shopping_list:
-    sentences:
-      add:
-        - "include ($shopping_item) on the shopping list"
-      remove:
-        - "add ($shopping_item) to the [shopping] list"
-```
+## Home Intent Sound Effects (Beeps)
+Home Intent uses custom beep sound effects for interaction. You can override them with your own beep sounds by adding the sound files to your config folder.
 
-### Intent aliasing with slot entities
-Entire intent aliases can also be created that are pre-populated with slot items.
-```yaml
-intents:
-  add_item_to_shopping_list:
-    alias:
-      - sentences: 
-        - "I want bacon"
-        slots:
-          shopping_item: "bacon"
-```
+ * Beep high: `/config/beep-high.wav`
+ * Beep low: `/config/beep-low.wav`
+ * Error: `/config/error.wav`
 
-<!-- ## Full Automation
-Create a sentence that kicks off multiple intents. This way you can kickoff multiple intents with a single phrase. -->
 
-## Full Example
-This file could be used as `/config/customizations/home_assistant/shopping_list.yaml`
-
-```yaml
-slots:
-  shopping_item:
-    add:
-      - fruit: apple
-      - (banans|naners|bananas): bananas
-      - baked beans
-    remove:
-      - beans
-      
-intents:
-  add_item_to_shopping_list:
-    sentences:
-      add:
-        - "add ($shopping_item) to the list"
-    alias:
-      - sentence: "I want bacon"
-        shopping_item: "bacon"
-```
+## Additional Customization
+If you don't want to disable entities in their entirety, but rather only with specific intents, you can customize individual [slots and intents](/getting-started/advanced-features/component-customization/).

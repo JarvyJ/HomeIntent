@@ -10,7 +10,7 @@ from requests.exceptions import Timeout
 
 from audio_config import AudioConfig
 from intent_handler import IntentHandler
-from intents import Intents, get_slots_from_sentences
+from intents import Intents, Sentence
 from rhasspy_api import RhasspyAPI, RhasspyError
 from path_finder import get_file
 
@@ -36,6 +36,7 @@ class HomeIntent:
         self.arch = None
         self.intent_handler = IntentHandler(self.mqtt_client, self.settings, self.intent_function)
         self.audio_config = AudioConfig(self.rhasspy_api, self.settings)
+        self.all_slots = {}
 
         uname = os.uname()
         if uname.machine == "x86_64":
@@ -64,20 +65,20 @@ class HomeIntent:
         if customization_file.is_file():
             intents.handle_customization(customization_file, class_instance)
 
-        for sentence in intents.all_sentences:
-            sentence_slots = get_slots_from_sentences(intents.all_sentences[sentence].sentences)
-            for slot in sentence_slots:
+        for sentence_name, sentence in intents.all_sentences.items():
+            for slot in sentence.slots:
                 if slot not in intents.all_slots:
                     raise HomeIntentException(
-                        f"The sentence '{sentence}' has a slot ({slot}) that is not defined. "
+                        f"The method '{sentence.func}' has a slot ({slot}) that is not defined. "
                         f"Ensure there is a slot method with the name '{slot}' in the class {intents.name}"
                     )
 
+            LOGGER.debug(sentence_name)
             LOGGER.debug(sentence)
-            LOGGER.debug(intents.all_sentences[sentence])
-            self.intent_function[f"{intents.name}.{sentence}"] = partial(
-                intents.all_sentences[sentence].func, class_instance
-            )
+            if self._enable_sentence(sentence):
+                self.intent_function[f"{intents.name}.{sentence_name}"] = partial(
+                    sentence.func, class_instance
+                )
 
         LOGGER.info("Sentences look good!")
         # while I am using a partial here, I keep track of the instantiated class instance for the
@@ -129,14 +130,13 @@ class HomeIntent:
         return rhasspy_config
 
     def _write_slots_to_rhasspy(self):
-        all_slots = {}
         for registered_intent in self.registered_intents:
             LOGGER.info(f"Getting slots for {registered_intent.intent.name}")
             for slot in registered_intent.intent.all_slots:
 
                 LOGGER.info(f"Getting slot values for {slot}")
 
-                if slot in all_slots:
+                if slot in self.all_slots:
                     raise HomeIntentException(
                         f"The slot {slot} in {registered_intent.intent.name} is already"
                         "in Home Intent. Please rename the slot to avoid conflict."
@@ -146,10 +146,10 @@ class HomeIntent:
                     registered_intent.class_instance
                 )
 
-                all_slots[slot] = slot_values
+                self.all_slots[slot] = slot_values
 
         LOGGER.info("Updating all slots in Rhasspy")
-        self.rhasspy_api.post("/api/slots?overwriteAll=true", all_slots)
+        self.rhasspy_api.post("/api/slots?overwriteAll=true", self.all_slots)
 
     def _write_sentences_to_rhasspy(self):
         # this will force clear out the defaults in sentences.ini
@@ -165,14 +165,19 @@ class HomeIntent:
                 register_func(registered_intent.class_instance)
 
             for (sentence_name, sentence,) in registered_intent.intent.all_sentences.items():
-                # the rhasspy API does '\n' for newlines
-                sentences_string = "\n".join(sentence.sentences)
-                sentences.append(
-                    f"[{registered_intent.intent.name}.{sentence_name}]\n{sentences_string}"
-                )
+                if self._enable_sentence(sentence) and self._sentence_slots_have_value(sentence):
+                    # the rhasspy API does '\n' for newlines
+                    sentences_string = "\n".join(sentence.sentences)
+                    sentences.append(
+                        f"[{registered_intent.intent.name}.{sentence_name}]\n{sentences_string}"
+                    )
 
         LOGGER.info("Updating all sentences in Rhasspy...")
         self.rhasspy_api.post("/api/sentences", {"sentences.ini": "\n".join(sentences)})
+
+    def _sentence_slots_have_value(self, sentence: Sentence) -> bool:
+        # NOTE: all([]) will also return True, so intents without slots will not break
+        return all(len(self.all_slots[slot]) > 0 for slot in sentence.slots)
 
     def _train(self):
         LOGGER.info("Training Rhasspy... (can take up to 1m if many devices)")
@@ -195,3 +200,15 @@ class HomeIntent:
             f"hermes/audioServer/{site_id}/playBytes/homeintent_audio",
             payload=audio_file.read_bytes(),
         )
+
+    def _enable_sentence(self, sentence: Sentence):
+        if self.settings.home_intent.enable_all:
+            return True
+
+        if self.settings.home_intent.enable_beta and sentence.beta:
+            return True
+
+        if sentence.disabled is False:
+            return True
+
+        return False

@@ -1,16 +1,17 @@
+from dataclasses import dataclass
 from functools import wraps, partial, partialmethod
 import inspect
 import logging
 from pathlib import PosixPath
 import re
-from typing import Callable, Dict, List, NamedTuple, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Extra
 import yaml
 
 LOGGER = logging.getLogger(__name__)
 # we'll likely have to get more sophisticated than regexes eventually
-SLOT_REGEX = re.compile(r"\(\$([a-z_]*)\)")
+SLOT_REGEX = re.compile(r"\(\$([a-z_]*)")
 TAG_REGEX = re.compile(r"""{([a-z_]*)}""")
 
 
@@ -36,18 +37,23 @@ class SentenceAlias(BaseModel, extra=Extra.forbid):
 class SentenceCustomization(BaseModel, extra=Extra.forbid):
     sentences: Optional[SentenceModification]
     alias: Optional[List[SentenceAlias]]
-    disable: bool = False
+    enable: Optional[bool] = None
 
 
 class Customization(BaseModel, extra=Extra.forbid):
     slots: Optional[Dict[str, SlotCustomization]]
     intents: Optional[Dict[str, SentenceCustomization]]
-    disable_all: bool = False
+    enable_all: Optional[bool] = None
 
 
-class Sentence(NamedTuple):
+@dataclass
+class Sentence:
     sentences: List[str]
     func: Callable
+    slots: List[str]
+    disabled: bool = False
+    disabled_reason: str = None
+    beta: bool = False
 
 
 class Intents:
@@ -64,12 +70,15 @@ class Intents:
         @wraps(func)
         def wrapper(*arg, **kwargs):
             slot_dictionary = func(*arg, **kwargs)
+            reverse_slot_dictionary = {v: k for (k, v) in slot_dictionary.items()}
             non_dictionary_additions = []
             if func.__name__ in self.slot_modifications:
                 if self.slot_modifications[func.__name__].remove:
                     for slots_to_remove in self.slot_modifications[func.__name__].remove:
                         if slots_to_remove in slot_dictionary:
                             del slot_dictionary[slots_to_remove]
+                        elif slots_to_remove in reverse_slot_dictionary:
+                            del slot_dictionary[reverse_slot_dictionary[slots_to_remove]]
                         else:
                             LOGGER.warning(
                                 f"'{slots_to_remove}' not in slot list for {func.__name__}"
@@ -81,15 +90,22 @@ class Intents:
                         if isinstance(slot_addition, str):
                             if slot_addition in slot_dictionary:
                                 del slot_dictionary[slot_addition]
-                            non_dictionary_additions.append(f"{slot_addition}{{{func.__name__}}}")
+                            non_dictionary_additions.append(
+                                f"{_sanitize_slot(slot_addition)}{{{func.__name__}}}"
+                            )
 
                         elif isinstance(slot_addition, dict):
                             synonyms, value = next(iter(slot_addition.items()))
                             if synonyms in slot_dictionary:
                                 del slot_dictionary[synonyms]
+                            elif value in reverse_slot_dictionary:
+                                del slot_dictionary[reverse_slot_dictionary[value]]
                             slot_dictionary[synonyms] = value
 
-            slot_list = [f"{x}{{{func.__name__}:{slot_dictionary[x]}}}" for x in slot_dictionary]
+            slot_list = [
+                f"{_sanitize_slot(x)}{{{func.__name__}:{slot_dictionary[x]}}}"
+                for x in slot_dictionary
+            ]
             slot_list.extend(non_dictionary_additions)
             return slot_list
 
@@ -125,9 +141,11 @@ class Intents:
                             synonyms, value = next(iter(slot_addition.items()))
                             if synonyms in slot_values:
                                 slot_values.remove(synonyms)
-                            synonmym_values.append(f"{synonyms}{{{func.__name__}:{value}}}")
+                            synonmym_values.append(
+                                f"{_sanitize_slot(synonyms)}{{{func.__name__}:{value}}}"
+                            )
 
-            slot_list = [f"{x}{{{func.__name__}}}" for x in slot_values]
+            slot_list = [f"{_sanitize_slot(x)}{{{func.__name__}}}" for x in slot_values]
             slot_list.extend(synonmym_values)
 
             return slot_list
@@ -135,16 +153,44 @@ class Intents:
         self.all_slots[func.__name__] = wrapper
         return wrapper
 
-    def sentences(self, sentences):
+    def sentences(self, sentences: List[str]):
         def inner(func):
-            _check_if_args_in_sentence_slots(sentences, func)
-            self.all_sentences[func.__name__] = Sentence(sentences, func)
+            if not isinstance(sentences, list):
+                raise IntentException(f"The sentences decorator expects a list for {func}")
+            sentence_slots = _check_if_args_in_sentence_slots(sentences, func)
+            self.all_sentences[func.__name__] = Sentence(sentences, func, sentence_slots)
 
             @wraps(func)
             def wrapper(*arg, **kwargs):
                 LOGGER.info(f"Running function {func.__name__}")
                 func(*arg, **kwargs)
 
+            return wrapper
+
+        return inner
+
+    def beta(self, func):
+        self.all_sentences[func.__name__].disabled = True
+        self.all_sentences[func.__name__].beta = True
+        self.all_sentences[func.__name__].disabled_reason = "BETA"
+
+        def inner(func):
+            @wraps(func)
+            def wrapper(*arg, **kwargs):
+                return func(*arg, **kwargs)
+
+            return wrapper
+
+        return inner
+
+    def default_disable(self, reason: str):
+        def inner(func):
+            @wraps(func)
+            def wrapper(*arg, **kwargs):
+                return func(*arg, **kwargs)
+
+            self.all_sentences[func.__name__].disabled_reason = reason
+            self.all_sentences[func.__name__].disabled = True
             return wrapper
 
         return inner
@@ -167,12 +213,22 @@ class Intents:
 
     def disable_intent(self, sentence_func: Union[Callable, str]):
         if isinstance(sentence_func, str):
-            del self.all_sentences[sentence_func]
+            self.all_sentences[sentence_func].disabled = True
         else:
-            del self.all_sentences[sentence_func.__name__]
+            self.all_sentences[sentence_func.__name__].disabled = True
+
+    def enable_intent(self, sentence_func: Union[Callable, str]):
+        if isinstance(sentence_func, str):
+            self.all_sentences[sentence_func].disabled = False
+        else:
+            self.all_sentences[sentence_func.__name__].disabled = False
 
     def disable_all(self):
         self.all_sentences = {}
+
+    def enable_all(self):
+        for _, sentence in self.all_sentences:
+            sentence.disabled = False
 
     def handle_customization(self, customization_file: PosixPath, class_instance):
         LOGGER.info(f"Loading customization file {customization_file}")
@@ -180,8 +236,11 @@ class Intents:
             customization_file.read_text("utf-8"), Loader=yaml.SafeLoader
         )
         component_customization = Customization(**customization_yaml)
-        if component_customization.disable_all:
-            self.disable_all()
+        if component_customization.enable_all is not None:
+            if component_customization.enable_all is True:
+                self.enable_all()
+            elif component_customization.enable_all is False:
+                self.disable_all()
 
         if component_customization.intents:
             for intent, customization in component_customization.intents.items():
@@ -200,8 +259,11 @@ class Intents:
                     raise IntentException(f"'{slot}' not associated with {self.name}")
 
     def _customize_intents(self, intent: str, customization: SentenceCustomization, class_instance):
-        if customization.disable:
-            self.disable_intent(intent)
+        if customization.enable is not None:
+            if customization.enable is True:
+                self.enable_intent(intent)
+            elif customization.enable is False:
+                self.disable_intent(intent)
 
         if customization.sentences:
             if customization.sentences.add:
@@ -228,10 +290,18 @@ class Intents:
                 else:
                     alias_function = getattr(class_instance, intent).__func__
                 setattr(class_instance, funcname, alias_function)
-                self.all_sentences[funcname] = Sentence(sentences, alias_function)
+                sentence_slots = _get_slots_from_sentences(sentences)
+                self.all_sentences[funcname] = Sentence(sentences, alias_function, sentence_slots)
 
 
-def get_slots_from_sentences(sentences: List[str]):
+def _sanitize_slot(slot_name: str):
+    # okay, maybe a regex would be better at this point...
+    return "".join(
+        x if x.isalnum() or x in ("(", ")", "|", "[", "]", ".", ":") else " " for x in slot_name
+    )
+
+
+def _get_slots_from_sentences(sentences: List[str]):
     sentence_slots = set()
     for sentence in sentences:
         sentence_slots.update((SLOT_REGEX.findall(sentence)))
@@ -248,7 +318,7 @@ def _get_tags_from_sentences(sentences: List[str]):
 
 
 def _check_if_args_in_sentence_slots(sentences, func):
-    sentence_slots = get_slots_from_sentences(sentences)
+    sentence_slots = _get_slots_from_sentences(sentences)
     sentence_tags = _get_tags_from_sentences(sentences)
 
     argument_spec = inspect.getfullargspec(func)
@@ -277,3 +347,5 @@ def _check_if_args_in_sentence_slots(sentences, func):
                     f"Make sure the sentence decorator includes a {{{arg}}} or "
                     "remove it as an argument."
                 )
+
+    return sentence_slots

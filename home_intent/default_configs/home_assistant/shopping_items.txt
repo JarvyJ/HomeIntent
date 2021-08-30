@@ -30,6 +30,7 @@ blue cheese
 blue dish sponges
 boneless chicken breast
 bread
+bread and butter pickles
 broccoli
 broom
 brown sugar
@@ -59,8 +60,6 @@ chicken bullion cube
 chicken legs
 chicken noodle soup
 chicken nuggets
-chicken nuggies
-chicken nuggs
 chicken thighs
 chips
 chives
@@ -90,16 +89,16 @@ cumin
 deodorant
 diapers
 diet coke
+dill pickles
 dinners
 dish washing soap
 dishwasher detergent
 dog food
-doggos
 dryer sheets
 egg
 eggs
 elbow macaroni
-facewash
+face wash
 fiber powder
 first aid cream
 fish
@@ -107,7 +106,7 @@ fish sauce
 flax seed
 floss
 flour
-flour tortillias
+flour tortillas
 foil
 formula
 freezer bags
@@ -145,7 +144,7 @@ hot sauce
 hydrogen peroxide
 ice cream
 iceberg lettuce
-italian bread
+Italian bread
 jalapeno
 jam
 jello
@@ -175,7 +174,6 @@ milk
 mixed fruit
 mixed vegetables
 mop
-motz
 mountain dew
 mouthwash
 mozzarella cheese
@@ -238,6 +236,7 @@ refried beans
 rice
 roast
 roast beef
+roast chicken
 rolls
 romaine lettuce
 rotelle pasta
@@ -267,7 +266,7 @@ soy sauce
 spaghetti
 spaghetti pasta
 spaghetti sauce
-spanish rice
+Spanish rice
 sponges
 sports drinks
 sprite
@@ -297,7 +296,6 @@ toothbrush
 toothpaste
 tortilla chips
 tortillas
-tortillias
 towels
 trash bag
 tums
@@ -311,7 +309,7 @@ vegetable oil
 vegetable soup
 vegetables
 vermicelli pasta
-vienna sausage
+Vienna sausage
 vinegar
 vitamin d
 water
@@ -322,7 +320,7 @@ whole chicken
 wine
 wings
 wipes
-worcestershire sauce
+Worcestershire sauce
 yard bags
 yogurt
 zucchini

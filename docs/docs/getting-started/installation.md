@@ -1,7 +1,9 @@
 # Getting Started
 
 ## Supported Configs
-Home Intent currently is designed to run in a docker container running on a Raspberry Pi 3B or 4 (armv7/arm64). We also offer a "server" build (amd64). Future installation options may be available in the future.
+Home Intent currently is designed to run in a docker container running on a Raspberry Pi 3B or 4 (armv7/arm64). We also offer an amd64 build. This can either be the same machine that runs Home Assistant or a different one.
+
+For now, knowledge on using and setting up docker is required. In the future, different setups for installation will be supported!
 
 ## Installation
 It is easy to get it started with a `docker-compose.yaml` file that runs Home Intent:
@@ -27,7 +29,7 @@ services:
 
 The `/profiles` directory is where Rhasspy stores its configs/downloads. The ports expose the Rhasspy web interface, which is useful during debugging and for advanced users.
 
-In your config folder, all you need to do is add a `config.yaml`, pointing to your Home Assistant URL and a "Long Lived Access" (bearer) token you can get from your [Home Assistant profile page](https://homeintent.jarvy.io/integrations/home-assistant/#getting-a-bearer-token):
+In your config folder, all you need to do is add a `config.yaml`, pointing to your Home Assistant URL and a "Long Lived Access" (bearer) token you can get from your [Home Assistant profile page](/integrations/home-assistant/#getting-a-bearer-token):
 
 ```yaml
 home_assistant:
@@ -38,7 +40,7 @@ timer:
 
 ```
 
-and just like that you have Home Intent setup and connected to Home Assistant! Plug in a USB Microphone, startup the containers, and you are good to go! The wakeword Home Intent uses is "Jarvis". We have [example sentences](https://homeintent.jarvy.io/integrations/home-assistant/#example-sentences) on the integration page for all the components, but here are a few to get you started:
+and just like that you have Home Intent setup and connected to Home Assistant! Plug in a USB Microphone, startup the containers, and you are good to go! The wakeword Home Intent uses is "Jarvis". We have [example sentences](/integrations/home-assistant/#example-sentences) on the integration page for all the components, but here are a few to get you started:
 
  * Jarvis, set timer one minute
  * Jarvis, turn on the kitchen light
