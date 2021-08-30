@@ -49,14 +49,18 @@ A lot of the examples sentences try to follow the same pattern. There is a lot o
 ### Fan
  * Turn on/off the living room fan
  * Toggle the ceiling fan
- * Set the kitchen fan to oscillate
- * Start oscillating the attic fan
+ * \*Set the kitchen fan to [not] oscillate
+ * \*Start/stop oscillating the attic fan
+ * \*Oscillate the attic fan
+ * \*Turn on/off the attic fan osccilation
  * Set/make/change the living room fan to sleep
  * Reverse the ceiling fan
  * Increase/Decrease the kitchen fan
  * Set/make/change the living room fan to high/medium/low
 
 Home Intent will only allow the specific fans that can oscillate to be set for oscillation. Same thing with presets and fan speeds.
+
+We're not sure what the best sentence approach is for the fan oscillation, so we've put in a lot of variation for now. Going to do some tests to see what works well. It performs a toggle under the covers so as long as it picks up the fan and "oscillate" it'll probably work. 
 
 ### Group
 
