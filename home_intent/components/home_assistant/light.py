@@ -1,7 +1,9 @@
-from home_intent import Intents, get_file
+from typing import Dict
+
 from pydantic import BaseModel, conint
 import yaml
-from typing import Dict
+
+from home_intent import Intents, get_file
 
 intents = Intents(__name__)
 

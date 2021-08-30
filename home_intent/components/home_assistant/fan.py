@@ -1,4 +1,5 @@
 from enum import IntFlag, auto
+
 from home_intent import Intents
 
 intents = Intents(__name__)

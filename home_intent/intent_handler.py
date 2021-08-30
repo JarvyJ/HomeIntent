@@ -1,5 +1,6 @@
 import json
 import logging
+
 import paho.mqtt.client as mqtt
 
 LOGGER = logging.getLogger(__name__)
