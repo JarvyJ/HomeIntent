@@ -109,7 +109,9 @@ class Fan:
     @intents.sentences(
         [
             "(start|stop) oscillating the ($oscillating_fan)",
+            "oscillate the ($oscillating_fan)",
             "(set|change|make) the ($oscillating_fan) [to] [not] oscillate",
+            "turn (on|off) the ($oscillating_fan) oscillation",
         ]
     )
     def oscillate_fan(self, oscillating_fan):
