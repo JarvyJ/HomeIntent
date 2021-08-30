@@ -1,0 +1,20 @@
+intents:
+  change_color_temperature:
+    enable: true
+
+  toggle_light:
+    enable: false
+
+  turn_off:
+    sentences:
+      add:
+        - "power off my ($light)"
+      remove:
+        - "turn off the ($light) [light]"
+
+  turn_on:
+    alias:
+      - sentences: 
+        - "Turn on fitzs light"
+        slots:
+          light: "bedroom"
