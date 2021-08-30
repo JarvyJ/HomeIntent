@@ -18,3 +18,4 @@ def test_registered_sentences(intents):
     assert len(intents.all_sentences) == 5
     assert len({k: v for (k, v) in intents.all_sentences.items() if v.disabled is True}) == 2
     assert intents.all_sentences["toggle_light"].disabled == True
+    assert intents.all_sentences["change_color_temperature"].disabled == False
