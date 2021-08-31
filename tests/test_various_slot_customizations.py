@@ -84,5 +84,5 @@ def test_registered_sentences(intents):
 
 
 def test_disable_all(no_intents):
-    assert len(no_intents.all_sentences) == 0
-    assert len({k: v for (k, v) in no_intents.all_sentences.items() if v.disabled is True}) == 0
+    assert len(no_intents.all_sentences) == 5
+    assert len({k: v for (k, v) in no_intents.all_sentences.items() if v.disabled is True}) == 5

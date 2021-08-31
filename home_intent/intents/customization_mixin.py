@@ -39,25 +39,6 @@ class Customization(BaseModel, extra=Extra.forbid):
 
 
 class IntentCustomizationMixin:
-    def disable_all(self):
-        self.all_sentences = {}
-
-    def enable_all(self):
-        for _, sentence in self.all_sentences.items():
-            sentence.disabled = False
-
-    def disable_intent(self, sentence_func: Union[Callable, str]):
-        if isinstance(sentence_func, str):
-            self.all_sentences[sentence_func].disabled = True
-        else:
-            self.all_sentences[sentence_func.__name__].disabled = True
-
-    def enable_intent(self, sentence_func: Union[Callable, str]):
-        if isinstance(sentence_func, str):
-            self.all_sentences[sentence_func].disabled = False
-        else:
-            self.all_sentences[sentence_func.__name__].disabled = False
-
     def handle_customization(self, customization_file: PosixPath, class_instance):
         LOGGER.info(f"Loading customization file {customization_file}")
         customization_yaml = yaml.load(
@@ -66,9 +47,9 @@ class IntentCustomizationMixin:
         component_customization = Customization(**customization_yaml)
         if component_customization.enable_all is not None:
             if component_customization.enable_all is True:
-                self.enable_all()
+                self._enable_all()
             elif component_customization.enable_all is False:
-                self.disable_all()
+                self._disable_all()
 
         if component_customization.intents:
             for intent, customization in component_customization.intents.items():
@@ -86,12 +67,20 @@ class IntentCustomizationMixin:
                 else:
                     raise IntentException(f"'{slot}' not associated with {self.name}")
 
+    def _enable_all(self):
+        for _, sentence in self.all_sentences.items():
+            sentence.disabled = False
+
+    def _disable_all(self):
+        for _, sentence in self.all_sentences.items():
+            sentence.disabled = True
+
     def _customize_intents(self, intent: str, customization: SentenceCustomization, class_instance):
         if customization.enable is not None:
             if customization.enable is True:
-                self.enable_intent(intent)
+                self._enable_intent(intent)
             elif customization.enable is False:
-                self.disable_intent(intent)
+                self._disable_intent(intent)
 
         if customization.sentences:
             if customization.sentences.add:
@@ -120,3 +109,15 @@ class IntentCustomizationMixin:
                 setattr(class_instance, funcname, alias_function)
                 sentence_slots = _get_slots_from_sentences(sentences)
                 self.all_sentences[funcname] = Sentence(sentences, alias_function, sentence_slots)
+
+    def _enable_intent(self, sentence_func: Union[Callable, str]):
+        if isinstance(sentence_func, str):
+            self.all_sentences[sentence_func].disabled = False
+        else:
+            self.all_sentences[sentence_func.__name__].disabled = False
+
+    def _disable_intent(self, sentence_func: Union[Callable, str]):
+        if isinstance(sentence_func, str):
+            self.all_sentences[sentence_func].disabled = True
+        else:
+            self.all_sentences[sentence_func.__name__].disabled = True
