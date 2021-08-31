@@ -1,10 +1,15 @@
 """Start up HomeIntent"""
 import importlib
 import logging
+from pathlib import Path
 import sys
 
-from home_intent import HomeIntent
-from home_intent.settings import Settings
+# small workaround so you can launch from commandline or as a module
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+# pylint: disable=wrong-import-position
+from home_intent import HomeIntent  # isort:skip
+from home_intent.settings import Settings  # isort:skip
 
 
 class HomeIntentImportException(Exception):
