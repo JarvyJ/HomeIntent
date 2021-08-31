@@ -8,11 +8,11 @@ from typing import NamedTuple
 import paho.mqtt.client as mqtt
 from requests.exceptions import Timeout
 
-from audio_config import AudioConfig
-from intent_handler import IntentHandler
-from intents import Intents, Sentence
-from path_finder import get_file
-from rhasspy_api import RhasspyAPI, RhasspyError
+from home_intent.audio_config import AudioConfig
+from home_intent.intent_handler import IntentHandler
+from home_intent.intents import Intents, Sentence
+from home_intent.path_finder import get_file
+from home_intent.rhasspy_api import RhasspyAPI, RhasspyError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -70,7 +70,8 @@ class HomeIntent:
                 if slot not in intents.all_slots:
                     raise HomeIntentException(
                         f"The method '{sentence.func}' has a slot ({slot}) that is not defined. "
-                        f"Ensure there is a slot method with the name '{slot}' in the class {intents.name}"
+                        f"Ensure there is a slot method with the name '{slot}' "
+                        f"in the class {intents.name}"
                     )
 
             LOGGER.debug(sentence_name)
@@ -183,7 +184,7 @@ class HomeIntent:
         LOGGER.info("Training Rhasspy... (can take up to 1m if many devices)")
         try:
             self.rhasspy_api.post("/api/train", timeout=60)
-        except Timeout as timeout_exception:
+        except Timeout:
             LOGGER.warning(
                 "Timed out waiting for Rhasspy to train. Moving on, we will likely be okay."
             )

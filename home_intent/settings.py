@@ -1,9 +1,11 @@
-import json
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 from pydantic import AnyHttpUrl, BaseModel, BaseSettings
 import yaml
+
+# diabled for the Settings object as pydantic passes init/env settings in
+# pylint: disable=unused-argument
 
 
 def json_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
@@ -38,7 +40,7 @@ class Settings(BaseSettings):
     rhasspy: RhasspySettings = RhasspySettings()
     home_intent: HomeIntentSettings = HomeIntentSettings()
 
-    class Config:
+    class Config:  # pylint: disable=too-few-public-methods
         env_file_encoding = "utf-8"
         extra = "allow"
 

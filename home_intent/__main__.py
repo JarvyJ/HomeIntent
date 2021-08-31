@@ -4,7 +4,7 @@ import logging
 import sys
 
 from home_intent import HomeIntent
-from settings import Settings
+from home_intent.settings import Settings
 
 
 class HomeIntentImportException(Exception):
@@ -46,7 +46,7 @@ def _get_components(settings: Settings):
 def _load_builtin_components(components: set, home_intent: HomeIntent):
     loaded_components = set()
     for component in components:
-        component_name = f"components.{component}"
+        component_name = f"home_intent.components.{component}"
         try:
             integration = importlib.import_module(component_name)
         except ModuleNotFoundError as module_error:
@@ -69,8 +69,8 @@ def _load_custom_components(custom_components: set, home_intent: HomeIntent):
         except ModuleNotFoundError as module_error:
             if module_error.name == custom_component:
                 raise HomeIntentImportException(
-                    f"Unable to load custom component '{custom_component}' from /config/custom_components. "
-                    "Ensure the filename and config value match up."
+                    f"Unable to load custom component '{custom_component}' from "
+                    "/config/custom_components. Ensure the filename and config value match up."
                 )
             else:
                 raise
