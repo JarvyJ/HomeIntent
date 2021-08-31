@@ -68,5 +68,5 @@ def _error(client, site_id, session_id, custom_data, input_str):
 
 def _say(client, text, site_id, session_id):
     notification = {"text": text, "siteId": site_id, "sessionId": session_id}
-    LOGGER.info("Using the session manager to close the session")
+    LOGGER.info(text)
     client.publish("hermes/dialogueManager/endSession", json.dumps(notification))
