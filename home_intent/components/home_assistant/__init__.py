@@ -2,7 +2,7 @@ from typing import Set
 
 from pydantic import AnyHttpUrl, BaseModel
 
-from . import cover, fan, group, light, lock, remote, shopping_list, switch
+from . import cover, fan, group, light, lock, remote, shopping_list, switch, weather
 from .api import HomeAssistantAPI
 
 
@@ -60,6 +60,5 @@ def setup(home_intent):
     if "switch" in home_assistant_component.domains and "switch" not in config.ignore_domains:
         home_intent.register(switch.Switch(home_assistant_component), switch.intents)
 
-    # disabling weather for now. the ciso8601 package breaks the build... :(
-    # if "weather" in home_assistant_component.domains and "weather" not in config.ignore_domains:
-    #     home_intent.register(weather.Weather(home_assistant_component), weather.intents)
+    if "weather" in home_assistant_component.domains and "weather" not in config.ignore_domains:
+        home_intent.register(weather.Weather(home_assistant_component), weather.intents)
