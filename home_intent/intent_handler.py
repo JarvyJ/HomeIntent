@@ -39,7 +39,7 @@ class IntentHandler:
         LOGGER.debug(slots)
         try:
             response = self.intent_function[intent_name](**slots)
-        except Exception as exception:  # pylint: disable=W0703
+        except Exception as exception:  # pylint: disable=broad-except
             LOGGER.exception(exception)
             _error(client, payload["siteId"], payload["sessionId"], exception, payload["input"])
         else:
