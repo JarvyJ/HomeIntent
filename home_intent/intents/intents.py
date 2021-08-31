@@ -22,10 +22,11 @@ class Intents(IntentCustomizationMixin):
         @wraps(func)
         def wrapper(*arg, **kwargs):
             slot_dictionary = func(*arg, **kwargs)
-            reverse_slot_dictionary = {v: k for (k, v) in slot_dictionary.items()}
             non_dictionary_additions = []
             if func.__name__ in self.slot_modifications:
-                self._handle_dictionary_slot_modification()
+                non_dictionary_additions = self._handle_dictionary_slot_modification(
+                    func.__name__, slot_dictionary
+                )
 
             slot_list = [
                 f"{_sanitize_slot(x)}{{{func.__name__}:{slot_dictionary[x]}}}"
@@ -43,35 +44,12 @@ class Intents(IntentCustomizationMixin):
         @wraps(func)
         def wrapper(*arg, **kwargs):
             slot_values = set(func(*arg, **kwargs))
-            synonmym_values = []
+            synonym_values = []
             if func.__name__ in self.slot_modifications:
-                if self.slot_modifications[func.__name__].remove:
-                    for slots_to_remove in self.slot_modifications[func.__name__].remove:
-                        if slots_to_remove in slot_values:
-                            slot_values.remove(slots_to_remove)
-                        else:
-                            LOGGER.warning(
-                                f"'{slots_to_remove}' not in slot list for {func.__name__}"
-                            )
-
-                if self.slot_modifications[func.__name__].add:
-                    for slot_addition in self.slot_modifications[func.__name__].add:
-
-                        if isinstance(slot_addition, str):
-                            if slot_addition in slot_values:
-                                slot_values.remove(slot_addition)
-                            slot_values.add(slot_addition)
-
-                        elif isinstance(slot_addition, dict):
-                            synonyms, value = next(iter(slot_addition.items()))
-                            if synonyms in slot_values:
-                                slot_values.remove(synonyms)
-                            synonmym_values.append(
-                                f"{_sanitize_slot(synonyms)}{{{func.__name__}:{value}}}"
-                            )
+                synonym_values = self._handle_slot_modification(func.__name__, slot_values)
 
             slot_list = [f"{_sanitize_slot(x)}{{{func.__name__}}}" for x in slot_values]
-            slot_list.extend(synonmym_values)
+            slot_list.extend(synonym_values)
 
             return slot_list
 
@@ -143,24 +121,27 @@ class Intents(IntentCustomizationMixin):
 
         return inner
 
-    def _handle_dictionary_slot_modification():
-        if self.slot_modifications[func.__name__].remove:
-            for slots_to_remove in self.slot_modifications[func.__name__].remove:
+    def _handle_dictionary_slot_modification(self, func_name, slot_dictionary) -> List[str]:
+        non_dictionary_additions = []
+        reverse_slot_dictionary = {v: k for (k, v) in slot_dictionary.items()}
+
+        if self.slot_modifications[func_name].remove:
+            for slots_to_remove in self.slot_modifications[func_name].remove:
                 if slots_to_remove in slot_dictionary:
                     del slot_dictionary[slots_to_remove]
                 elif slots_to_remove in reverse_slot_dictionary:
                     del slot_dictionary[reverse_slot_dictionary[slots_to_remove]]
                 else:
-                    LOGGER.warning(f"'{slots_to_remove}' not in slot list for {func.__name__}")
+                    LOGGER.warning(f"'{slots_to_remove}' not in slot list for {func_name}")
 
-        if self.slot_modifications[func.__name__].add:
-            for slot_addition in self.slot_modifications[func.__name__].add:
+        if self.slot_modifications[func_name].add:
+            for slot_addition in self.slot_modifications[func_name].add:
 
                 if isinstance(slot_addition, str):
                     if slot_addition in slot_dictionary:
                         del slot_dictionary[slot_addition]
                     non_dictionary_additions.append(
-                        f"{_sanitize_slot(slot_addition)}{{{func.__name__}}}"
+                        f"{_sanitize_slot(slot_addition)}{{{func_name}}}"
                     )
 
                 elif isinstance(slot_addition, dict):
@@ -170,3 +151,31 @@ class Intents(IntentCustomizationMixin):
                     elif value in reverse_slot_dictionary:
                         del slot_dictionary[reverse_slot_dictionary[value]]
                     slot_dictionary[synonyms] = value
+
+        return non_dictionary_additions
+
+    def _handle_slot_modification(self, func_name, slot_values):
+        synonmy_values = []
+
+        if self.slot_modifications[func_name].remove:
+            for slots_to_remove in self.slot_modifications[func_name].remove:
+                if slots_to_remove in slot_values:
+                    slot_values.remove(slots_to_remove)
+                else:
+                    LOGGER.warning(f"'{slots_to_remove}' not in slot list for {func_name}")
+
+        if self.slot_modifications[func_name].add:
+            for slot_addition in self.slot_modifications[func_name].add:
+
+                if isinstance(slot_addition, str):
+                    if slot_addition in slot_values:
+                        slot_values.remove(slot_addition)
+                    slot_values.add(slot_addition)
+
+                elif isinstance(slot_addition, dict):
+                    synonyms, value = next(iter(slot_addition.items()))
+                    if synonyms in slot_values:
+                        slot_values.remove(synonyms)
+                    synonmy_values.append(f"{_sanitize_slot(synonyms)}{{{func_name}:{value}}}")
+
+        return synonmy_values
