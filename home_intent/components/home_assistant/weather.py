@@ -28,6 +28,7 @@ class Weather:
     def day_of_week(self):
         return {x[1]: x[0] for x in enumerate(DAYS_OF_WEEK)}
 
+    @intents.beta
     @intents.sentences(["what is the temperature [(right now|today|outside)]"])
     def temperature_day(self):
         response = self.ha.api.get_entity(self.entity)
@@ -41,6 +42,7 @@ class Weather:
             intents.disable_intent(self.forecast_day)
             intents.disable_intent(self.forecast_night)
 
+    @intents.beta
     @intents.sentences(
         [
             "what is the (weather|forecast) (right now|today|outside)",
@@ -53,6 +55,7 @@ class Weather:
         current_conditions = response["attributes"]["forecast"][0]
         return _get_forecast_details(current_conditions)
 
+    @intents.beta
     @intents.sentences(
         ["what is the (weather|forecast) tonight", "(how|what) is it going to be [like] tonight"]
     )
@@ -65,6 +68,7 @@ class Weather:
             if day_or_night == TimeOfDay.NIGHT:
                 return _get_forecast_details(forecast)
 
+    @intents.beta
     @intents.sentences(
         ["what is the (weather|forecast) [going to be] (on|for) [next] ($day_of_week:!int)"]
     )
@@ -74,6 +78,7 @@ class Weather:
         forecast = _get_forecast(response["attributes"]["forecast"], TimeOfDay.DAY, day_of_week)
         return _get_forecast_details(forecast)
 
+    @intents.beta
     @intents.sentences(
         ["what is the (weather|forecast) [going to be] (on|for) [next] ($day_of_week:!int) night"]
     )
