@@ -1,6 +1,7 @@
-from home_intent import Intents
 from datetime import datetime
 from enum import Enum, auto
+
+from home_intent import Intents
 
 intents = Intents(__name__)
 
