@@ -1,23 +1,14 @@
-from functools import partial, partialmethod, wraps
-import inspect
+from functools import wraps
 import logging
-from pathlib import PosixPath
-import re
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable, Dict, List
 
-from intent_customization import IntentCustomization, SlotCustomization
-from intent_util import _sanitize_slot, _check_if_args_in_sentence_slots, Sentence
-
-from pydantic import BaseModel, Extra
+from .customization_mixin import IntentCustomizationMixin, SlotCustomization
+from .util import _sanitize_slot, _check_if_args_in_sentence_slots, Sentence, IntentException
 
 LOGGER = logging.getLogger(__name__)
 
 
-class IntentException(Exception):
-    pass
-
-
-class Intents(IntentCustomization):
+class Intents(IntentCustomizationMixin):
     def __init__(self, name):
         self.name = name
         self.all_slots: Dict[str, Callable] = {}
@@ -34,34 +25,7 @@ class Intents(IntentCustomization):
             reverse_slot_dictionary = {v: k for (k, v) in slot_dictionary.items()}
             non_dictionary_additions = []
             if func.__name__ in self.slot_modifications:
-                if self.slot_modifications[func.__name__].remove:
-                    for slots_to_remove in self.slot_modifications[func.__name__].remove:
-                        if slots_to_remove in slot_dictionary:
-                            del slot_dictionary[slots_to_remove]
-                        elif slots_to_remove in reverse_slot_dictionary:
-                            del slot_dictionary[reverse_slot_dictionary[slots_to_remove]]
-                        else:
-                            LOGGER.warning(
-                                f"'{slots_to_remove}' not in slot list for {func.__name__}"
-                            )
-
-                if self.slot_modifications[func.__name__].add:
-                    for slot_addition in self.slot_modifications[func.__name__].add:
-
-                        if isinstance(slot_addition, str):
-                            if slot_addition in slot_dictionary:
-                                del slot_dictionary[slot_addition]
-                            non_dictionary_additions.append(
-                                f"{_sanitize_slot(slot_addition)}{{{func.__name__}}}"
-                            )
-
-                        elif isinstance(slot_addition, dict):
-                            synonyms, value = next(iter(slot_addition.items()))
-                            if synonyms in slot_dictionary:
-                                del slot_dictionary[synonyms]
-                            elif value in reverse_slot_dictionary:
-                                del slot_dictionary[reverse_slot_dictionary[value]]
-                            slot_dictionary[synonyms] = value
+                self._handle_dictionary_slot_modification()
 
             slot_list = [
                 f"{_sanitize_slot(x)}{{{func.__name__}:{slot_dictionary[x]}}}"
@@ -178,3 +142,31 @@ class Intents(IntentCustomization):
             return wrapper
 
         return inner
+
+    def _handle_dictionary_slot_modification():
+        if self.slot_modifications[func.__name__].remove:
+            for slots_to_remove in self.slot_modifications[func.__name__].remove:
+                if slots_to_remove in slot_dictionary:
+                    del slot_dictionary[slots_to_remove]
+                elif slots_to_remove in reverse_slot_dictionary:
+                    del slot_dictionary[reverse_slot_dictionary[slots_to_remove]]
+                else:
+                    LOGGER.warning(f"'{slots_to_remove}' not in slot list for {func.__name__}")
+
+        if self.slot_modifications[func.__name__].add:
+            for slot_addition in self.slot_modifications[func.__name__].add:
+
+                if isinstance(slot_addition, str):
+                    if slot_addition in slot_dictionary:
+                        del slot_dictionary[slot_addition]
+                    non_dictionary_additions.append(
+                        f"{_sanitize_slot(slot_addition)}{{{func.__name__}}}"
+                    )
+
+                elif isinstance(slot_addition, dict):
+                    synonyms, value = next(iter(slot_addition.items()))
+                    if synonyms in slot_dictionary:
+                        del slot_dictionary[synonyms]
+                    elif value in reverse_slot_dictionary:
+                        del slot_dictionary[reverse_slot_dictionary[value]]
+                    slot_dictionary[synonyms] = value

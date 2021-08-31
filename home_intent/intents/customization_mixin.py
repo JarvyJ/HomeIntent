@@ -4,13 +4,9 @@ from pathlib import PosixPath
 import logging
 from typing import Union, Callable, Optional, List, Dict
 from pydantic import BaseModel, Extra
-from intent_util import _get_slots_from_sentences, Sentence
+from .util import _get_slots_from_sentences, Sentence, IntentException
 
 LOGGER = logging.getLogger(__name__)
-
-
-class IntentCustomizationException(Exception):
-    pass
 
 
 class SlotCustomization(BaseModel, extra=Extra.forbid):
@@ -40,7 +36,7 @@ class Customization(BaseModel, extra=Extra.forbid):
     enable_all: Optional[bool] = None
 
 
-class IntentCustomization:
+class IntentCustomizationMixin:
     def disable_all(self):
         self.all_sentences = {}
 
@@ -77,7 +73,7 @@ class IntentCustomization:
                 if intent in self.all_sentences:
                     self._customize_intents(intent, customization, class_instance)
                 else:
-                    raise IntentCustomizationException(
+                    raise IntentException(
                         f"'{intent}'' not in intent sentences: {self.all_sentences.keys()}"
                     )
 
@@ -86,7 +82,7 @@ class IntentCustomization:
                 if slot in self.all_slots:
                     self.slot_modifications[slot] = customization
                 else:
-                    raise IntentCustomizationException(f"'{slot}' not associated with {self.name}")
+                    raise IntentException(f"'{slot}' not associated with {self.name}")
 
     def _customize_intents(self, intent: str, customization: SentenceCustomization, class_instance):
         if customization.enable is not None:

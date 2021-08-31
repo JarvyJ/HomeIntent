@@ -8,6 +8,10 @@ SLOT_REGEX = re.compile(r"\(\$([a-z_]*)")
 TAG_REGEX = re.compile(r"""{([a-z_]*)}""")
 
 
+class IntentException(Exception):
+    pass
+
+
 @dataclass
 class Sentence:
     sentences: List[str]
@@ -16,10 +20,6 @@ class Sentence:
     disabled: bool = False
     disabled_reason: str = ""
     beta: bool = False
-
-
-class IntentUtilException(Exception):
-    pass
 
 
 def _sanitize_slot(slot_name: str):
@@ -63,14 +63,14 @@ def _check_if_args_in_sentence_slots(sentences, func):
         valid_argument = arg in sentence_slots or arg in sentence_tags
         if not valid_argument:
             if arg not in sentence_slots:
-                raise IntentUtilException(
+                raise IntentException(
                     f"The argument '{arg}' is not associated in the sentence for {func}. "
                     f"Make sure the sentence decorator includes a (${arg}) or "
                     "remove it as an argument."
                 )
 
             if arg not in sentence_tags:
-                raise IntentUtilException(
+                raise IntentException(
                     f"The argument '{arg}' is not associated in the sentence for {func}. "
                     f"Make sure the sentence decorator includes a {{{arg}}} or "
                     "remove it as an argument."
