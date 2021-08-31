@@ -11,8 +11,8 @@ from requests.exceptions import Timeout
 from audio_config import AudioConfig
 from intent_handler import IntentHandler
 from intents import Intents, Sentence
-from rhasspy_api import RhasspyAPI, RhasspyError
 from path_finder import get_file
+from rhasspy_api import RhasspyAPI, RhasspyError
 
 LOGGER = logging.getLogger(__name__)
 

@@ -1,5 +1,6 @@
-from pydantic import AnyHttpUrl, BaseModel
 from typing import Set
+
+from pydantic import AnyHttpUrl, BaseModel
 
 from . import cover, fan, group, light, lock, remote, shopping_list, switch
 from .api import HomeAssistantAPI

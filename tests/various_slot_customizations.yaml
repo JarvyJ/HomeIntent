@@ -1,0 +1,20 @@
+enable_all: true
+
+slots:
+  light:
+    add:
+      - "bathroom"
+      - "laundry": "basement"
+
+    remove:
+      - "bedroom"
+
+  color:
+    add:
+      - "green"
+      - "lime green": "limegreen"
+
+    remove:
+      - "blue"
+      - "lightblue"
+      - "nonreal color"
