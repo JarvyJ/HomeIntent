@@ -67,6 +67,12 @@ class IntentCustomizationMixin:
                 else:
                     raise IntentException(f"'{slot}' not associated with {self.name}")
 
+    def disable_intent(self, sentence_func: Union[Callable, str]):
+        if isinstance(sentence_func, str):
+            self.all_sentences[sentence_func].disabled = True
+        else:
+            self.all_sentences[sentence_func.__name__].disabled = True
+
     def _enable_all(self):
         for _, sentence in self.all_sentences.items():
             sentence.disabled = False
@@ -80,7 +86,7 @@ class IntentCustomizationMixin:
             if customization.enable is True:
                 self._enable_intent(intent)
             elif customization.enable is False:
-                self._disable_intent(intent)
+                self.disable_intent(intent)
 
         if customization.sentences:
             if customization.sentences.add:
@@ -115,9 +121,3 @@ class IntentCustomizationMixin:
             self.all_sentences[sentence_func].disabled = False
         else:
             self.all_sentences[sentence_func.__name__].disabled = False
-
-    def _disable_intent(self, sentence_func: Union[Callable, str]):
-        if isinstance(sentence_func, str):
-            self.all_sentences[sentence_func].disabled = True
-        else:
-            self.all_sentences[sentence_func.__name__].disabled = True

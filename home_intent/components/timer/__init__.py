@@ -17,7 +17,7 @@ class TimerException(Exception):
 class Timer:
     def __init__(self, home_intent: HomeIntent):
         # TODO: keep track of timers and add ability to remove timers
-        self.timers = []
+        # self.timers = []
         self.home_intent = home_intent
 
     @intents.dictionary_slots

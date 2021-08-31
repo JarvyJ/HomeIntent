@@ -5,6 +5,9 @@ import paho.mqtt.client as mqtt
 
 LOGGER = logging.getLogger(__name__)
 
+# since this has to integrate with paho, there are just extra args everywhere.
+# pylint: disable=unused-argument
+
 
 class IntentHandler:
     def __init__(self, mqtt_client, settings, intent_function):
@@ -19,20 +22,12 @@ class IntentHandler:
                 username=self.settings.rhasspy.mqtt_username,
                 password=self.settings.rhasspy.mqtt_password,
             )
-        self.mqtt_client.on_connect = self._on_connect
+        self.mqtt_client.on_connect = _on_connect
         self.mqtt_client.connect(
             self.settings.rhasspy.mqtt_host, self.settings.rhasspy.mqtt_port, 60
         )
         LOGGER.info("Waiting to handle intents!")
         self.mqtt_client.loop_forever()
-
-    def _on_connect(self, client, userdata, flags, rc):
-        LOGGER.info("Connected to MQTT. This happens when the Rhasspy MQTT starts (or restarts)")
-        if rc == 0:
-            LOGGER.info("Subscribed to intent messages: hermes/intent/#")
-            client.subscribe("hermes/intent/#")
-        else:
-            LOGGER.error(f"Failed to connect to MQTT. Return Code: {rc}")
 
     def _handle_intent(self, client, userdata, message: mqtt.MQTTMessage):
         payload = json.loads(message.payload)
@@ -44,25 +39,34 @@ class IntentHandler:
         LOGGER.debug(slots)
         try:
             response = self.intent_function[intent_name](**slots)
-        except Exception as exception:
+        except Exception as exception:  # pylint: disable=broad-except
             LOGGER.exception(exception)
-            self._error(
-                client, payload["siteId"], payload["sessionId"], exception, payload["input"]
-            )
+            _error(client, payload["siteId"], payload["sessionId"], exception, payload["input"])
         else:
             if response:
-                self._say(client, response, payload["siteId"], payload["sessionId"])
+                _say(client, response, payload["siteId"], payload["sessionId"])
 
-    def _say(self, client, text, site_id, session_id):
-        notification = {"text": text, "siteId": site_id, "sessionId": session_id}
-        LOGGER.info("Using the session manager to close the session")
-        client.publish("hermes/dialogueManager/endSession", json.dumps(notification))
 
-    def _error(self, client, site_id, session_id, custom_data, input_str):
-        notification = {
-            "siteId": site_id,
-            "sessionId": session_id,
-            "customData": f"{custom_data}",
-            "input": input_str,
-        }
-        client.publish("hermes/nlu/intentNotRecognized", json.dumps(notification))
+def _on_connect(client, userdata, flags, return_code):
+    LOGGER.info("Connected to MQTT. This happens when the Rhasspy MQTT starts (or restarts)")
+    if return_code == 0:
+        LOGGER.info("Subscribed to intent messages: hermes/intent/#")
+        client.subscribe("hermes/intent/#")
+    else:
+        LOGGER.error(f"Failed to connect to MQTT. Return Code: {return_code}")
+
+
+def _error(client, site_id, session_id, custom_data, input_str):
+    notification = {
+        "siteId": site_id,
+        "sessionId": session_id,
+        "customData": f"{custom_data}",
+        "input": input_str,
+    }
+    client.publish("hermes/nlu/intentNotRecognized", json.dumps(notification))
+
+
+def _say(client, text, site_id, session_id):
+    notification = {"text": text, "siteId": site_id, "sessionId": session_id}
+    LOGGER.info("Using the session manager to close the session")
+    client.publish("hermes/dialogueManager/endSession", json.dumps(notification))

@@ -27,7 +27,7 @@ class RhasspyAPI:
         LOGGER.info(f"Trying to connect to Rhasspy at {url}")
         try:
             self.get("/api/version")
-        except requests.exceptions.ConnectionError as error:
+        except requests.exceptions.ConnectionError:
             raise Exception(
                 f"Unable to connect to Rhasspy server at {url} - "
                 "Ensure it is running and try again!"

@@ -1,7 +1,7 @@
 import json
 import logging
 
-from path_finder import get_file
+from home_intent.path_finder import get_file
 
 LOGGER = logging.getLogger(__name__)
 
@@ -56,7 +56,8 @@ def _setup_microphone_device(config_microphone_device, microphone_devices, rhass
         LOGGER.info(f"Using {config_microphone_device} for pyaudio device")
         if config_microphone_device not in microphone_devices:
             raise AudioConfigException(
-                f"Microphone device {config_microphone_device} not found in microphone devices list above."
+                f"Microphone device {config_microphone_device} not found in "
+                "microphone devices list above."
             )
         if "microphone" in rhasspy_config:
             if "pyaudio" in rhasspy_config["microphone"]:
