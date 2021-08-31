@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-import re
 import inspect
-from typing import List, Callable
+import re
+from typing import Callable, List
 
 # we'll likely have to get more sophisticated than regexes eventually
 SLOT_REGEX = re.compile(r"\(\$([a-z_]*)")

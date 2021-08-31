@@ -1,2 +1,2 @@
 from .intents import Intents
-from .util import Sentence, IntentException
+from .util import IntentException, Sentence

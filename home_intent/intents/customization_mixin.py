@@ -1,10 +1,12 @@
-import yaml
 from functools import partial
-from pathlib import PosixPath
 import logging
-from typing import Union, Callable, Optional, List, Dict
+from pathlib import PosixPath
+from typing import Callable, Dict, List, Optional, Union
+
 from pydantic import BaseModel, Extra
-from .util import _get_slots_from_sentences, Sentence, IntentException
+import yaml
+
+from .util import IntentException, Sentence, _get_slots_from_sentences
 
 LOGGER = logging.getLogger(__name__)
 
