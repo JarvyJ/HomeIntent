@@ -1,0 +1,25 @@
+@charset "utf-8";
+
+// restore default behaviour
+$body-overflow-y: auto;
+
+//// Update Bulma's global variables
+//$grey-darker: rgb(233, 235, 252);
+//$grey-dark: rgba(210, 215, 249, 0.62);
+$primary: rgb(76, 174, 79);
+//$grey-light: rgb
+//
+//// Update some of Bulma's component variables
+//$body-background-color: rgb(46, 48, 62);
+
+// Import only what you need from Bulma
+@import "../node_modules/bulma/sass/utilities/_all";
+@import "../node_modules/bulma/sass/base/_all";
+@import "../node_modules/bulma/sass/elements/_all";
+@import "../node_modules/bulma/sass/form/_all";
+@import "../node_modules/bulma/sass/components/_all";
+@import "../node_modules/bulma/sass/grid/_all";
+@import "../node_modules/bulma/sass/helpers/_all";
+@import "../node_modules/bulma/sass/layout/_all";
+
+

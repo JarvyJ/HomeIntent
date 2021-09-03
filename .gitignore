@@ -132,3 +132,4 @@ config/
 docker-compose.yaml
 test/
 rhasspy/
+docs/site
