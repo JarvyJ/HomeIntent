@@ -28,7 +28,6 @@
 
   main {
     padding: .5em .75em;
-    max-width: 64rem;
     background-color: whitesmoke;
     height: 100%;
   }
