@@ -5,7 +5,7 @@
 </script>
 
 {#if enabled}
-  <span on:click="{() => enabled = !enabled}"><ToggleOff /></span>
+  <span class="" on:click="{() => enabled = !enabled}"><ToggleOff /></span>
 {:else}
-  <span on:click="{() => enabled = !enabled}"><ToggleOn /></span>
+  <span class="text-hi-green" on:click="{() => enabled = !enabled}"><ToggleOn /></span>
 {/if}

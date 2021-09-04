@@ -1,53 +1,14 @@
 <style>
-  .navbar-burger {
-    margin-left: 0;
-    display: block;
-  }
-
   :global(.bi) {
     display: inline-block;
     vertical-align: -.125em;
     width: 1em;
     height: 1em;
   }
-
-  .menu {
-    height: 100%;
-    overflow: hidden;
-    position: fixed;
-    background-color: rgb(76, 174, 79);
-  }
-
-  .menu-text {
-    padding-left: 1em;
-  }
-
-  hr {
-    margin: 0;
-  }
-
-  main {
-    padding: .5em .75em;
-    background-color: whitesmoke;
-    height: 100%;
-  }
-
-  :global(html, body, #svelte) {
-    height: 100%;
-  }
-
-  :global(.label) {
-    font-weight: 400;
-  }
-
-  :global(h1, h2, h3, h4, h5, h6) {
-    font-weight: 300 !important;
-  }
-
 </style>
 
 <script>
-  import "../global.scss";
+  import "../app.postcss";
   import { page } from '$app/stores';
 
   import SettingsIcon from "../icons/gear-fill.svelte"
@@ -67,52 +28,43 @@
 
 </script>
 
-<nav class="menu">
+<nav class="border-r h-screen fixed pt-3 bg-gray-800 text-gray-50" style="width: {navWidth}px;">    
+  {#if visible}
+  <a class="text-3xl px-4" href="/">
+    Home Intent
+  </a>
+  {/if}
 
-  <div class="navbar-brand" style="width: {navWidth}px;">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" on:click="{() => visible = !visible}">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
+  <hr class="my-3">
 
-    {#if visible}
-    <a class="navbar-item" href="/" >
-      Home Intent
-    </a>
-    {/if}
-  </div>
-
-  <hr />
-
-  <ul class="menu-list">
-    <li><a class="is-size-5 has-text-light" class:is-active="{$page.path == '/settings'}" href="/settings"><SettingsIcon />
+  <ul class="text-xl">
+    <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path === "/settings"}"><a class="block" href="/settings"><SettingsIcon />
       {#if visible}
-      <span class="menu-text">Settings</span>
+        <span class="ml-4">Settings</span>
       {/if}
     </a></li>
 
-    <li><a class="is-size-5 has-text-light" class:is-active="{$page.path == '/customize'}" href="/customize"><CustomizeIcon />
+    <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path === "/customize"}"><a class="block" href="/customize"><CustomizeIcon />
       {#if visible}
-      <span class="menu-text">Customize</span>
+        <span class="ml-4">Customize</span>
       {/if}
     </a></li>
 
-    <li><a class="is-size-5 has-text-light" class:is-active="{$page.path == '/satellites'}" href='/satellites'><SatellitesIcon />
+    <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path === "/satellites"}"><a class="block" href="/satellites"><SatellitesIcon />
       {#if visible}
-      <span class="menu-text">Satellites</span>
+        <span class="ml-4">Satellites</span>
       {/if}
     </a></li>
 
-    <li><a class="is-size-5 has-text-light" class:is-active="{$page.path == '/logs'}" href="/logs"><LogsIcon />
+    <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path === "/logs"}"><a class="block" href="/logs"><LogsIcon />
       {#if visible}
-      <span class="menu-text">Logs</span>
+        <span class="ml-4">Logs</span>
       {/if}
     </a></li>
 
-    <li><a class="is-size-5 has-text-light" href="/docs" target="_blank"><DocsIcon />
+    <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path === "/docs"}"><a class="block" href="/docs" target="_blank"><DocsIcon />
       {#if visible}
-      <span class="menu-text">Docs</span>
+        <span class="ml-4">Docs</span>
       {/if}
     </a></li>
   </ul>
