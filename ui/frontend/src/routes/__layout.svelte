@@ -65,7 +65,7 @@
         {/if}
       </a></li>
 
-      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/docs")}"><a class="block" href="/docs" target="_blank"><DocsIcon />
+      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/docs")}"><a class="block" href="/docs/" target="_blank"><DocsIcon />
         {#if visible}
           <span class="ml-4">Docs</span>
         {/if}
