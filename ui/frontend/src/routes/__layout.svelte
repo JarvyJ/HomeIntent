@@ -11,12 +11,12 @@
   import "../app.postcss";
   import { page } from '$app/stores';
 
-  import SettingsIcon from "../icons/gear-fill.svelte"
-  import CustomizeIcon from "../icons/tools.svelte"
-  import SatellitesIcon from "../icons/speaker.svelte"
-  import LogsIcon from "../icons/card-list.svelte"
-  import DocsIcon from "../icons/journal-richtext.svelte"
-  import HomeIntentWhite from "../components/HomeIntentWhite.svelte"
+  import SettingsIcon from "$lib/icons/gear-fill.svelte"
+  import CustomizeIcon from "$lib/icons/tools.svelte"
+  import SatellitesIcon from "$lib/icons/speaker.svelte"
+  import LogsIcon from "$lib/icons/card-list.svelte"
+  import DocsIcon from "$lib/icons/journal-richtext.svelte"
+  import HomeIntentWhite from "$lib/components/HomeIntentWhite.svelte"
 
   let visible = true;
   let navWidth = 256;

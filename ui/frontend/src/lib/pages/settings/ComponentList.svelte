@@ -1,5 +1,5 @@
 <script>
-  import Toggle from "../../components/Toggle.svelte";
+  import Toggle from "$lib/components/Toggle.svelte";
 </script>
 
 <div class="border m-4 rounded text-xl">

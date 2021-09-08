@@ -1,6 +1,6 @@
 <script>
-  import PlayCircleFill from "../../icons/play-circle-fill.svelte";
-  import Button from "../../components/Button.svelte";
+  import PlayCircleFill from "$lib/icons/play-circle-fill.svelte";
+  import Button from "$lib/components/Button.svelte";
   import SettingsSection from "./SettingsSection.svelte";
 import Checkbox from "./Checkbox.svelte";
 

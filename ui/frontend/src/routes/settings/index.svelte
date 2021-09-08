@@ -1,7 +1,7 @@
 <script>
-import RhasspySettings from "../pages/settings/RhasspySettings.svelte";
-import ComponentList from "../pages/settings/ComponentList.svelte";
-import Button from "../components/Button.svelte"
+import RhasspySettings from "$lib/pages/settings/RhasspySettings.svelte";
+import ComponentList from "$lib/pages/settings/ComponentList.svelte";
+import Button from "$lib/components/Button.svelte"
 </script>
 
 <nav class="flex items-center bg-gray-800 text-gray-50 px-4 py-3 border-b">

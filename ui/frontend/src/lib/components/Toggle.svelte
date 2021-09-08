@@ -1,6 +1,6 @@
 <script>
-  import ToggleOn from "../icons/toggle-on.svelte";
-  import ToggleOff from "../icons/toggle-off.svelte";
+  import ToggleOn from "$lib/icons/toggle-on.svelte";
+  import ToggleOff from "$lib/icons/toggle-off.svelte";
   let enabled = false;
 </script>
 
