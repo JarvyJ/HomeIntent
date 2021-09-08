@@ -15,11 +15,12 @@ def read_item(item_id: int, q: Optional[str] = None):
 
 
 app.mount(
-    "/", StaticFiles(directory="frontend/build", html=True), name="frontend",
-)
-
-app.mount(
     "/docs/",
     StaticFiles(directory=f"{Path(__file__).parent.resolve().parent}/docs/site", html=True),
     name="frontend",
+)
+
+
+app.mount(
+    "/", StaticFiles(directory="frontend/build", html=True), name="frontend",
 )

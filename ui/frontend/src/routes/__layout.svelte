@@ -11,12 +11,12 @@
   import "../app.postcss";
   import { page } from '$app/stores';
 
-  import SettingsIcon from "../icons/gear-fill.svelte"
-  import CustomizeIcon from "../icons/tools.svelte"
-  import SatellitesIcon from "../icons/speaker.svelte"
-  import LogsIcon from "../icons/card-list.svelte"
-  import DocsIcon from "../icons/journal-richtext.svelte"
-  import HomeIntentWhite from "../components/HomeIntentWhite.svelte"
+  import SettingsIcon from "$lib/icons/gear-fill.svelte"
+  import CustomizeIcon from "$lib/icons/tools.svelte"
+  import SatellitesIcon from "$lib/icons/speaker.svelte"
+  import LogsIcon from "$lib/icons/card-list.svelte"
+  import DocsIcon from "$lib/icons/journal-richtext.svelte"
+  import HomeIntentWhite from "$lib/components/HomeIntentWhite.svelte"
 
   let visible = true;
   let navWidth = 256;
@@ -41,31 +41,31 @@
   <div class="pt-3">
 
     <ul class="text-xl">
-      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path === "/settings"}"><a class="block" href="/settings"><SettingsIcon />
+      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/settings")}"><a class="block" href="/settings"><SettingsIcon />
         {#if visible}
           <span class="ml-4">Settings</span>
         {/if}
       </a></li>
 
-      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path === "/customize"}"><a class="block" href="/customize"><CustomizeIcon />
+      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/customize")}"><a class="block" href="/customize"><CustomizeIcon />
         {#if visible}
           <span class="ml-4">Customize</span>
         {/if}
       </a></li>
 
-      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path === "/satellites"}"><a class="block" href="/satellites"><SatellitesIcon />
+      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/satellites")}"><a class="block" href="/satellites"><SatellitesIcon />
         {#if visible}
           <span class="ml-4">Satellites</span>
         {/if}
       </a></li>
 
-      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path === "/logs"}"><a class="block" href="/logs"><LogsIcon />
+      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/logs")}"><a class="block" href="/logs"><LogsIcon />
         {#if visible}
           <span class="ml-4">Logs</span>
         {/if}
       </a></li>
 
-      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path === "/docs"}"><a class="block" href="/docs" target="_blank"><DocsIcon />
+      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/docs")}"><a class="block" href="/docs/" target="_blank"><DocsIcon />
         {#if visible}
           <span class="ml-4">Docs</span>
         {/if}
