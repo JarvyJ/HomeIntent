@@ -2,10 +2,11 @@
   import PlayCircleFill from "$lib/icons/play-circle-fill.svelte";
   import Button from "$lib/components/Button.svelte";
   import SettingsSection from "./SettingsSection.svelte";
-import Checkbox from "./Checkbox.svelte";
+  import Checkbox from "./Checkbox.svelte";
+  import SettingsTitle from "./SettingsTitle.svelte";
 
 </script>
-<h2 class="text-3xl mb-3">Home Intent Settings</h2>
+<SettingsTitle>Home Intent Settings</SettingsTitle>
 
 <style>
   .chevron-down{

@@ -2,14 +2,15 @@
 import {page} from '$app/stores';
 
 import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
+import NoSettings from "$lib/pages/settings/NoSettings.svelte";
 import ComponentList from "$lib/pages/settings/ComponentList.svelte";
 import Button from "$lib/components/Button.svelte"
 
-let settingsList = [ 
-  {name: "home_intent", component: HomeIntentSettings, enabled: true},
-  {name: "home_assistant", component: HomeIntentSettings, enabled: false},
-  {name: "timer", component: HomeIntentSettings, enabled: true},
-]
+let settingsList = { 
+  "home_intent": {component: HomeIntentSettings, enabled: true},
+  "home_assistant": {component: NoSettings, enabled: false},
+  "timer": {component: NoSettings, enabled: true},
+}
 
 $: currentSetting = $page.params.slug
 
@@ -25,6 +26,8 @@ $: currentSetting = $page.params.slug
     <ComponentList bind:settingsList bind:currentSetting/>
   </div>
   <div class="col-span-4 mt-5">
-    <HomeIntentSettings />
+    {#key currentSetting}
+    <svelte:component this={settingsList[currentSetting].component} bind:currentSetting/>
+    {/key}
   </div>
 </div>
