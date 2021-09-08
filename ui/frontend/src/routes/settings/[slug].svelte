@@ -5,9 +5,9 @@ import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
 import ComponentList from "$lib/pages/settings/ComponentList.svelte";
 import Button from "$lib/components/Button.svelte"
 
-const settingsList = [ 
+let settingsList = [ 
   {name: "home_intent", component: HomeIntentSettings, enabled: true},
-  {name: "home_assistant", component: HomeIntentSettings, enabled: true},
+  {name: "home_assistant", component: HomeIntentSettings, enabled: false},
   {name: "timer", component: HomeIntentSettings, enabled: true},
 ]
 
@@ -22,7 +22,7 @@ $: currentSetting = $page.params.slug
 
 <div class="bg-gray-900 text-gray-50 grid grid-cols-5">
   <div class="h-screen">
-    <ComponentList settingsList={settingsList} bind:currentSetting/>
+    <ComponentList bind:settingsList bind:currentSetting/>
   </div>
   <div class="col-span-4 mt-5">
     <HomeIntentSettings />

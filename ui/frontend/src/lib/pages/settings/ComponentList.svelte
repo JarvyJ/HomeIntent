@@ -16,7 +16,7 @@
 <ul class="border m-4 rounded text-xl border-b-0">
   {#each settingsList as setting (setting.name)}
     <li class="py-2 px-3 border-b flex space-x-3" class:border-r-2="{setting.name === currentSetting}" class:border-r-hi-green="{setting.name === currentSetting}">
-      <Toggle /><a class="flex-grow" href="/settings/{setting.name}">{capitalize_with_underscore(setting.name)}</a>
+      <Toggle bind:enabled={setting.enabled} /><a class="flex-grow" href="/settings/{setting.name}">{capitalize_with_underscore(setting.name)}</a>
     </li>
   {/each}
 </ul>
