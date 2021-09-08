@@ -1,14 +1,17 @@
 <script>
 import {page} from '$app/stores';
 
-import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
-import NoSettings from "$lib/pages/settings/NoSettings.svelte";
 import ComponentList from "$lib/pages/settings/ComponentList.svelte";
 import Button from "$lib/components/Button.svelte"
 
+import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
+import HomeAssistantSettings from "$lib/pages/settings/HomeAssistantSettings.svelte";
+import NoSettings from "$lib/pages/settings/NoSettings.svelte";
+
+
 let settingsList = { 
   "home_intent": {component: HomeIntentSettings, enabled: true},
-  "home_assistant": {component: NoSettings, enabled: false},
+  "home_assistant": {component: HomeAssistantSettings, enabled: false},
   "timer": {component: NoSettings, enabled: true},
 }
 
