@@ -33,16 +33,16 @@ class Lock:
     def lock_the_lock(self, lock):
         self.ha.api.call_service("lock", "lock", {"entity_id": lock})
         response = self.ha.api.get_entity(lock)
-        return f"Locking the {response['attributes']['friendly_name']} lock"
+        return f"Locking the {response['attributes']['friendly_name']}"
 
     @intents.sentences(["unlock [the] ($lock) [lock]"])
     def unlock_the_lock(self, lock):
         self.ha.api.call_service("lock", "unlock", {"entity_id": lock})
         response = self.ha.api.get_entity(lock)
-        return f"Unlocking on the {response['attributes']['friendly_name']} lock"
+        return f"Unlocking the {response['attributes']['friendly_name']}"
 
     @intents.sentences(["open [the] ($openable_lock) [lock]"])
     def open_the_lock(self, openable_lock):
         self.ha.api.call_service("lock", "open", {"entity_id": openable_lock})
         response = self.ha.api.get_entity(openable_lock)
-        return f"Turning off the {response['attributes']['friendly_name']} lock"
+        return f"Turning off the {response['attributes']['friendly_name']}"
