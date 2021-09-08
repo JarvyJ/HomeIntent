@@ -13,6 +13,7 @@
   import { capitalize_with_underscore } from "$lib/util/capitalization";
   import HelpText from "./HelpText.svelte";
   import Checkbox from "./Checkbox.svelte";
+import Button from "$lib/components/Button.svelte";
 
   const humanSettingName = capitalize_with_underscore(currentSetting)
   const linkName = currentSetting.replace("_", "-")
@@ -76,5 +77,10 @@ remote
   <textarea id="ignore-domains" name="ignore-domains" class="text-area border border-gray-300 rounded-md focus:outline-none p-1.5"
   rows="5" cols="40" placeholder="Domains should be separated by newlines"></textarea>
 
+</div>
 
+<div class="mt-5 text-xl">
+  <Button>
+    Save
+  </Button>
 </div>
