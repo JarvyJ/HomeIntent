@@ -13,7 +13,7 @@ import Button from "../components/Button.svelte"
   <div class="h-screen">
     <ComponentList />
   </div>
-  <div class="col-span-4">
+  <div class="col-span-4 mt-5">
     <RhasspySettings />
   </div>
 </div>

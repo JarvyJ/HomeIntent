@@ -1,119 +1,90 @@
-<div class="mt-5">
-  <h2 class="text-3xl">Home Intent Settings</h2>
-  <div class="w-full">
+<script>
+  import PlayCircleFill from "../../icons/play-circle-fill.svelte";
+  import Button from "../../components/Button.svelte";
+  import SettingsSection from "./SettingsSection.svelte";
+import Checkbox from "./Checkbox.svelte";
 
-    <div class="flex mb-6">
-      <div class="md:w-1/3">
-        <label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="inline-full-name">
-          Playback Device
-        </label>
-      </div>
-      <div class="md:w-2/3">
-                   <select>
-              <option>Business development</option>
-              <option>Marketing</option>
-              <option>Sales</option>
-            </select>
-      </div>
-    </div>
-    <div style="max-width: 57rem; margin: 1em auto;">
-      <progress class="progress" value="15" max="100">15%</progress>
-    </div>
+</script>
+<h2 class="text-3xl mb-3">Home Intent Settings</h2>
+
+<style>
+  .chevron-down{
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23404749' fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position-x: 94%;
+  background-position-y: center;
+}
+</style>
+
+
+<div class="mx-auto w-4/5">
+  <div class="mt-5 flex items-center space-x-3">
+  <label for="sounds-devices">Sounds Device</label>
+  <select id="sounds-devices" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none">
+    <option>default:CARD=USB</option>
+    <option>default:CARD=Headphones</option>
+    <option>jack</option>
+  </select>
+  <span class=""><PlayCircleFill /></span>
   </div>
 
-  <div class="field is-horizontal">
-    <div class="field-label is-normal">
-      <label class="label">Microphone Device</label>
-    </div>
-    <div class="field-body">
-      <div class="field is-narrow">
-        <div class="control">
-          <div class="select is-fullwidth">
-            <select>
-              <option>Business development</option>
-              <option>Marketing</option>
-              <option>Sales</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <progress class="bg-gray-300 w-96 mt-3 text-xs rounded-full" max="100" value="90">90%</progress>
 
-  <div style="max-width: 57rem; margin: 1em auto;">
-    <progress class="progress" value="15" max="100">15%</progress>
+  <div class="mt-5 flex items-center space-x-3">
+  <label for="microphone-devices">Microphone Device</label>
+  <select id="sounds-devices" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none">
+    <option>plughw</option>
+    <option>Default device</option>
+    <option>Something else</option>
+  </select>
   </div>
-
-  <div class="field is-horizontal">
-    <div class="field-label"></div>
-    <div class="field-body">
-      <label class="checkbox">
-        <input type="checkbox">
-        Enable All Intents
-      </label>
-    </div>
-  </div>
-
-  <div class="field is-horizontal">
-    <div class="field-label"></div>
-    <div class="field-body">
-      <label class="checkbox">
-        <input type="checkbox">
-        Enable Beta Intents
-      </label>
-    </div>
-  </div>
-
-  <h2 class="text-3xl">Sound Effects</h2>
-  <div class="field is-horizontal">
-    <div class="field-label is-medium pt-0">
-      <label class="label mb-0">Beep High</label>
-      <p class="help">Using Default</p>
-    </div>
-    <div class="field-body">
-      <div class="field">
-        <div class="control">
-          <button class="button is-primary is-medium">
-            Upload
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="field is-horizontal">
-    <div class="field-label is-medium pt-0">
-      <label class="label mb-0">Beep Low</label>
-      <p class="help">Using Custom</p>
-    </div>
-    <div class="field-body">
-      <div class="field">
-        <div class="control">
-          <button class="button is-primary is-medium">
-            Upload
-          </button>
-          <button class="button is-primary is-medium">
-            Use Default
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+  
+  <progress class="bg-gray-300 w-96 mt-3 text-xs rounded-full" max="100" value="70">70%</progress>
 
 
-  <div class="field is-horizontal">
-    <div class="field-label is-medium pt-0">
-      <label class="label mb-0">Error Sound</label>
-      <p class="help">Using Default</p>
-    </div>
-    <div class="field-body">
-      <div class="field">
-        <div class="control">
-          <button class="button is-primary is-medium">
-            Upload
-          </button>
-        </div>
-      </div>
-    </div>
+</div>
+
+<Checkbox>Enable All Intents</Checkbox>
+<Checkbox>Enable Beta Intents</Checkbox>
+
+<SettingsSection>Sound Effects</SettingsSection>
+
+<div class="text-lg grid grid-cols-4 w-1/2 items-center gap-x-5 gap-y-6">
+  <span class="justify-self-end"><PlayCircleFill /></span>
+  <div>
+    <p class="">Beep High</p>
+    <p class="text-xs text-gray-500">Using Default</p>
   </div>
+  <Button>
+    Upload
+  </Button>
+
+  <span class="justify-self-end col-start-1"><PlayCircleFill /></span>
+  <div>
+    <p class="">Beep Low</p>
+    <p class="text-xs text-gray-500">Using Default</p>
+  </div>
+  <Button>
+    Upload
+  </Button>
+
+  <span class="justify-self-end col-start-1"><PlayCircleFill /></span>
+  <div>
+    <p class="">Error</p>
+    <p class="text-xs text-gray-500">Using Custom</p>
+  </div>
+  <Button>
+    Upload
+  </Button>
+  <Button>
+    Use Default
+  </Button>
+
+</div>
+
+
+<div class="mt-5 text-xl">
+<Button>
+  Save
+</Button>
 </div>
