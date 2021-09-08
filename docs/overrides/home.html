@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-  {{ super() }}
-
   <style>
     .hero-text {
       width: 40%;
@@ -13,7 +11,6 @@
       float: left;
       text-align: center;
       margin-left: 4em;
-      margin-top: -5em;
     }
 
     @media (max-width: 576px) { 
@@ -30,8 +27,7 @@
   </style>
 
   <div class="hero-text">
-    <p>Home Intent is a privacy focused, local voice assistant designed around <em>you</em>. Connect it to Home Assistant and be up and running in minutes!</p>
-    <p><a class="md-button md-button--primary" href="/getting-started/installation">Get Started</a></p>
+    {{ super() }}
   </div>
 
   <div class="hero-img">

@@ -117,7 +117,7 @@ A lot of the components slot values can be overridden with your own slot values.
 A custom defined list of light colors can be placed in `/config/home_assistant/colors.txt` and the default shopping items can be replaced with `/config/home_assistant/shopping_items.txt`. A custom list of color temperatures can be defined at `/config/home_assistant/color_temperature.yaml` in the format of the [default values](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/).
 
 
-The various Home Assistant sub components can also be customized further using [customization json](/getting-started/advanced-features/component-customization/) if desired. These are the respective filenames:
+The various Home Assistant sub components can also be customized further using [customization json](../getting-started/advanced-features/component-customization.md) if desired. These are the respective filenames:
 
  * Covers: `/config/customizations/home_assistant/cover.yaml`
  * Fans: `/config/customizations/home_assistant/cover.yaml`

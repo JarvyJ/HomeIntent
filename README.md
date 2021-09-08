@@ -1,6 +1,6 @@
 # Home Intent
 
-![rhasspy advanced profile](/.github/home-intent-logo.png)
+![Home Intent Logo](/.github/home-intent-logo.png)
 
 Home Intent is an open source locally hosted intent handler. Using [Rhasspy](https://rhasspy.readthedocs.io) and integrating with [Home Assistant](https://www.home-assistant.io/) it functions as an easy-to-use voice assistant for your home.
 
