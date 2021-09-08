@@ -113,7 +113,7 @@ class Cover:
         elif SupportedFeatures.SUPPORT_CLOSE_TILT in self.cover_features[cover_close]:
             self.ha.api.call_service("cover", "close_cover_tilt", {"entity_id": cover_close})
         response = self.ha.api.get_entity(cover_close)
-        return f"Closing the {response['attributes']['friendly_name']} lock"
+        return f"Closing the {response['attributes']['friendly_name']}"
 
     @intents.sentences(["stop [the] ($cover_stop)"])
     def stop_cover(self, cover_stop):
@@ -134,7 +134,7 @@ class Cover:
     def close_cover_tilt(self, cover_close_tilt):
         self.ha.api.call_service("cover", "close_cover_tilt", {"entity_id": cover_close_tilt})
         response = self.ha.api.get_entity(cover_close_tilt)
-        return f"Closing the {response['attributes']['friendly_name']} lock"
+        return f"Closing the {response['attributes']['friendly_name']}"
 
     @intents.sentences(
         [
