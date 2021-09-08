@@ -34,6 +34,7 @@ theme:
 
   logo: img/home-intent-white.svg
   favicon: favicon.ico
+  font: false
 
 markdown_extensions:
   - admonition
