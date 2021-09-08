@@ -33,7 +33,7 @@ These are the list of all the currently supported domains:
 
 ### Overriding Defaults
 
-Home Intent loads color information (list of colors and color temperatures) and shopping items from everyday `txt` and `yaml` files that can be overridden if desired. Instructions on how to do so can be found on the Home Assistant [integration page](/integrations/home-assistant/#advanced-customization)
+Home Intent loads color information (list of colors and color temperatures) and shopping items from everyday `txt` and `yaml` files that can be overridden if desired. Instructions on how to do so can be found on the Home Assistant [integration page](../integrations/home-assistant.md#advanced-customization)
 
 ## Home Intent Sound Effects (Beeps)
 Home Intent uses custom beep sound effects for interaction. You can override them with your own beep sounds by adding the sound files to your config folder.
@@ -44,4 +44,4 @@ Home Intent uses custom beep sound effects for interaction. You can override the
 
 
 ## Additional Customization
-If you don't want to disable entities in their entirety, but rather only with specific intents, you can customize individual [slots and intents](/getting-started/advanced-features/component-customization/).
+If you don't want to disable entities in their entirety, but rather only with specific intents, you can customize individual [slots and intents](./advanced-features/component-customization.md).

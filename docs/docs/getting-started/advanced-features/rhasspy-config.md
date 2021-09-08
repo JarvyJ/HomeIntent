@@ -1,7 +1,7 @@
 # Advanced Rhasspy Config
-The default Rhasspy configuration is designed to work with the default [docker based installation](/getting-started/installation/#installation). The config most likely needed to be changed are the `microphone_device` and `sounds_device` options. However, Home Intent can be setup to work with an external Rhasspy instance via the config.
+The default Rhasspy configuration is designed to work with the default [docker based installation](../installation.md#installation). The config most likely needed to be changed are the `microphone_device` and `sounds_device` options. However, Home Intent can be setup to work with an external Rhasspy instance via the config.
 
-Setting up the `microphone_device` and `sounds_device` is described in the [audio config section](/getting-started/installation/#audio-config).
+Setting up the `microphone_device` and `sounds_device` is described in the [audio config section](../installation.md#audio-config).
 
 ## Rhasspy web interface
 The Rhasspy web interface can be accessed at `http://localhost:12101` by default. It can be useful for debugging to see how things are configured.

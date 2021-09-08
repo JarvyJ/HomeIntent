@@ -21,4 +21,4 @@ The `register` method expects an instantiated intent class object and an `Intent
 Have Home Intent say something to the user. This method will likely be modified a bit when satellite support is enabled so a sentence is said at the right location.
 
 ## `home_intent.play_audio_file(filename)`
-This will load a `.wav` file from the filename using the [`get_file`](/reference/api/get-file/) and play it back using Home Intent. It will also need to be modified once satellite support is in.
+This will load a `.wav` file from the filename using the [`get_file`](./get-file.md) and play it back using Home Intent. It will also need to be modified once satellite support is in.
