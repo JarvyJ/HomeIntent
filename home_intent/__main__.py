@@ -82,6 +82,8 @@ def _load_custom_components(custom_components: set, home_intent: HomeIntent):
         else:
             integration.setup(home_intent)
 
+    assert sys.path.pop() == "/config/custom_components"
+
 
 if __name__ == "__main__":
     main()
