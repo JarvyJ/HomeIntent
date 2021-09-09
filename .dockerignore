@@ -1,3 +1,8 @@
 rhasspy/
 config/
 __pycache__/
+docs/site
+ui/frontend/node_modules
+ui/frontend/build
+ui/frontend/.svelte-kit
+.git/
