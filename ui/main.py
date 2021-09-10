@@ -1,23 +1,37 @@
-import uvicorn
-
+import json
+from pathlib import Path
+import sys
 from typing import Optional
 
-from pathlib import Path
-from starlette.staticfiles import StaticFiles
 from fastapi import FastAPI, HTTPException
-import extract_settings
-import yaml
+from ruamel.yaml import YAML
+from starlette.staticfiles import StaticFiles
+import uvicorn
 
-app = FastAPI(docs_url="/openapi")
+import extract_settings
+
+app = FastAPI(
+    docs_url="/openapi",
+    title="Home Intent UI",
+    description="A simple web interface to help manage Home Intent",
+    version="2021.10.0b1",
+)
 
 CONFIG_FILE = Path("/config/config.yaml")
 
 FullSettings = extract_settings.get()
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+def merge_dict(source, destination):
+    for key, value in source.items():
+        if isinstance(value, dict):
+            # get node or create one
+            node = destination.setdefault(key, {})
+            merge_dict(value, node)
+        else:
+            destination[key] = value
+
+    return destination
 
 
 @app.get("/api/v1/settings", response_model=FullSettings)
@@ -25,14 +39,49 @@ def get_settings():
     if not CONFIG_FILE.is_file():
         raise HTTPException(404, detail=f"Config file '{CONFIG_FILE}' is not a file")
 
-    config_contents = yaml.load(CONFIG_FILE.read_text("utf-8"), Loader=yaml.SafeLoader)
+    yaml = YAML()
+    config_contents = yaml.load(CONFIG_FILE.read_text("utf-8"))
     return FullSettings(**config_contents)
 
 
 @app.put("/api/v1/settings")
 def update_settings(settings: FullSettings):
     settings_to_write = settings.dict()
-    yaml.dump(settings_to_write, CONFIG_FILE.open("w"))
+    for key, value in settings_to_write.items():
+        if value is None:
+            if key not in FullSettings.components_without_settings:
+                raise HTTPException(
+                    400, detail=f"The setting '{key}' is not a component that can be loaded."
+                )
+
+    yaml = YAML()
+    if CONFIG_FILE.is_file():
+        config_contents = yaml.load(CONFIG_FILE.read_text("utf-8"))
+
+        # this is really hokey and leaves a lot of room for improvements
+        # the general idea is to not change what the user has manually done in config
+        # the json loads/.json() is mostly to get pydantic to serialize everything
+        # to happy types (ints/strings/etc) as yaml will try to serialize the classes
+        # the merge should hopefully keep any comments/structure the user might have in place
+        # this might cause issues in the future, but we'll try it for now!
+        reserialized_settings = json.loads(settings.json(exclude_defaults=True))
+        merge_dict(reserialized_settings, config_contents)
+
+        # code to figure out what components w/out settings are enabled
+        current_nosetting_components = frozenset(
+            key for key, value in config_contents.items() if value is None
+        )
+        updated_nosetting_components = frozenset(
+            key for key, value in reserialized_settings.items() if value is None
+        )
+
+        # get away with a difference here because the update has already happened
+        components_to_remove = current_nosetting_components.difference(updated_nosetting_components)
+        for component in components_to_remove:
+            del config_contents[component]
+
+    yaml.dump(config_contents, sys.stdout)
+    # yaml.dump(settings_to_write, CONFIG_FILE.open("w"))
 
 
 app.mount(

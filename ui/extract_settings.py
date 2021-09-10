@@ -1,10 +1,13 @@
 from functools import partial
 import importlib
+import json
 from pathlib import Path
 import sys
+from typing import ClassVar, FrozenSet, Set
 from unittest.mock import MagicMock, patch
 
-from pydantic import Field, create_model, BaseModel
+from pydantic import AnyHttpUrl, BaseModel, Field, create_model
+from typing_extensions import Annotated
 
 PARENT_PATH = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PARENT_PATH))
@@ -15,6 +18,12 @@ class HealthyBreakpoint(Exception):
 
 
 ALL_SETTINGS_OBJECTS = {}
+COMPONENTS_WITHOUT_SETTINGS = set()
+
+
+class Config:
+    extra = "allow"
+    json_encoders = {AnyHttpUrl: lambda v: str(v)}
 
 
 def get() -> BaseModel:
@@ -57,14 +66,19 @@ def _get_settings_for_component(component_name, component_path=""):
     home_intent.get_config.side_effect = partial(_get_settings_object, component_name)
     component_prefix = f"{component_path}." if component_path else ""
 
+    no_settings_component = True
+
     with patch.dict("sys.modules", home_intent=home_intent):
         integration = importlib.import_module(f"{component_prefix}{component_name}")
         try:
             integration.setup(home_intent)
         except HealthyBreakpoint:
-            print("Got a settings object!")
+            no_settings_component = False
         except Exception:
             pass
+
+    if no_settings_component:
+        COMPONENTS_WITHOUT_SETTINGS.add(component_name)
 
 
 def _get_settings_object(name, settings_object):
@@ -81,11 +95,47 @@ def _create_dynamic_settings_object(settings_object):
 
 
 def _generate_full_settings():
-    FullSettings = create_model("FullSettings", **ALL_SETTINGS_OBJECTS)
+    Config.schema_extra = {
+        "additionalProperties": {"x-components-without-settings": COMPONENTS_WITHOUT_SETTINGS}
+    }
+    FullSettings = create_model(
+        "FullSettings",
+        **ALL_SETTINGS_OBJECTS,
+        __config__=Config,
+        components_without_settings=(ClassVar[FrozenSet], frozenset(COMPONENTS_WITHOUT_SETTINGS)),
+    )
 
     return FullSettings
+
+
+def merge(source, destination):
+    for key, value in source.items():
+        if isinstance(value, dict):
+            # get node or create one
+            node = destination.setdefault(key, {})
+            merge(value, node)
+        else:
+            destination[key] = value
+
+    return destination
 
 
 if __name__ == "__main__":
     generated_settings = get()
     print(generated_settings.schema_json(indent=2))
+
+    from ruamel.yaml import YAML
+
+    yaml = YAML()
+
+    CONFIG_FILE = Path("/config/config.yaml")
+    config_contents = yaml.load(CONFIG_FILE.read_text("utf-8"))
+    going_back = generated_settings(**config_contents)
+
+    # this is really hokey and leaves a lot of room for improvements
+    # the general idea is to not change what the user has manually done in config
+    # the json loads/.json() is mostly to get pydantic to serialize everything
+    # to happy types (ints/strings/etc) as yaml will try to serialize the data types
+    merge(json.loads(going_back.json(exclude_defaults=True)), config_contents)
+
+    yaml.dump(config_contents, sys.stdout)
