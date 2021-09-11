@@ -7,12 +7,15 @@
   import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
   import HomeAssistantSettings from "$lib/pages/settings/HomeAssistantSettings.svelte";
   import NoSettings from "$lib/pages/settings/NoSettings.svelte";
+import SettingsSection from '$lib/pages/settings/SettingsSection.svelte';
 
 
   let settingsList = { 
     "home_intent": {component: HomeIntentSettings, enabled: false},
     "home_assistant": {component: HomeAssistantSettings, enabled: false},
   }
+
+  let customSettingsList = {}
 
   let currentSetting = "home_intent"
 
@@ -34,7 +37,11 @@
 
     let fullSettings = openapi.components.schemas.FullSettings
     for (const settingName of fullSettings.additionalProperties["x-components-without-settings"]) {
-      settingsList[settingName] = {component: NoSettings, enabled: false}
+      if (fullSettings.additionalProperties["x-custom-components"].includes(settingName)) {
+        customSettingsList[settingName] = {component: NoSettings, enabled:false}
+      } else {
+        settingsList[settingName] = {component: NoSettings, enabled: false}
+      }
     }
     loaded = true
   });
@@ -50,10 +57,18 @@
 <div class="bg-gray-900 text-gray-50 grid grid-cols-5">
   <div class="h-screen">
     <ComponentList bind:settingsList bind:currentSetting/>
+    {#if Object.keys(customSettingsList).length !== 0}
+    <h3 class="text-2xl ml-5 mt-7">Custom Components</h3>
+    <ComponentList bind:settingsList={customSettingsList} bind:currentSetting/>
+    {/if}
   </div>
   <div class="col-span-4 mt-5">
     {#key currentSetting}
-    <svelte:component this={settingsList[currentSetting].component} bind:currentSetting/>
+    {#if currentSetting in settingsList}
+      <svelte:component this={settingsList[currentSetting].component} bind:currentSetting/>
+    {:else if currentSetting in customSettingsList}
+      <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting/>
+    {/if}
     {/key}
   </div>
 </div>
