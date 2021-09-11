@@ -6,13 +6,8 @@ const config = {
 	// Consult https://github.com/sveltejs/svelte-preprocess
 	// for more information about preprocessors
 	preprocess: [preprocess({
-        "postcss": true
-    })],
-
-	proxy: {
-      // string shorthand
-      '/docs': 'http://localhost:8000/docs/'
-  	},
+		"postcss": true
+	})],
 
 	kit: {
 		// hydrate the <div id="svelte"> element in src/app.html
@@ -22,8 +17,26 @@ const config = {
 			crawl: true,
 			pages: ["/settings/home_intent", "/"], //enough to trigger a full crawl!
 			onError: "continue"
+		},
+		vite: {
+			server: {
+				proxy: {
+					// string shorthand
+					'/openapi.json': {
+						target: 'http://localhost:11102',
+						secure: false,
+						changeOrigin: true
+	  				},
+	  				'/api': {
+						target: 'http://localhost:11102',
+						secure: false,
+						changeOrigin: true
+	  				}
+
+				}
+			}
 		}
-	}
+	},
 };
 
 export default config;

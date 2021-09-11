@@ -2,7 +2,7 @@
     export async function load() {
         return {
             status: 302,
-            redirect: "/settings/home_intent"
+            redirect: "/settings"
         };
     }
 </script>

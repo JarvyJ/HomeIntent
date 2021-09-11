@@ -19,6 +19,7 @@ class HealthyBreakpoint(Exception):
 
 ALL_SETTINGS_OBJECTS = {}
 COMPONENTS_WITHOUT_SETTINGS = set()
+CUSTOM_COMPONENTS = set()
 
 
 class Config:
@@ -44,7 +45,8 @@ def _crawl_and_get_component_settings():
     component_folder = PARENT_PATH / "home_intent/components"
     sys.path.append(str(component_folder))
     for init_file in sorted(component_folder.glob("*/__init__.py")):
-        _get_settings_for_component(init_file.parts[-2])
+        component_name = init_file.parts[-2]
+        _get_settings_for_component(component_name)
 
     assert sys.path.pop() == str(component_folder)
 
@@ -53,10 +55,14 @@ def _crawl_and_get_custom_component_settings():
     sys.path.append("/config/custom_components")
     component_folder = Path("/config/custom_components")
     for init_file in sorted(component_folder.glob("*/__init__.py")):
-        _get_settings_for_component(init_file.parts[-2])
+        component_name = init_file.parts[-2]
+        _get_settings_for_component(component_name)
+        CUSTOM_COMPONENTS.add(component_name)
 
     for init_file in sorted(component_folder.glob("*.py")):
-        _get_settings_for_component(init_file.parts[-1][:-3])
+        component_name = init_file.parts[-1][:-3]
+        _get_settings_for_component(component_name)
+        CUSTOM_COMPONENTS.add(component_name)
 
     assert sys.path.pop() == "/config/custom_components"
 
@@ -96,7 +102,10 @@ def _create_dynamic_settings_object(settings_object):
 
 def _generate_full_settings():
     Config.schema_extra = {
-        "additionalProperties": {"x-components-without-settings": COMPONENTS_WITHOUT_SETTINGS}
+        "additionalProperties": {
+            "x-components-without-settings": COMPONENTS_WITHOUT_SETTINGS,
+            "x-custom-components": CUSTOM_COMPONENTS,
+        }
     }
     FullSettings = create_model(
         "FullSettings",
