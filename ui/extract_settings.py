@@ -96,9 +96,9 @@ def _create_dynamic_settings_object(settings_object, optional=False):
     # it's a little odd, but seems to do the trick!
 
     if optional:
-        return (Optional[settings_object], Field())
+        return (Optional[settings_object], None)
     else:
-        return (settings_object, Field(default_factory=settings_object))
+        return (settings_object, Field(default_factory=settings_object, required=False))
 
 
 def _generate_full_settings():
@@ -130,6 +130,19 @@ def merge(source, destination):
     return destination
 
 
+def pseudo_serialize_settings(settings_object):
+    normalize = json.loads(settings_object.json(exclude_defaults=True))
+    keys_to_remove = []
+    for key in normalize:
+        if not normalize[key]:
+            keys_to_remove.append(key)
+
+    for key in keys_to_remove:
+        del normalize[key]
+
+    return normalize
+
+
 if __name__ == "__main__":
     generated_settings = get()
     print(generated_settings.schema_json(indent=2))
@@ -140,12 +153,18 @@ if __name__ == "__main__":
 
     CONFIG_FILE = Path("/config/config.yaml")
     config_contents = yaml.load(CONFIG_FILE.read_text("utf-8"))
-    going_back = generated_settings(**config_contents)
+    if config_contents:
+        going_back = generated_settings(**config_contents)
+    else:
+        going_back = generated_settings()
 
     # this is really hokey and leaves a lot of room for improvements
     # the general idea is to not change what the user has manually done in config
     # the json loads/.json() is mostly to get pydantic to serialize everything
     # to happy types (ints/strings/etc) as yaml will try to serialize the data types
-    merge(json.loads(going_back.json(exclude_defaults=True)), config_contents)
+    if config_contents:
+        merge(pseudo_serialize_settings(going_back), config_contents)
+    else:
+        config_contents = pseudo_serialize_settings(going_back)
 
     yaml.dump(config_contents, sys.stdout)
