@@ -52,6 +52,7 @@
     return model
   }
 
+  // The following functions are from stack overflow https://stackoverflow.com/a/34749873
   /**
    * Simple object check.
    * @param item
