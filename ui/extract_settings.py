@@ -3,11 +3,10 @@ import importlib
 import json
 from pathlib import Path
 import sys
-from typing import ClassVar, FrozenSet, Set
+from typing import ClassVar, FrozenSet, Optional
 from unittest.mock import MagicMock, patch
 
-from pydantic import AnyHttpUrl, BaseModel, Field, create_model
-from typing_extensions import Annotated
+from pydantic import BaseModel, Field, create_model
 
 PARENT_PATH = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PARENT_PATH))
@@ -24,7 +23,6 @@ CUSTOM_COMPONENTS = set()
 
 class Config:
     extra = "allow"
-    json_encoders = {AnyHttpUrl: lambda v: str(v)}
 
 
 def get() -> BaseModel:
@@ -88,16 +86,19 @@ def _get_settings_for_component(component_name, component_path=""):
 
 
 def _get_settings_object(name, settings_object):
-    ALL_SETTINGS_OBJECTS[name] = _create_dynamic_settings_object(settings_object)
+    ALL_SETTINGS_OBJECTS[name] = _create_dynamic_settings_object(settings_object, optional=True)
     raise HealthyBreakpoint("Found a settings object, no longer need to continue")
 
 
-def _create_dynamic_settings_object(settings_object):
+def _create_dynamic_settings_object(settings_object, optional=False):
     # I pulled how to do this from
     # https://github.com/samuelcolvin/pydantic/issues/3184#issuecomment-914876226
     # it's a little odd, but seems to do the trick!
 
-    return (settings_object, Field(default_factory=settings_object))
+    if optional:
+        return (Optional[settings_object], Field())
+    else:
+        return (settings_object, Field(default_factory=settings_object))
 
 
 def _generate_full_settings():

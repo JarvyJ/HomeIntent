@@ -7,22 +7,82 @@
   import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
   import HomeAssistantSettings from "$lib/pages/settings/HomeAssistantSettings.svelte";
   import NoSettings from "$lib/pages/settings/NoSettings.svelte";
-import SettingsSection from '$lib/pages/settings/SettingsSection.svelte';
 
+
+  let loaded = false
+  let customSettingsList = {}
 
   let settingsList = { 
     "home_intent": {component: HomeIntentSettings, enabled: false},
     "home_assistant": {component: HomeAssistantSettings, enabled: false},
   }
-
-  let customSettingsList = {}
-
   let currentSetting = "home_intent"
 
   let openapi = {}
   let settings = {}
+  let settingsModel
 
-  let loaded = false
+  function setupComponentsWithoutSettings() {
+    let fullSettings = openapi.components.schemas.FullSettings
+
+    for (const settingName of fullSettings.additionalProperties["x-components-without-settings"]) {
+     
+      if (fullSettings.additionalProperties["x-custom-components"].includes(settingName)) {
+        customSettingsList[settingName] = {component: NoSettings, enabled:false}
+      } else {
+        settingsList[settingName] = {component: NoSettings, enabled: false}
+      }
+    }
+  }
+
+  function generateSettingsModel(full_schema_name) {
+    let schema_name = full_schema_name.split("/").pop()
+    let schema = openapi.components.schemas[schema_name]
+    let model = {}
+    for (const name in schema.properties) {
+      if ("$ref" in schema.properties[name]) {
+        model[name] = generateSettingsModel(schema.properties[name]["$ref"])
+      } else if ("default" in schema.properties[name]) {
+        model[name] = schema.properties[name]["default"]
+      } else {
+        model[name] = null
+      }
+    }
+
+    return model
+  }
+
+  /**
+   * Simple object check.
+   * @param item
+   * @returns {boolean}
+   */
+  function isObject(item) {
+    return (item && typeof item === 'object' && !Array.isArray(item));
+  }
+
+  /**
+   * Deep merge two objects.
+   * @param target
+   * @param ...sources
+   */
+  function mergeDeep(target, ...sources) {
+    if (!sources.length) return target;
+    const source = sources.shift();
+
+    if (isObject(target) && isObject(source)) {
+      for (const key in source) {
+        if (isObject(source[key])) {
+          if (!target[key]) Object.assign(target, { [key]: {} });
+          mergeDeep(target[key], source[key]);
+        } else {
+          Object.assign(target, { [key]: source[key] });
+        }
+      }
+    }
+
+    return mergeDeep(target, ...sources);
+  }
 
   // this does get re-called after the SPA is loaded
   // so it ends up calling this methods twice.
@@ -32,17 +92,26 @@ import SettingsSection from '$lib/pages/settings/SettingsSection.svelte';
     const res = await fetch(`/openapi.json`);
     openapi = await res.json();
 
+    setupComponentsWithoutSettings()
+    settingsModel = generateSettingsModel("#/components/schemas/FullSettings")
+    console.log(settingsModel)
+    
     const settings_response = await fetch(`/api/v1/settings`);
-    settings = await settings_response.json();
+    if (settings_response.ok) {
+      settings = await settings_response.json();
+      // mergeDeep(settingsModel, settings)
+    }
+    
+    // console.log(settingsModel)
 
-    let fullSettings = openapi.components.schemas.FullSettings
-    for (const settingName of fullSettings.additionalProperties["x-components-without-settings"]) {
-      if (fullSettings.additionalProperties["x-custom-components"].includes(settingName)) {
-        customSettingsList[settingName] = {component: NoSettings, enabled:false}
-      } else {
-        settingsList[settingName] = {component: NoSettings, enabled: false}
+    for (const setting in settingsModel) {
+      if (setting in settingsList) {
+        settingsList[setting].enabled = true
+      } else if (setting in customSettingsList) {
+        customSettingsList[setting].enabled = true
       }
     }
+
     loaded = true
   });
 
@@ -65,7 +134,7 @@ import SettingsSection from '$lib/pages/settings/SettingsSection.svelte';
   <div class="col-span-4 mt-5">
     {#key currentSetting}
     {#if currentSetting in settingsList}
-      <svelte:component this={settingsList[currentSetting].component} bind:currentSetting/>
+      <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:settingsModel/>
     {:else if currentSetting in customSettingsList}
       <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting/>
     {/if}

@@ -5,7 +5,11 @@
   }
 </style>
 
+<script>
+  export let checked
+</script>
+
 <label class="flex items-center space-x-3 mt-3">
-  <input type="checkbox" class="form-tick appearance-none h-6 w-6 border border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none">
+  <input type="checkbox" class="form-tick appearance-none h-6 w-6 border border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none" bind:checked>
   <span><slot></slot></span>
 </label>
