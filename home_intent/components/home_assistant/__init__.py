@@ -1,17 +1,36 @@
 from typing import Set
 
-from pydantic import AnyHttpUrl, BaseModel
+from pydantic import AnyHttpUrl, BaseModel, Field
 
 from . import cover, fan, group, light, lock, remote, shopping_list, switch, weather
 from .api import HomeAssistantAPI
 
 
 class HomeAssistantSettings(BaseModel):
-    url: AnyHttpUrl
-    bearer_token: str
-    prefer_toggle: bool = True
-    ignore_domains: Set[str] = set()
-    ignore_entities: Set[str] = set()
+    url: AnyHttpUrl = Field(..., description="The URL for your Home Assistant instance")
+    bearer_token: str = Field(
+        ...,
+        description="The long-lived access token that Home Intent uses to interact with Home Assistant"
+        ""
+        "Instructions on getting a [bearer token](/docs/integrations/home-assistant/#getting-a-bearer-token)",
+        example="It should start with 'ey' and be ~180 characters",
+    )
+    prefer_toggle: bool = Field(
+        True,
+        description="Prefer to toggle instead using on or off when handling intents"
+        ""
+        "Reason to use [prefer toggle](/docs/integrations/home-assistant/#on-prefer_toggle)",
+    )
+    ignore_domains: Set[str] = Field(
+        set(),
+        description="A list of entities that shouldn't be controlled via Home Intent",
+        example=["light.kitchen", "fan.attic", "switch.tv"],
+    )
+    ignore_entities: Set[str] = Field(
+        set(),
+        description="A list of domains that shouldn't be controlled via Home Intent.",
+        example=["shopping_list" "light", "remote"],
+    )
 
 
 class HomeAssistantComponent:
