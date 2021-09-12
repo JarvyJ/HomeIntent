@@ -19,15 +19,14 @@
   let currentSetting = "home_intent"
 
   let openapi = {}
-  let settings = {}
   let settingsModel
+  let componentsWithoutSettings
+  let customComponents
 
   function setupComponentsWithoutSettings() {
-    let fullSettings = openapi.components.schemas.FullSettings
+    for (const settingName of componentsWithoutSettings) {
 
-    for (const settingName of fullSettings.additionalProperties["x-components-without-settings"]) {
-     
-      if (fullSettings.additionalProperties["x-custom-components"].includes(settingName)) {
+      if (customComponents.has(settingName)) {
         customSettingsList[settingName] = {component: NoSettings, enabled:false}
       } else {
         settingsList[settingName] = {component: NoSettings, enabled: false}
@@ -58,7 +57,7 @@
    * @param item
    * @returns {boolean}
    */
-  function isObject(item) {
+   function isObject(item) {
     return (item && typeof item === 'object' && !Array.isArray(item));
   }
 
@@ -67,7 +66,7 @@
    * @param target
    * @param ...sources
    */
-  function mergeDeep(target, ...sources) {
+   function mergeDeep(target, ...sources) {
     if (!sources.length) return target;
     const source = sources.shift();
 
@@ -85,32 +84,45 @@
     return mergeDeep(target, ...sources);
   }
 
-  // this does get re-called after the SPA is loaded
-  // so it ends up calling this methods twice.
-  // i could probably move them to a store and get only if they don't exist.
-  // TODO: I might do that later.
+  function enableSetting(setting) {
+    if (customComponents.has(setting)) {
+      customSettingsList[setting].enabled = true
+    } else {
+      settingsList[setting].enabled = true
+    }
+  }
+
+  function mergeCurrentSettingsIntoModel(settings) {
+    // did this setting by setting to enable them correctly
+    // also could've just done a mergeDeep at the root, but it gets screwy
+    // because of the `null` meaning two different things...
+   for (const setting in settings) {
+    if (settings[setting]) {
+      mergeDeep(settingsModel[setting], settings[setting])
+        if (setting === "rhasspy") { continue; } // rhasspy settings are actually lumped into home_intent
+        enableSetting(setting)
+      } else if (componentsWithoutSettings.has(setting)) {
+        settingsModel[setting] = null
+        enableSetting(setting)
+      }
+    } 
+  }
+
   onMount(async () => {
     const res = await fetch(`/openapi.json`);
     openapi = await res.json();
 
+    let fullSettings = openapi.components.schemas.FullSettings
+    componentsWithoutSettings = new Set(fullSettings.additionalProperties["x-components-without-settings"])
+    customComponents = new Set(fullSettings.additionalProperties["x-custom-components"])
+
     setupComponentsWithoutSettings()
     settingsModel = generateSettingsModel("#/components/schemas/FullSettings")
-    console.log(settingsModel)
     
     const settings_response = await fetch(`/api/v1/settings`);
     if (settings_response.ok) {
-      settings = await settings_response.json();
-      // mergeDeep(settingsModel, settings)
-    }
-    
-    // console.log(settingsModel)
-
-    for (const setting in settingsModel) {
-      if (setting in settingsList) {
-        settingsList[setting].enabled = true
-      } else if (setting in customSettingsList) {
-        customSettingsList[setting].enabled = true
-      }
+      let settings = await settings_response.json();
+      mergeCurrentSettingsIntoModel(settings)
     }
 
     loaded = true
@@ -135,9 +147,9 @@
   <div class="col-span-4 mt-5">
     {#key currentSetting}
     {#if currentSetting in settingsList}
-      <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:settingsModel/>
+    <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:settingsModel/>
     {:else if currentSetting in customSettingsList}
-      <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting/>
+    <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting/>
     {/if}
     {/key}
   </div>
