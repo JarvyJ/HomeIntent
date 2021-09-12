@@ -17,6 +17,12 @@ app = FastAPI(
     version="2021.10.0b1",
 )
 
+app.mount(
+    "/docs/",
+    StaticFiles(directory=f"{Path(__file__).parent.resolve().parent}/docs/site", html=True),
+    name="frontend",
+)
+
 CONFIG_FILE = Path("/config/config.yaml")
 
 FullSettings = extract_settings.get()
@@ -36,6 +42,27 @@ def merge_dict(source, destination):
 
 @app.get("/api/v1/settings", response_model=FullSettings)
 def get_settings():
+    """
+    This endpoint ended up being accidentally obtuse...
+    It does make sense for PUTting the new object back however.
+
+    For components _with_ settings objets, the key (component name) is always present when
+    getting settings and if it is disabled, the value is `null`.
+    If it is enabled, then the value is the value of the component's config object.
+
+    For components _without_ settings objects, if the key is present, then it is enabled.
+    The value should be `null`.
+
+    Yes, this means that `null` has two different meanings.
+    This is mostly an artifact from storing the config as yaml and how it is represented in json.
+
+    There is a helper object (`x-components-without-settings`) in `additionalProperties` that can
+    be used to determine what components do not have settings objects.
+
+    _However_, when updating the config object,
+    you can just omit any keys (and values) that are not enabled.
+
+    """
     if not CONFIG_FILE.is_file():
         raise HTTPException(404, detail=f"Config file '{CONFIG_FILE}' is not a file")
 
@@ -46,6 +73,11 @@ def get_settings():
 
 @app.put("/api/v1/settings")
 def update_settings(settings: FullSettings):
+    """
+    You should probably read the GET /api/v1/settings caveat above.
+
+    tl;dr: omit any key/values for things that are not enabled.
+    """
     settings_to_write = settings.dict()
     for key, value in settings_to_write.items():
         if value is None:
@@ -85,16 +117,8 @@ def update_settings(settings: FullSettings):
 
 
 app.mount(
-    "/docs/",
-    StaticFiles(directory=f"{Path(__file__).parent.resolve().parent}/docs/site", html=True),
-    name="frontend",
-)
-
-
-app.mount(
     "/", StaticFiles(directory="frontend/build", html=True), name="frontend",
 )
-
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=11102, log_level="info", reload=True)

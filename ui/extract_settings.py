@@ -86,7 +86,7 @@ def _get_settings_for_component(component_name, component_path=""):
 
 
 def _get_settings_object(name, settings_object):
-    ALL_SETTINGS_OBJECTS[name] = _create_dynamic_settings_object(settings_object, optional=True)
+    ALL_SETTINGS_OBJECTS[name] = _create_dynamic_settings_object(settings_object)
     raise HealthyBreakpoint("Found a settings object, no longer need to continue")
 
 
@@ -95,10 +95,7 @@ def _create_dynamic_settings_object(settings_object, optional=False):
     # https://github.com/samuelcolvin/pydantic/issues/3184#issuecomment-914876226
     # it's a little odd, but seems to do the trick!
 
-    if optional:
-        return (Optional[settings_object], None)
-    else:
-        return (settings_object, Field(default_factory=settings_object, required=False))
+    return (Optional[settings_object], None)
 
 
 def _generate_full_settings():
