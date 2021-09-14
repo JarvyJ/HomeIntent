@@ -5,10 +5,10 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 from ruamel.yaml import YAML
 from starlette.staticfiles import StaticFiles
 import uvicorn
-from pydantic import ValidationError
 
 import extract_settings
 
@@ -61,12 +61,13 @@ def pseudo_serialize_settings(settings_object):
     return normalize
 
 
-# @app.exception_handler(ValidationError)
-# async def unicorn_exception_handler(request: Request, exc: ValidationError):
-#     return JSONResponse(
-#         status_code=400,
-#         content={"detail": exc.errors(), "title": "Something is wrong in /config/config.yaml"},
-#     )
+# displays any errors the user may have put into the config.yaml file manually
+@app.exception_handler(ValidationError)
+async def unicorn_exception_handler(request: Request, exc: ValidationError):
+    return JSONResponse(
+        status_code=400,
+        content={"detail": exc.errors(), "title": "Something is wrong in /config/config.yaml"},
+    )
 
 
 @app.get("/api/v1/settings", response_model=FullSettings, response_model_exclude_unset=True)
