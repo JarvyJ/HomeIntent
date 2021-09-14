@@ -6,7 +6,7 @@ import sys
 from typing import ClassVar, FrozenSet, Optional
 from unittest.mock import MagicMock, patch
 
-from pydantic import BaseModel, Field, create_model
+from pydantic import BaseModel, Field, create_model, validator
 
 PARENT_PATH = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PARENT_PATH))
@@ -16,13 +16,33 @@ class HealthyBreakpoint(Exception):
     pass
 
 
+class Missing:
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        return "No-Value-Provided"
+
+    def __repr__(self):
+        return "No-Value-Provided"
+
+
 ALL_SETTINGS_OBJECTS = {}
+VALIDATORS = {}
 COMPONENTS_WITHOUT_SETTINGS = set()
 CUSTOM_COMPONENTS = set()
 
 
+def validate_not_none(cls, v):
+    assert v is not None, "must not be None"
+    return v
+
+
 class Config:
     extra = "allow"
+    json_encoders = {
+        Missing: str,
+    }
 
 
 def get() -> BaseModel:
@@ -86,7 +106,8 @@ def _get_settings_for_component(component_name, component_path=""):
 
 
 def _get_settings_object(name, settings_object):
-    ALL_SETTINGS_OBJECTS[name] = _create_dynamic_settings_object(settings_object)
+    ALL_SETTINGS_OBJECTS[name] = _create_dynamic_settings_object(settings_object, optional=True)
+    VALIDATORS[f"{name}_validator"] = validator(name, allow_reuse=True, pre=True)(validate_not_none)
     raise HealthyBreakpoint("Found a settings object, no longer need to continue")
 
 
@@ -95,7 +116,10 @@ def _create_dynamic_settings_object(settings_object, optional=False):
     # https://github.com/samuelcolvin/pydantic/issues/3184#issuecomment-914876226
     # it's a little odd, but seems to do the trick!
 
-    return (Optional[settings_object], None)
+    if optional:
+        return (Optional[settings_object], Field(default_factory=Missing))
+    else:
+        return (settings_object, Field(default_factory=settings_object))
 
 
 def _generate_full_settings():
@@ -110,6 +134,7 @@ def _generate_full_settings():
         **ALL_SETTINGS_OBJECTS,
         __config__=Config,
         components_without_settings=(ClassVar[FrozenSet], frozenset(COMPONENTS_WITHOUT_SETTINGS)),
+        __validators__=VALIDATORS,
     )
 
     return FullSettings
@@ -127,13 +152,20 @@ def merge(source, destination):
     return destination
 
 
-def pseudo_serialize_settings(settings_object):
+def pseudo_serialize_settings(settings_object, settings_schema):
+    # use the json to serialize things a bit more sanely
     normalize = json.loads(settings_object.json(exclude_defaults=True))
+
+    # remove unused keys to better match the yaml config file
     keys_to_remove = []
     for key in normalize:
-        if not normalize[key]:
+        if key not in settings_schema.components_without_settings and not normalize[key]:
             keys_to_remove.append(key)
 
+        if normalize[key] == "No-Value-Provided":
+            keys_to_remove.append(key)
+
+    print(keys_to_remove)
     for key in keys_to_remove:
         del normalize[key]
 
@@ -152,6 +184,7 @@ if __name__ == "__main__":
     config_contents = yaml.load(CONFIG_FILE.read_text("utf-8"))
     if config_contents:
         going_back = generated_settings(**config_contents)
+        print(going_back)
     else:
         going_back = generated_settings()
 
@@ -160,8 +193,9 @@ if __name__ == "__main__":
     # the json loads/.json() is mostly to get pydantic to serialize everything
     # to happy types (ints/strings/etc) as yaml will try to serialize the data types
     if config_contents:
-        merge(pseudo_serialize_settings(going_back), config_contents)
+        going_back.my_crazy_custom_component = True
+        merge(pseudo_serialize_settings(going_back, generated_settings), config_contents)
     else:
-        config_contents = pseudo_serialize_settings(going_back)
+        config_contents = pseudo_serialize_settings(going_back, generated_settings)
 
     yaml.dump(config_contents, sys.stdout)

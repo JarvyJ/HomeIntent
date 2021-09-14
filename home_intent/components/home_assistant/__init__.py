@@ -29,7 +29,7 @@ class HomeAssistantSettings(BaseModel):
     ignore_entities: Set[str] = Field(
         set(),
         description="A list of domains that shouldn't be controlled via Home Intent.",
-        example=["shopping_list" "light", "remote"],
+        example=["shopping_list", "light", "remote"],
     )
 
 

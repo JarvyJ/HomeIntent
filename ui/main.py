@@ -3,10 +3,12 @@ from pathlib import Path
 import sys
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from ruamel.yaml import YAML
 from starlette.staticfiles import StaticFiles
 import uvicorn
+from pydantic import ValidationError
 
 import extract_settings
 
@@ -40,7 +42,34 @@ def merge_dict(source, destination):
     return destination
 
 
-@app.get("/api/v1/settings", response_model=FullSettings)
+def pseudo_serialize_settings(settings_object):
+    # use the json to serialize things a bit more sanely
+    normalize = json.loads(settings_object.json(exclude_defaults=True))
+
+    # remove unused keys to better match the yaml config file
+    keys_to_remove = []
+    for key in normalize:
+        if not normalize[key] and key not in FullSettings.components_without_settings:
+            keys_to_remove.append(key)
+
+        if normalize[key] == "No-Value-Provided":
+            keys_to_remove.append(key)
+
+    for key in keys_to_remove:
+        del normalize[key]
+
+    return normalize
+
+
+# @app.exception_handler(ValidationError)
+# async def unicorn_exception_handler(request: Request, exc: ValidationError):
+#     return JSONResponse(
+#         status_code=400,
+#         content={"detail": exc.errors(), "title": "Something is wrong in /config/config.yaml"},
+#     )
+
+
+@app.get("/api/v1/settings", response_model=FullSettings, response_model_exclude_unset=True)
 def get_settings():
     """
     This endpoint ended up being accidentally obtuse...
@@ -68,24 +97,19 @@ def get_settings():
 
     yaml = YAML()
     config_contents = yaml.load(CONFIG_FILE.read_text("utf-8"))
-    return FullSettings(**config_contents)
+    if config_contents:
+        return FullSettings(**config_contents)
+    else:
+        return FullSettings()
 
 
 @app.put("/api/v1/settings")
-def update_settings(settings: FullSettings):
+def update_settings(settings: FullSettings, response_model_exclude_unset=True):
     """
     You should probably read the GET /api/v1/settings caveat above.
 
     tl;dr: omit any key/values for things that are not enabled.
     """
-    settings_to_write = settings.dict()
-    for key, value in settings_to_write.items():
-        if value is None:
-            if key not in FullSettings.components_without_settings:
-                raise HTTPException(
-                    400, detail=f"The setting '{key}' is not a component that can be loaded."
-                )
-
     yaml = YAML()
     if CONFIG_FILE.is_file():
         config_contents = yaml.load(CONFIG_FILE.read_text("utf-8"))
@@ -96,15 +120,22 @@ def update_settings(settings: FullSettings):
         # to happy types (ints/strings/etc) as yaml will try to serialize the classes
         # the merge should hopefully keep any comments/structure the user might have in place
         # this might cause issues in the future, but we'll try it for now!
-        reserialized_settings = json.loads(settings.json(exclude_defaults=True))
-        merge_dict(reserialized_settings, config_contents)
+        if config_contents:
+            merge_dict(pseudo_serialize_settings(settings), config_contents)
+
+        else:
+            config_contents = pseudo_serialize_settings(settings)
 
         # code to figure out what components w/out settings are enabled
         current_nosetting_components = frozenset(
-            key for key, value in config_contents.items() if value is None
+            key
+            for key, value in config_contents.items()
+            if value is None and key in FullSettings.components_without_settings
         )
         updated_nosetting_components = frozenset(
-            key for key, value in reserialized_settings.items() if value is None
+            key
+            for key, value in settings.dict().items()
+            if value is None and key in FullSettings.components_without_settings
         )
 
         # get away with a difference here because the update has already happened
@@ -113,6 +144,7 @@ def update_settings(settings: FullSettings):
             del config_contents[component]
 
     yaml.dump(config_contents, sys.stdout)
+    return config_contents
     # yaml.dump(settings_to_write, CONFIG_FILE.open("w"))
 
 
