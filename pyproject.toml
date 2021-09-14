@@ -14,7 +14,7 @@ combine_as_imports = true
 [tool.pylint.'MESSAGES CONTROL']
 extension-pkg-whitelist = "pydantic"
 max-line-length = 100
-disable = "C0114, C0115, C0116, W0707, W1203, R1720"
+disable = "C0114, C0115, C0116, W0707, W1203, R1705, R1720"
 
 [tool.pylint.MASTER]
 jobs=2

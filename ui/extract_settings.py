@@ -12,11 +12,12 @@ PARENT_PATH = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PARENT_PATH))
 
 
-class HealthyBreakpoint(Exception):
+class _HealthyBreakpoint(Exception):
     pass
 
 
-class Missing:
+# Default class for
+class _Missing:
     def __init__(self):
         pass
 
@@ -27,22 +28,23 @@ class Missing:
         return "No-Value-Provided"
 
 
+class SettingsConfig:  # pylint: disable=too-few-public-methods
+    extra = "allow"
+    json_encoders = {
+        _Missing: str,
+    }
+
+
+# used to ensure that components with settings don't come in with None
+def _validate_not_none(cls, value):  # pylint: disable=unused-argument
+    assert value is not None, "must not be None"
+    return value
+
+
 ALL_SETTINGS_OBJECTS = {}
 VALIDATORS = {}
 COMPONENTS_WITHOUT_SETTINGS = set()
 CUSTOM_COMPONENTS = set()
-
-
-def validate_not_none(cls, v):
-    assert v is not None, "must not be None"
-    return v
-
-
-class Config:
-    extra = "allow"
-    json_encoders = {
-        Missing: str,
-    }
 
 
 def get() -> BaseModel:
@@ -53,7 +55,10 @@ def get() -> BaseModel:
 
 
 def _get_default_settings():
-    from home_intent.settings import RhasspySettings, HomeIntentSettings
+    from home_intent.settings import (  # pylint: disable=import-outside-toplevel
+        RhasspySettings,
+        HomeIntentSettings,
+    )
 
     ALL_SETTINGS_OBJECTS["home_intent"] = _create_dynamic_settings_object(HomeIntentSettings)
     ALL_SETTINGS_OBJECTS["rhasspy"] = _create_dynamic_settings_object(RhasspySettings)
@@ -96,9 +101,11 @@ def _get_settings_for_component(component_name, component_path=""):
         integration = importlib.import_module(f"{component_prefix}{component_name}")
         try:
             integration.setup(home_intent)
-        except HealthyBreakpoint:
+        except _HealthyBreakpoint:
             no_settings_component = False
-        except Exception:
+
+        # eventually it will break because the Mock can't handle it
+        except Exception:  # pylint: disable=broad-except
             pass
 
     if no_settings_component:
@@ -107,8 +114,10 @@ def _get_settings_for_component(component_name, component_path=""):
 
 def _get_settings_object(name, settings_object):
     ALL_SETTINGS_OBJECTS[name] = _create_dynamic_settings_object(settings_object, optional=True)
-    VALIDATORS[f"{name}_validator"] = validator(name, allow_reuse=True, pre=True)(validate_not_none)
-    raise HealthyBreakpoint("Found a settings object, no longer need to continue")
+    VALIDATORS[f"{name}_validator"] = validator(name, allow_reuse=True, pre=True)(
+        _validate_not_none
+    )
+    raise _HealthyBreakpoint("Found a settings object, no longer need to continue")
 
 
 def _create_dynamic_settings_object(settings_object, optional=False):
@@ -117,27 +126,27 @@ def _create_dynamic_settings_object(settings_object, optional=False):
     # it's a little odd, but seems to do the trick!
 
     if optional:
-        return (Optional[settings_object], Field(default_factory=Missing))
+        return (Optional[settings_object], Field(default_factory=_Missing))
     else:
         return (settings_object, Field(default_factory=settings_object))
 
 
 def _generate_full_settings():
-    Config.schema_extra = {
+    SettingsConfig.schema_extra = {
         "additionalProperties": {
             "x-components-without-settings": COMPONENTS_WITHOUT_SETTINGS,
             "x-custom-components": CUSTOM_COMPONENTS,
         }
     }
-    FullSettings = create_model(
+    full_settings = create_model(
         "FullSettings",
         **ALL_SETTINGS_OBJECTS,
-        __config__=Config,
+        __config__=SettingsConfig,
         components_without_settings=(ClassVar[FrozenSet], frozenset(COMPONENTS_WITHOUT_SETTINGS)),
         __validators__=VALIDATORS,
     )
 
-    return FullSettings
+    return full_settings
 
 
 def merge(source, destination):
@@ -165,7 +174,6 @@ def pseudo_serialize_settings(settings_object, settings_schema):
         if normalize[key] == "No-Value-Provided":
             keys_to_remove.append(key)
 
-    print(keys_to_remove)
     for key in keys_to_remove:
         del normalize[key]
 
