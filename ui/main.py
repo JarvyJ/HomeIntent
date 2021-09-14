@@ -1,7 +1,5 @@
-import json
 from pathlib import Path
 import sys
-from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -10,7 +8,7 @@ from ruamel.yaml import YAML
 from starlette.staticfiles import StaticFiles
 import uvicorn
 
-import extract_settings
+from extract_settings import ExtractSettings, merge, pseudo_serialize_settings
 
 app = FastAPI(
     docs_url="/openapi",
@@ -27,38 +25,7 @@ app.mount(
 
 CONFIG_FILE = Path("/config/config.yaml")
 
-FullSettings = extract_settings.get()
-
-
-def merge_dict(source, destination):
-    for key, value in source.items():
-        if isinstance(value, dict):
-            # get node or create one
-            node = destination.setdefault(key, {})
-            merge_dict(value, node)
-        else:
-            destination[key] = value
-
-    return destination
-
-
-def pseudo_serialize_settings(settings_object):
-    # use the json to serialize things a bit more sanely
-    normalize = json.loads(settings_object.json(exclude_defaults=True))
-
-    # remove unused keys to better match the yaml config file
-    keys_to_remove = []
-    for key in normalize:
-        if not normalize[key] and key not in FullSettings.components_without_settings:
-            keys_to_remove.append(key)
-
-        if normalize[key] == "No-Value-Provided":
-            keys_to_remove.append(key)
-
-    for key in keys_to_remove:
-        del normalize[key]
-
-    return normalize
+FullSettings = ExtractSettings.get()
 
 
 # displays any errors the user may have put into the config.yaml file manually
@@ -122,10 +89,10 @@ def update_settings(settings: FullSettings, response_model_exclude_unset=True):
         # the merge should hopefully keep any comments/structure the user might have in place
         # this might cause issues in the future, but we'll try it for now!
         if config_contents:
-            merge_dict(pseudo_serialize_settings(settings), config_contents)
+            merge(pseudo_serialize_settings(settings, FullSettings), config_contents)
 
         else:
-            config_contents = pseudo_serialize_settings(settings)
+            config_contents = pseudo_serialize_settings(settings, FullSettings)
 
         # code to figure out what components w/out settings are enabled
         current_nosetting_components = frozenset(
