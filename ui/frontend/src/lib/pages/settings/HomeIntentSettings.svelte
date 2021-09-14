@@ -8,6 +8,8 @@
 </style>
 
 <script>
+  export let settingsModel
+
   import PlayCircleFill from "$lib/icons/play-circle-fill.svelte";
   import Button from "$lib/components/Button.svelte";
   import SettingsSection from "./SettingsSection.svelte";
@@ -29,7 +31,7 @@
   </div>
 
   <div>
-    <select id="sounds-device" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none">
+    <select bind:value={settingsModel.rhasspy.sounds_device} id="sounds-device" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none">
       <option>default:CARD=USB</option>
       <option>default:CARD=Headphones</option>
       <option>jack</option>
@@ -44,7 +46,7 @@
   </div>
 
   <div>
-    <select id="microphone-device" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none">
+    <select bind:value={settingsModel.rhasspy.microphone_device} id="microphone-device" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none">
       <option>plughw</option>
       <option>Default device</option>
       <option>Something Else</option>
@@ -56,14 +58,14 @@
     <label for="story" class="font-bold">Enable Beta Intents</label>
     <HelpText>Enable intents that are currently in beta to try out new features!</HelpText>
   </div>
-  <Checkbox>Enable Beta Intents</Checkbox>
+  <Checkbox bind:checked={settingsModel.home_intent.enable_beta}>Enable Beta Intents</Checkbox>
 
 
   <div>
     <label for="story" class="font-bold">Enable Dangerous Intents</label>
     <HelpText>Enable intents that are known to cause recognition issues (chaos mode)</HelpText>
   </div>
-  <Checkbox>Enable Dangerous Intents</Checkbox>
+  <Checkbox bind:checked={settingsModel.home_intent.enable_all}>Enable Dangerous Intents</Checkbox>
 
 </div>
 

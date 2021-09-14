@@ -1,11 +1,7 @@
-<style>
-  .text-area {
-
-  }
-</style>
-
 <script>
   export let currentSetting = ""
+  export let settingsModel
+
   import DocumentationLink from "$lib/icons/file-earmark-text-link.svelte"
   import SettingsTitle from "./SettingsTitle.svelte";
   import InputText from "./InputText.svelte";
@@ -13,7 +9,7 @@
   import { capitalize_with_underscore } from "$lib/util/capitalization";
   import HelpText from "./HelpText.svelte";
   import Checkbox from "./Checkbox.svelte";
-import Button from "$lib/components/Button.svelte";
+  import Button from "$lib/components/Button.svelte";
 
   const humanSettingName = capitalize_with_underscore(currentSetting)
   const linkName = currentSetting.replace("_", "-")
@@ -27,7 +23,7 @@ import Button from "$lib/components/Button.svelte";
     <label for="input" class="font-bold">URL</label>
     <HelpText>The URL for your Home Assistant instance</HelpText>
   </div>
-  <input id="url" type="text" class="border border-gray-300 rounded-md focus:outline-none p-1.5">
+  <input id="url" type="text" class="border border-gray-300 rounded-md focus:outline-none p-1.5" bind:value={settingsModel.home_assistant.url}>
 
   <div>
     <label for="story" class="font-bold">Bearer Token</label>
@@ -36,14 +32,14 @@ import Button from "$lib/components/Button.svelte";
   </div>
 
   <textarea id="story" name="story" class="text-area border border-gray-300 rounded-md focus:outline-none p-1.5"
-  rows="5" cols="40" placeholder="Paste your bearer token here. It should start with 'ey'"></textarea>
+  rows="5" cols="40" placeholder="Paste your bearer token here. It should start with 'ey'" bind:value={settingsModel.home_assistant.bearer_token}></textarea>
 
   <div>
     <label for="story" class="font-bold">Prefer Toggle</label>
     <HelpText>Prefer to toggle instead using on or off when handling intents</HelpText>
     <HelpText classes="mt-3">Reason to use <a href="/docs/integrations/home-assistant/#on-prefer_toggle" target="_blank">prefer toggle</a></HelpText>
   </div>
-  <Checkbox>Prefer Toggle</Checkbox>
+  <Checkbox bind:checked={settingsModel.home_assistant.prefer_toggle}>Prefer Toggle</Checkbox>
 
   <div class="col-start-1">
     <label for="ignore-entities" class="font-bold">Entities to Ignore</label>

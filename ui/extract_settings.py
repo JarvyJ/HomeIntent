@@ -3,118 +3,158 @@ import importlib
 import json
 from pathlib import Path
 import sys
-from typing import ClassVar, FrozenSet, Set
+from typing import ClassVar, FrozenSet, Optional
 from unittest.mock import MagicMock, patch
 
-from pydantic import AnyHttpUrl, BaseModel, Field, create_model
-from typing_extensions import Annotated
+from pydantic import BaseModel, Field, create_model, validator
 
 PARENT_PATH = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PARENT_PATH))
 
 
-class HealthyBreakpoint(Exception):
+class _HealthyBreakpoint(Exception):
     pass
 
 
-ALL_SETTINGS_OBJECTS = {}
-COMPONENTS_WITHOUT_SETTINGS = set()
-CUSTOM_COMPONENTS = set()
+# Default class for
+class _Missing:
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        return "No-Value-Provided"
+
+    def __repr__(self):
+        return "No-Value-Provided"
 
 
-class Config:
+class SettingsConfig:  # pylint: disable=too-few-public-methods
     extra = "allow"
-    json_encoders = {AnyHttpUrl: lambda v: str(v)}
-
-
-def get() -> BaseModel:
-    _get_default_settings()
-    _crawl_and_get_component_settings()
-    _crawl_and_get_custom_component_settings()
-    return _generate_full_settings()
-
-
-def _get_default_settings():
-    from home_intent.settings import RhasspySettings, HomeIntentSettings
-
-    ALL_SETTINGS_OBJECTS["home_intent"] = _create_dynamic_settings_object(HomeIntentSettings)
-    ALL_SETTINGS_OBJECTS["rhasspy"] = _create_dynamic_settings_object(RhasspySettings)
-
-
-def _crawl_and_get_component_settings():
-    component_folder = PARENT_PATH / "home_intent/components"
-    sys.path.append(str(component_folder))
-    for init_file in sorted(component_folder.glob("*/__init__.py")):
-        component_name = init_file.parts[-2]
-        _get_settings_for_component(component_name)
-
-    assert sys.path.pop() == str(component_folder)
-
-
-def _crawl_and_get_custom_component_settings():
-    sys.path.append("/config/custom_components")
-    component_folder = Path("/config/custom_components")
-    for init_file in sorted(component_folder.glob("*/__init__.py")):
-        component_name = init_file.parts[-2]
-        _get_settings_for_component(component_name)
-        CUSTOM_COMPONENTS.add(component_name)
-
-    for init_file in sorted(component_folder.glob("*.py")):
-        component_name = init_file.parts[-1][:-3]
-        _get_settings_for_component(component_name)
-        CUSTOM_COMPONENTS.add(component_name)
-
-    assert sys.path.pop() == "/config/custom_components"
-
-
-def _get_settings_for_component(component_name, component_path=""):
-    home_intent = MagicMock(name="home_intent")
-    home_intent.get_config.side_effect = partial(_get_settings_object, component_name)
-    component_prefix = f"{component_path}." if component_path else ""
-
-    no_settings_component = True
-
-    with patch.dict("sys.modules", home_intent=home_intent):
-        integration = importlib.import_module(f"{component_prefix}{component_name}")
-        try:
-            integration.setup(home_intent)
-        except HealthyBreakpoint:
-            no_settings_component = False
-        except Exception:
-            pass
-
-    if no_settings_component:
-        COMPONENTS_WITHOUT_SETTINGS.add(component_name)
-
-
-def _get_settings_object(name, settings_object):
-    ALL_SETTINGS_OBJECTS[name] = _create_dynamic_settings_object(settings_object)
-    raise HealthyBreakpoint("Found a settings object, no longer need to continue")
-
-
-def _create_dynamic_settings_object(settings_object):
-    # I pulled how to do this from
-    # https://github.com/samuelcolvin/pydantic/issues/3184#issuecomment-914876226
-    # it's a little odd, but seems to do the trick!
-
-    return (settings_object, Field(default_factory=settings_object))
-
-
-def _generate_full_settings():
-    Config.schema_extra = {
-        "additionalProperties": {
-            "x-components-without-settings": COMPONENTS_WITHOUT_SETTINGS,
-            "x-custom-components": CUSTOM_COMPONENTS,
-        }
+    json_encoders = {
+        _Missing: str,
     }
-    FullSettings = create_model(
-        "FullSettings",
-        **ALL_SETTINGS_OBJECTS,
-        __config__=Config,
-        components_without_settings=(ClassVar[FrozenSet], frozenset(COMPONENTS_WITHOUT_SETTINGS)),
-    )
 
-    return FullSettings
+
+# used to ensure that components with settings don't come in with None
+def _validate_not_none(cls, value):  # pylint: disable=unused-argument
+    assert value is not None, "must not be None"
+    return value
+
+
+class ExtractSettings:
+    ALL_SETTINGS_OBJECTS = {}
+    VALIDATORS = {}
+    COMPONENTS_WITHOUT_SETTINGS = set()
+    CUSTOM_COMPONENTS = set()
+
+    @classmethod
+    def get(cls) -> BaseModel:
+        cls._get_default_settings()
+        cls._crawl_and_get_component_settings()
+        cls._crawl_and_get_custom_component_settings()
+        return cls._generate_full_settings()
+
+    @classmethod
+    def _get_default_settings(cls):
+        from home_intent.settings import (  # pylint: disable=import-outside-toplevel
+            RhasspySettings,
+            HomeIntentSettings,
+        )
+
+        cls.ALL_SETTINGS_OBJECTS["home_intent"] = cls._create_dynamic_settings_object(
+            HomeIntentSettings
+        )
+        cls.ALL_SETTINGS_OBJECTS["rhasspy"] = cls._create_dynamic_settings_object(RhasspySettings)
+
+    @classmethod
+    def _crawl_and_get_component_settings(cls):
+        component_folder = PARENT_PATH / "home_intent/components"
+        sys.path.append(str(component_folder))
+        for init_file in sorted(component_folder.glob("*/__init__.py")):
+            component_name = init_file.parts[-2]
+            cls._get_settings_for_component(component_name)
+
+        assert sys.path.pop() == str(component_folder)
+
+    @classmethod
+    def _crawl_and_get_custom_component_settings(cls):
+        sys.path.append("/config/custom_components")
+        component_folder = Path("/config/custom_components")
+        for init_file in sorted(component_folder.glob("*/__init__.py")):
+            component_name = init_file.parts[-2]
+            cls._get_settings_for_component(component_name)
+            cls.CUSTOM_COMPONENTS.add(component_name)
+
+        for init_file in sorted(component_folder.glob("*.py")):
+            component_name = init_file.parts[-1][:-3]
+            cls._get_settings_for_component(component_name)
+            cls.CUSTOM_COMPONENTS.add(component_name)
+
+        assert sys.path.pop() == "/config/custom_components"
+
+    @classmethod
+    def _get_settings_for_component(cls, component_name, component_path=""):
+        home_intent = MagicMock(name="home_intent")
+        home_intent.get_config.side_effect = partial(cls._get_settings_object, component_name)
+        component_prefix = f"{component_path}." if component_path else ""
+
+        no_settings_component = True
+
+        with patch.dict("sys.modules", home_intent=home_intent):
+            integration = importlib.import_module(f"{component_prefix}{component_name}")
+            try:
+                integration.setup(home_intent)
+            except _HealthyBreakpoint:
+                no_settings_component = False
+
+            # eventually it will break because the Mock can't handle it
+            except Exception:  # pylint: disable=broad-except
+                pass
+
+        if no_settings_component:
+            cls.COMPONENTS_WITHOUT_SETTINGS.add(component_name)
+
+    @classmethod
+    def _get_settings_object(cls, name, settings_object):
+        cls.ALL_SETTINGS_OBJECTS[name] = cls._create_dynamic_settings_object(
+            settings_object, optional=True
+        )
+        cls.VALIDATORS[f"{name}_validator"] = validator(name, allow_reuse=True, pre=True)(
+            _validate_not_none
+        )
+        raise _HealthyBreakpoint("Found a settings object, no longer need to continue")
+
+    @classmethod
+    def _create_dynamic_settings_object(cls, settings_object, optional=False):
+        # I pulled how to do this from
+        # https://github.com/samuelcolvin/pydantic/issues/3184#issuecomment-914876226
+        # it's a little odd, but seems to do the trick!
+
+        if optional:
+            return (Optional[settings_object], Field(default_factory=_Missing))
+        else:
+            return (settings_object, Field(default_factory=settings_object))
+
+    @classmethod
+    def _generate_full_settings(cls):
+        SettingsConfig.schema_extra = {
+            "additionalProperties": {
+                "x-components-without-settings": cls.COMPONENTS_WITHOUT_SETTINGS,
+                "x-custom-components": cls.CUSTOM_COMPONENTS,
+            }
+        }
+        full_settings = create_model(
+            "FullSettings",
+            **cls.ALL_SETTINGS_OBJECTS,
+            __config__=SettingsConfig,
+            components_without_settings=(
+                ClassVar[FrozenSet],
+                frozenset(cls.COMPONENTS_WITHOUT_SETTINGS),
+            ),
+            __validators__=cls.VALIDATORS,
+        )
+
+        return full_settings
 
 
 def merge(source, destination):
@@ -129,8 +169,27 @@ def merge(source, destination):
     return destination
 
 
+def pseudo_serialize_settings(settings_object, settings_schema):
+    # use the json to serialize things a bit more sanely
+    normalize = json.loads(settings_object.json(exclude_defaults=True))
+
+    # remove unused keys to better match the yaml config file
+    keys_to_remove = []
+    for key in normalize:
+        if key not in settings_schema.components_without_settings and not normalize[key]:
+            keys_to_remove.append(key)
+
+        if normalize[key] == "No-Value-Provided":
+            keys_to_remove.append(key)
+
+    for key in keys_to_remove:
+        del normalize[key]
+
+    return normalize
+
+
 if __name__ == "__main__":
-    generated_settings = get()
+    generated_settings = ExtractSettings.get()
     print(generated_settings.schema_json(indent=2))
 
     from ruamel.yaml import YAML
@@ -139,12 +198,20 @@ if __name__ == "__main__":
 
     CONFIG_FILE = Path("/config/config.yaml")
     config_contents = yaml.load(CONFIG_FILE.read_text("utf-8"))
-    going_back = generated_settings(**config_contents)
+    if config_contents:
+        going_back = generated_settings(**config_contents)
+        print(going_back)
+    else:
+        going_back = generated_settings()
 
     # this is really hokey and leaves a lot of room for improvements
     # the general idea is to not change what the user has manually done in config
     # the json loads/.json() is mostly to get pydantic to serialize everything
     # to happy types (ints/strings/etc) as yaml will try to serialize the data types
-    merge(json.loads(going_back.json(exclude_defaults=True)), config_contents)
+    if config_contents:
+        going_back.my_crazy_custom_component = True
+        merge(pseudo_serialize_settings(going_back, generated_settings), config_contents)
+    else:
+        config_contents = pseudo_serialize_settings(going_back, generated_settings)
 
     yaml.dump(config_contents, sys.stdout)
