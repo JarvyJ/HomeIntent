@@ -20,14 +20,14 @@
   }
 
 
-  $: if (value.length > 50) {
+  $: if (value && value.length > 50) {
     inputType = "longtext"
   }
 </script>
 
 <div>
   <label for="{id}" class="font-bold">{title}</label>
-  <HelpText>{description}</HelpText>
+  <HelpText>{@html description}</HelpText>
 </div>
 
 <!-- have to do this via if/else because otherwise there's an error with 2way binding -->

@@ -16,7 +16,7 @@
 
 <div class="col-start-1">
   <label for="ignore-entities" class="font-bold">{title}</label>
-  <HelpText>{description}</HelpText>
+  <HelpText>{@html description}</HelpText>
   {#if example}
   <HelpText classes="mt-3">
     Example:
