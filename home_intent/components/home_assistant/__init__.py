@@ -11,24 +11,25 @@ class HomeAssistantSettings(BaseModel):
     bearer_token: str = Field(
         ...,
         description="The long-lived access token that Home Intent uses to interact with Home Assistant"
-        ""
-        "Instructions on getting a [bearer token](/docs/integrations/home-assistant/#getting-a-bearer-token)",
+        "<br /> <br />"
+        "Instructions on getting a "
+        '<a href="/docs/integrations/home-assistant/#getting-a-bearer-token" target="_blank">bearer token</a>',
         example="It should start with 'ey' and be ~180 characters",
     )
     prefer_toggle: bool = Field(
         True,
         description="Prefer to toggle instead using on or off when handling intents"
-        ""
-        "Reason to use [prefer toggle](/docs/integrations/home-assistant/#on-prefer_toggle)",
+        "<br /><br />"
+        'Reason to use <a href="/docs/integrations/home-assistant/#on-prefer_toggle" target="_blank">prefer toggle</a>',
     )
     ignore_domains: Set[str] = Field(
         set(),
-        description="A list of entities that shouldn't be controlled via Home Intent",
+        description="A list of domains that shouldn't be controlled via Home Intent",
         example=["light.kitchen", "fan.attic", "switch.tv"],
     )
     ignore_entities: Set[str] = Field(
         set(),
-        description="A list of domains that shouldn't be controlled via Home Intent.",
+        description="A list of entities that shouldn't be controlled via Home Intent.",
         example=["shopping_list", "light", "remote"],
     )
 

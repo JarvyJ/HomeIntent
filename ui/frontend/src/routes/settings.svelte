@@ -5,16 +5,15 @@
   import Button from "$lib/components/Button.svelte"
 
   import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
-  import HomeAssistantSettings from "$lib/pages/settings/HomeAssistantSettings.svelte";
   import NoSettings from "$lib/pages/settings/NoSettings.svelte";
+  import AutoSettings from "$lib/pages/settings/AutoSettings.svelte";
 
 
   let loaded = false
   let customSettingsList = {}
 
   let settingsList = { 
-    "home_intent": {component: HomeIntentSettings, enabled: false},
-    "home_assistant": {component: HomeAssistantSettings, enabled: false},
+    "home_intent": {component: HomeIntentSettings, enabled: false, schema: null}
   }
   let currentSetting = "home_intent"
 
@@ -27,20 +26,30 @@
     for (const settingName of componentsWithoutSettings) {
 
       if (customComponents.has(settingName)) {
-        customSettingsList[settingName] = {component: NoSettings, enabled:false}
+        customSettingsList[settingName] = {component: NoSettings, enabled:false, schema: null}
       } else {
-        settingsList[settingName] = {component: NoSettings, enabled: false}
+        settingsList[settingName] = {component: NoSettings, enabled: false, schema: null}
       }
     }
   }
 
-  function generateSettingsModel(full_schema_name) {
-    let schema_name = full_schema_name.split("/").pop()
-    let schema = openapi.components.schemas[schema_name]
+  function generateSettingsModel(fullSchemaName, topLevel) {
+    let schemaName = getSchemaName(fullSchemaName)
+    let schema = openapi.components.schemas[schemaName]
     let model = {}
     for (const name in schema.properties) {
       if ("$ref" in schema.properties[name]) {
-        model[name] = generateSettingsModel(schema.properties[name]["$ref"])
+        model[name] = generateSettingsModel(schema.properties[name]["$ref"], false)
+        if (topLevel) {
+          let settingSchemaName = getSchemaName(schema.properties[name]["$ref"])
+          let settingSchema = openapi.components.schemas[settingSchemaName]
+          if (name in settingsList) {
+            settingsList[name].schema = settingSchema
+          } else {
+            settingsList[name] = {component: AutoSettings, enabled: false, schema:settingSchema}
+          }
+
+        }
       } else if ("default" in schema.properties[name]) {
         model[name] = schema.properties[name]["default"]
       } else {
@@ -49,6 +58,10 @@
     }
 
     return model
+  }
+
+  function getSchemaName(fullSchemaName) {
+    return fullSchemaName.split("/").pop()
   }
 
   // The following functions are from stack overflow https://stackoverflow.com/a/34749873
@@ -116,8 +129,8 @@
     componentsWithoutSettings = new Set(fullSettings.additionalProperties["x-components-without-settings"])
     customComponents = new Set(fullSettings.additionalProperties["x-custom-components"])
 
+    settingsModel = generateSettingsModel("#/components/schemas/FullSettings", true)
     setupComponentsWithoutSettings()
-    settingsModel = generateSettingsModel("#/components/schemas/FullSettings")
     
     const settings_response = await fetch(`/api/v1/settings`);
     if (settings_response.ok) {
@@ -147,9 +160,9 @@
   <div class="col-span-4 mt-5">
     {#key currentSetting}
     {#if currentSetting in settingsList}
-    <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:settingsModel/>
+    <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:settingsModel bind:schema={settingsList[currentSetting].schema}/>
     {:else if currentSetting in customSettingsList}
-    <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting/>
+    <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting bind:settingsModel bind:schema={customSettingsList[currentSetting].schema}/>
     {/if}
     {/key}
   </div>

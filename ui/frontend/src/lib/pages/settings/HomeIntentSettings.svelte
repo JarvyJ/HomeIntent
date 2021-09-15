@@ -9,6 +9,8 @@
 
 <script>
   export let settingsModel
+  export let currentSetting
+  export let schema
 
   import PlayCircleFill from "$lib/icons/play-circle-fill.svelte";
   import Button from "$lib/components/Button.svelte";
@@ -55,10 +57,10 @@
   </div>
 
   <BooleanInput title="Enable Beta Intents" description="Enable intents that are currently in beta to try out new features!"
-  bind:checked={settingsModel.home_intent.enable_beta} />
+  bind:value={settingsModel.home_intent.enable_beta} />
 
   <BooleanInput title="Enable Dangerous Intents" description="Enable intents that are known to cause recognition issues (chaos mode)"
-  bind:checked={settingsModel.home_intent.enable_beta} />
+  bind:value={settingsModel.home_intent.enable_beta} />
 
 </SettingsList>
 
