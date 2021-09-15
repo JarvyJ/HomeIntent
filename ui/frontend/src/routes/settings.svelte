@@ -14,8 +14,7 @@
   let customSettingsList = {}
 
   let settingsList = { 
-    "home_intent": {component: HomeIntentSettings, enabled: false},
-    // "home_assistant": {component: HomeAssistantSettings, enabled: false},
+    "home_intent": {component: HomeIntentSettings, enabled: false, schema: null}
   }
   let currentSetting = "home_intent"
 
@@ -28,9 +27,9 @@
     for (const settingName of componentsWithoutSettings) {
 
       if (customComponents.has(settingName)) {
-        customSettingsList[settingName] = {component: NoSettings, enabled:false, schema:null}
+        customSettingsList[settingName] = {component: NoSettings, enabled:false, schema: null}
       } else {
-        settingsList[settingName] = {component: NoSettings, enabled: false, schema:null}
+        settingsList[settingName] = {component: NoSettings, enabled: false, schema: null}
       }
     }
   }
