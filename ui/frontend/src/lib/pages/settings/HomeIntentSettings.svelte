@@ -13,10 +13,10 @@
   import PlayCircleFill from "$lib/icons/play-circle-fill.svelte";
   import Button from "$lib/components/Button.svelte";
   import SettingsSection from "./SettingsSection.svelte";
-  import Checkbox from "./Checkbox.svelte";
   import SettingsTitle from "./SettingsTitle.svelte";
-  import SelectDropdown from "./SelectDropdown.svelte";
+  import SettingsList from "./SettingsList.svelte";
   import HelpText from "./HelpText.svelte";
+  import BooleanInput from "./form_elements/boolean.svelte"
 
   let selectedSoundsDevice = ""
   let selectedMicrophoneDevice = ""
@@ -24,7 +24,7 @@
 </script>
 <SettingsTitle>Home Intent Settings</SettingsTitle>
 
-<div class="grid grid-cols-2 w-3/4 gap-6">
+<SettingsList>
   <div>
     <label for="sounds-device" class="font-bold">Sounds Devices</label>
     <HelpText>The URL for your Home Assistant instance</HelpText>
@@ -54,20 +54,13 @@
     <progress class="bg-gray-300 w-96 mt-3 text-xs rounded-full" max="100" value="70">70%</progress>
   </div>
 
-  <div>
-    <label for="story" class="font-bold">Enable Beta Intents</label>
-    <HelpText>Enable intents that are currently in beta to try out new features!</HelpText>
-  </div>
-  <Checkbox bind:checked={settingsModel.home_intent.enable_beta}>Enable Beta Intents</Checkbox>
+  <BooleanInput title="Enable Beta Intents" description="Enable intents that are currently in beta to try out new features!"
+  bind:checked={settingsModel.home_intent.enable_beta} />
 
+  <BooleanInput title="Enable Dangerous Intents" description="Enable intents that are known to cause recognition issues (chaos mode)"
+  bind:checked={settingsModel.home_intent.enable_beta} />
 
-  <div>
-    <label for="story" class="font-bold">Enable Dangerous Intents</label>
-    <HelpText>Enable intents that are known to cause recognition issues (chaos mode)</HelpText>
-  </div>
-  <Checkbox bind:checked={settingsModel.home_intent.enable_all}>Enable Dangerous Intents</Checkbox>
-
-</div>
+</SettingsList>
 
 
 <SettingsSection>Sound Effects</SettingsSection>

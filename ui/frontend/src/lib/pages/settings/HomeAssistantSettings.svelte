@@ -4,12 +4,13 @@
 
   import DocumentationLink from "$lib/icons/file-earmark-text-link.svelte"
   import SettingsTitle from "./SettingsTitle.svelte";
-  import InputText from "./InputText.svelte";
+  import StringInput from "./form_elements/string.svelte"
+  import BooleanInput from "./form_elements/boolean.svelte"
+  import ArrayInput from "./form_elements/array.svelte"
 
   import { capitalize_with_underscore } from "$lib/util/capitalization";
-  import HelpText from "./HelpText.svelte";
-  import Checkbox from "./Checkbox.svelte";
   import Button from "$lib/components/Button.svelte";
+import SettingsList from "./SettingsList.svelte";
 
   const humanSettingName = capitalize_with_underscore(currentSetting)
   const linkName = currentSetting.replace("_", "-")
@@ -17,63 +18,20 @@
 </script>
 <SettingsTitle>{humanSettingName} Settings <a href="/docs/integrations/{linkName}" target="_blank"><DocumentationLink /></a></SettingsTitle>
 
+<SettingsList>
+  <StringInput title="URL" description="The URL for your Home Assistant instance" format="uri" bind:value={settingsModel.home_assistant.url} />
 
-<div class="grid grid-cols-2 w-3/4 gap-6">
-  <div>
-    <label for="input" class="font-bold">URL</label>
-    <HelpText>The URL for your Home Assistant instance</HelpText>
-  </div>
-  <input id="url" type="text" class="border border-gray-300 rounded-md focus:outline-none p-1.5" bind:value={settingsModel.home_assistant.url}>
+  <StringInput title="Bearer Token" description="The long-lived access token that Home Intent uses to interact with Home Assistant"
+    bind:value={settingsModel.home_assistant.bearer_token} />
 
-  <div>
-    <label for="story" class="font-bold">Bearer Token</label>
-    <HelpText>The long-lived access token that Home Intent uses to interact with Home Assistant</HelpText>
-    <HelpText classes="mt-3">Instructions on <a href="/docs/integrations/home-assistant/#getting-a-bearer-token" target="_blank">getting a bearer token</a></HelpText>
-  </div>
+  <BooleanInput title="Prefer Toggle" description="Prefer to toggle instead using on or off when handling intents" bind:checked="{settingsModel.home_assistant.prefer_toggle}" />
 
-  <textarea id="story" name="story" class="text-area border border-gray-300 rounded-md focus:outline-none p-1.5"
-  rows="5" cols="40" placeholder="Paste your bearer token here. It should start with 'ey'" bind:value={settingsModel.home_assistant.bearer_token}></textarea>
+  <ArrayInput title="Entities to Ignore" description="A list of entities that shouldn't be controlled via Home Intent"
+  example="{['light.kitchen', 'fan.attic', 'switch.tv']}" bind:value={settingsModel.home_assistant.ignore_entities} />
 
-  <div>
-    <label for="story" class="font-bold">Prefer Toggle</label>
-    <HelpText>Prefer to toggle instead using on or off when handling intents</HelpText>
-    <HelpText classes="mt-3">Reason to use <a href="/docs/integrations/home-assistant/#on-prefer_toggle" target="_blank">prefer toggle</a></HelpText>
-  </div>
-  <Checkbox bind:checked={settingsModel.home_assistant.prefer_toggle}>Prefer Toggle</Checkbox>
-
-  <div class="col-start-1">
-    <label for="ignore-entities" class="font-bold">Entities to Ignore</label>
-    <HelpText>A list of entities that shouldn't be controlled via Home Intent</HelpText>
-    <HelpText classes="mt-3">
-      Example:
-      <code class="block p-2 bg-gray-300 rounded-md"><pre>
-light.kitchen
-fan.attic
-switch.tv
-      </pre></code>
-    </HelpText>
-  </div>
-
-  <textarea id="ignore-entities" name="ignore-entities" class="text-area border border-gray-300 rounded-md focus:outline-none p-1.5"
-  rows="5" cols="40" placeholder="Entities should be separated by newlines"></textarea>
-
-  <div>
-    <label for="ignore-domains" class="font-bold">Domains to Ignore</label>
-    <HelpText>A list of domains that shouldn't be controlled via Home Intent.</HelpText>
-    <HelpText classes="mt-3">
-      Example:
-      <code class="block p-2 bg-gray-300 rounded-md"><pre>
-shopping_list
-light
-remote
-      </pre></code>
-    </HelpText>
-  </div>
-
-  <textarea id="ignore-domains" name="ignore-domains" class="text-area border border-gray-300 rounded-md focus:outline-none p-1.5"
-  rows="5" cols="40" placeholder="Domains should be separated by newlines"></textarea>
-
-</div>
+  <ArrayInput title="Domains to Ignore" description="A list of domains that shouldn't be controlled via Home Intent."
+  example="{['shopping_list', 'light', 'remote']}" bind:value={settingsModel.home_assistant.ignore_domains} />
+</SettingsList>
 
 <div class="mt-5 text-xl">
   <Button>

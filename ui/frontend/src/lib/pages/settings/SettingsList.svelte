@@ -1,0 +1,1 @@
+<div class="grid grid-cols-2 w-3/4 gap-6"><slot></slot></div>
