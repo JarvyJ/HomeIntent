@@ -5,7 +5,6 @@
   import Button from "$lib/components/Button.svelte"
 
   import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
-  import HomeAssistantSettings from "$lib/pages/settings/HomeAssistantSettings.svelte";
   import NoSettings from "$lib/pages/settings/NoSettings.svelte";
   import AutoSettings from "$lib/pages/settings/AutoSettings.svelte";
 
@@ -163,7 +162,7 @@
     {#if currentSetting in settingsList}
     <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:settingsModel bind:schema={settingsList[currentSetting].schema}/>
     {:else if currentSetting in customSettingsList}
-    <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting  bind:settingsModel bind:schema={settingsList[currentSetting].schema}/>
+    <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting bind:settingsModel bind:schema={customSettingsList[currentSetting].schema}/>
     {/if}
     {/key}
   </div>
