@@ -141,11 +141,43 @@
     loaded = true
   });
 
+  async function saveSettings() {
+    // create a settings copy, so the bound settingsModel doesn't get modified (and break the UI)
+    // when submitting the settings. We'll do a full reload after save.
+    // TODO: popup a modal to confirm save
+    let settingsCopy = JSON.parse(JSON.stringify(settingsModel)) // safe to do as it's all JSON
+    for (const setting in settingsCopy) {
+      if (customComponents.has(setting)) {
+        if (customSettingsList[setting].enabled === false) {
+          delete settingsCopy[setting]
+        }
+      } else {
+        if (settingsList[setting].enabled === false) {
+          delete settingsCopy[setting]
+        }
+      }
+    }
+    console.log(settingsCopy)
+    let response = await fetch('/api/v1/settings', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(settingsCopy)
+    });
+    if (response.ok) {
+      let result = await response.json();
+      console.log(result);
+    }
+  }
+
 </script>
 
 <nav class="flex items-center bg-gray-800 text-gray-50 px-4 py-3 border-b">
   <span class="font-semibold text-3xl">Settings</span>
-  <Button>Save</Button>
+  <Button>
+    <span on:click="{saveSettings}">Save</span>
+  </Button>
 </nav>
 
 {#if loaded}
@@ -165,6 +197,11 @@
     <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting bind:settingsModel bind:schema={customSettingsList[currentSetting].schema}/>
     {/if}
     {/key}
+    <div class="mt-5 text-xl">
+      <Button>
+        <span on:click="{saveSettings}">Save</span>
+      </Button>
+    </div>
   </div>
 </div>
 {/if}

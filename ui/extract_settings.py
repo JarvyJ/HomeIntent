@@ -170,7 +170,8 @@ def merge(source, destination):
 
 
 def pseudo_serialize_settings(settings_object, settings_schema):
-    # use the json to serialize things a bit more sanely
+    # the json loads/.json() is mostly to get pydantic to serialize everything
+    # to happy types (ints/strings/etc) as yaml will try to serialize the classes
     normalize = json.loads(settings_object.json(exclude_defaults=True))
 
     # remove unused keys to better match the yaml config file
@@ -182,10 +183,12 @@ def pseudo_serialize_settings(settings_object, settings_schema):
         if normalize[key] == "No-Value-Provided":
             keys_to_remove.append(key)
 
+    print(keys_to_remove)
+
     for key in keys_to_remove:
         del normalize[key]
 
-    return normalize
+    return normalize, keys_to_remove
 
 
 if __name__ == "__main__":

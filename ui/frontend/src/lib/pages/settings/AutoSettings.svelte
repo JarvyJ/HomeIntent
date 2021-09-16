@@ -22,9 +22,3 @@
   <svelte:component this={FormElement[field.type]} {...field} bind:value="{settingsModel[currentSetting][name]}"/>
 {/each}
 </SettingsList>
-
-<div class="mt-5 text-xl">
-  <Button>
-    Save
-  </Button>
-</div>
