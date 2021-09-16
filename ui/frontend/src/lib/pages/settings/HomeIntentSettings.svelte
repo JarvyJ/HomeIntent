@@ -8,7 +8,7 @@
 </style>
 
 <script>
-  export let settingsModel
+  export let userSettings
   export let currentSetting
   export let schema
 
@@ -33,7 +33,7 @@
   </div>
 
   <div>
-    <select bind:value={settingsModel.rhasspy.sounds_device} id="sounds-device" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none">
+    <select bind:value={userSettings.rhasspy.sounds_device} id="sounds-device" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none">
       <option>default:CARD=USB</option>
       <option>default:CARD=Headphones</option>
       <option>jack</option>
@@ -48,7 +48,7 @@
   </div>
 
   <div>
-    <select bind:value={settingsModel.rhasspy.microphone_device} id="microphone-device" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none">
+    <select bind:value={userSettings.rhasspy.microphone_device} id="microphone-device" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none">
       <option>plughw</option>
       <option>Default device</option>
       <option>Something Else</option>
@@ -57,10 +57,10 @@
   </div>
 
   <BooleanInput title="Enable Beta Intents" description="Enable intents that are currently in beta to try out new features!"
-  bind:value={settingsModel.home_intent.enable_beta} />
+  bind:value={userSettings.home_intent.enable_beta} />
 
   <BooleanInput title="Enable Dangerous Intents" description="Enable intents that are known to cause recognition issues (chaos mode)"
-  bind:value={settingsModel.home_intent.enable_beta} />
+  bind:value={userSettings.home_intent.enable_beta} />
 
 </SettingsList>
 
@@ -98,11 +98,4 @@
     Use Default
   </Button>
 
-</div>
-
-
-<div class="mt-5 text-xl">
-  <Button>
-    Save
-  </Button>
 </div>
