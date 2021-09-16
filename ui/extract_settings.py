@@ -174,21 +174,21 @@ def pseudo_serialize_settings(settings_object, settings_schema):
     # to happy types (ints/strings/etc) as yaml will try to serialize the classes
     normalize = json.loads(settings_object.json(exclude_defaults=True))
 
-    # remove unused keys to better match the yaml config file
-    keys_to_remove = []
+    # remove unused default keys to better match the yaml config file
+    default_keys_to_remove = []
     for key in normalize:
         if key not in settings_schema.components_without_settings and not normalize[key]:
-            keys_to_remove.append(key)
+            default_keys_to_remove.append(key)
 
         if normalize[key] == "No-Value-Provided":
-            keys_to_remove.append(key)
+            default_keys_to_remove.append(key)
 
-    print(keys_to_remove)
+    print(default_keys_to_remove)
 
-    for key in keys_to_remove:
+    for key in default_keys_to_remove:
         del normalize[key]
 
-    return normalize, keys_to_remove
+    return normalize, default_keys_to_remove
 
 
 if __name__ == "__main__":
