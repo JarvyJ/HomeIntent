@@ -5,7 +5,6 @@
   
 
   import { capitalize_with_underscore } from "$lib/util/capitalization";
-import Button from "$lib/components/Button.svelte";
 
   const humanSettingName = capitalize_with_underscore(currentSetting)
   const linkName = currentSetting.replace("_", "-")

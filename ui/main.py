@@ -30,7 +30,7 @@ FullSettings = ExtractSettings.get()
 
 # displays any errors the user may have put into the config.yaml file manually
 @app.exception_handler(ValidationError)
-async def unicorn_exception_handler(request: Request, exc: ValidationError):
+async def yaml_config_validation_handler(request: Request, exc: ValidationError):
     return JSONResponse(
         status_code=400,
         content={"detail": exc.errors(), "title": "Something is wrong in /config/config.yaml"},

@@ -7,6 +7,7 @@
   import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
   import NoSettings from "$lib/pages/settings/NoSettings.svelte";
   import AutoSettings from "$lib/pages/settings/AutoSettings.svelte";
+  import {mergeDeep} from "$lib/util/merge.js"
 
 
   let loaded = false
@@ -18,13 +19,52 @@
   let currentSetting = "home_intent"
 
   let openapi = {}
-  let settingsModel
+  let userSettings
   let componentsWithoutSettings
   let customComponents
 
+  onMount(async () => {
+    const res = await fetch(`/openapi.json`);
+    openapi = await res.json();
+
+    let fullSettings = openapi.components.schemas.FullSettings
+    componentsWithoutSettings = new Set(fullSettings.additionalProperties["x-components-without-settings"])
+    customComponents = new Set(fullSettings.additionalProperties["x-custom-components"])
+
+    setupComponentList("#/components/schemas/FullSettings")
+    setupComponentsWithoutSettings()
+
+    await reloadUserSettings()
+  });
+
+  function setupComponentList(fullSchemaName) {
+    let schemaName = getSchemaName(fullSchemaName)
+    let schema = openapi.components.schemas[schemaName]
+
+    for (const name in schema.properties) {
+      if ("$ref" in schema.properties[name]) {
+        let settingSchemaName = getSchemaName(schema.properties[name]["$ref"])
+        let settingSchema = openapi.components.schemas[settingSchemaName]
+        if (name in settingsList) {
+          settingsList[name].schema = settingSchema
+        } else {
+          if (customComponents.has(name)) {
+            // hopefully this will work for folks.
+            customSettingsList[name] = {component: AutoSettings, enabled: false, schema:settingSchema}
+          } else {
+            settingsList[name] = {component: AutoSettings, enabled: false, schema:settingSchema}
+          }
+        }
+      }
+    }
+  }
+
+  function getSchemaName(fullSchemaName) {
+    return fullSchemaName.split("/").pop()
+  }
+
   function setupComponentsWithoutSettings() {
     for (const settingName of componentsWithoutSettings) {
-
       if (customComponents.has(settingName)) {
         customSettingsList[settingName] = {component: NoSettings, enabled:false, schema: null}
       } else {
@@ -33,23 +73,26 @@
     }
   }
 
-  function generateSettingsModel(fullSchemaName, topLevel) {
+  async function reloadUserSettings() {
+    userSettings = generateDefaultUserSettings("#/components/schemas/FullSettings")
+
+    const settings_response = await fetch(`/api/v1/settings`);
+    if (settings_response.ok) {
+      let settings = await settings_response.json();
+      mergeUserSettings(settings)
+      enableUsersSettings(settings)
+    }
+
+    loaded = true
+  }
+
+  function generateDefaultUserSettings(fullSchemaName) {
     let schemaName = getSchemaName(fullSchemaName)
     let schema = openapi.components.schemas[schemaName]
     let model = {}
     for (const name in schema.properties) {
       if ("$ref" in schema.properties[name]) {
-        model[name] = generateSettingsModel(schema.properties[name]["$ref"], false)
-        if (topLevel) {
-          let settingSchemaName = getSchemaName(schema.properties[name]["$ref"])
-          let settingSchema = openapi.components.schemas[settingSchemaName]
-          if (name in settingsList) {
-            settingsList[name].schema = settingSchema
-          } else {
-            settingsList[name] = {component: AutoSettings, enabled: false, schema:settingSchema}
-          }
-
-        }
+        model[name] = generateDefaultUserSettings(schema.properties[name]["$ref"])
       } else if ("default" in schema.properties[name]) {
         model[name] = schema.properties[name]["default"]
       } else {
@@ -60,41 +103,23 @@
     return model
   }
 
-  function getSchemaName(fullSchemaName) {
-    return fullSchemaName.split("/").pop()
-  }
-
-  // The following functions are from stack overflow https://stackoverflow.com/a/34749873
-  /**
-   * Simple object check.
-   * @param item
-   * @returns {boolean}
-   */
-   function isObject(item) {
-    return (item && typeof item === 'object' && !Array.isArray(item));
-  }
-
-  /**
-   * Deep merge two objects.
-   * @param target
-   * @param ...sources
-   */
-   function mergeDeep(target, ...sources) {
-    if (!sources.length) return target;
-    const source = sources.shift();
-
-    if (isObject(target) && isObject(source)) {
-      for (const key in source) {
-        if (isObject(source[key])) {
-          if (!target[key]) Object.assign(target, { [key]: {} });
-          mergeDeep(target[key], source[key]);
-        } else {
-          Object.assign(target, { [key]: source[key] });
-        }
+  function mergeUserSettings(settings) {
+    // did this setting by setting to enable them correctly
+    // also could've just done a mergeDeep at the root, but it gets screwy
+    // because of the `null` meaning two different things...
+   for (const setting in settings) {
+    if (settings[setting]) {
+      mergeDeep(userSettings[setting], settings[setting])
+      } else if (componentsWithoutSettings.has(setting)) {
+        userSettings[setting] = null
       }
     }
+  }
 
-    return mergeDeep(target, ...sources);
+  function enableUsersSettings(settings) {
+    for (const setting in settings) {
+      enableSetting(setting)
+    }
   }
 
   function enableSetting(setting) {
@@ -105,59 +130,14 @@
     }
   }
 
-  function mergeCurrentSettingsIntoModel(settings) {
-    // did this setting by setting to enable them correctly
-    // also could've just done a mergeDeep at the root, but it gets screwy
-    // because of the `null` meaning two different things...
-   for (const setting in settings) {
-    if (settings[setting]) {
-      mergeDeep(settingsModel[setting], settings[setting])
-        if (setting === "rhasspy") { continue; } // rhasspy settings are actually lumped into home_intent
-        enableSetting(setting)
-      } else if (componentsWithoutSettings.has(setting)) {
-        settingsModel[setting] = null
-        enableSetting(setting)
-      }
-    } 
-  }
-
-  onMount(async () => {
-    const res = await fetch(`/openapi.json`);
-    openapi = await res.json();
-
-    let fullSettings = openapi.components.schemas.FullSettings
-    componentsWithoutSettings = new Set(fullSettings.additionalProperties["x-components-without-settings"])
-    customComponents = new Set(fullSettings.additionalProperties["x-custom-components"])
-
-    settingsModel = generateSettingsModel("#/components/schemas/FullSettings", true)
-    setupComponentsWithoutSettings()
-    
-    const settings_response = await fetch(`/api/v1/settings`);
-    if (settings_response.ok) {
-      let settings = await settings_response.json();
-      mergeCurrentSettingsIntoModel(settings)
-    }
-
-    loaded = true
-  });
-
   async function saveSettings() {
-    // create a settings copy, so the bound settingsModel doesn't get modified (and break the UI)
+    // create a settings copy, so the bound userSettings doesn't get modified (and break the UI)
     // when submitting the settings. We'll do a full reload after save.
     // TODO: popup a modal to confirm save
-    let settingsCopy = JSON.parse(JSON.stringify(settingsModel)) // safe to do as it's all JSON
-    for (const setting in settingsCopy) {
-      if (customComponents.has(setting)) {
-        if (customSettingsList[setting].enabled === false) {
-          delete settingsCopy[setting]
-        }
-      } else {
-        if (settingsList[setting].enabled === false) {
-          delete settingsCopy[setting]
-        }
-      }
-    }
+    let settingsCopy = JSON.parse(JSON.stringify(userSettings)) // safe to do as it's all JSON
+    disableUnusedSettings(settingsCopy)
     console.log(settingsCopy)
+
     let response = await fetch('/api/v1/settings', {
       method: 'PUT',
       headers: {
@@ -167,7 +147,22 @@
     });
     if (response.ok) {
       let result = await response.json();
+      await reloadUserSettings()
       console.log(result);
+    }
+  }
+
+  function disableUnusedSettings(settings) {
+    for (const setting in settings) {
+      if (customComponents.has(setting)) {
+        if (customSettingsList[setting].enabled === false) {
+          delete settings[setting]
+        }
+      } else {
+        if (settingsList[setting].enabled === false) {
+          delete settings[setting]
+        }
+      }
     }
   }
 
@@ -192,9 +187,9 @@
   <div class="col-span-4 mt-5">
     {#key currentSetting}
     {#if currentSetting in settingsList}
-    <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:settingsModel bind:schema={settingsList[currentSetting].schema}/>
+    <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={settingsList[currentSetting].schema}/>
     {:else if currentSetting in customSettingsList}
-    <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting bind:settingsModel bind:schema={customSettingsList[currentSetting].schema}/>
+    <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={customSettingsList[currentSetting].schema}/>
     {/if}
     {/key}
     <div class="mt-5 text-xl">
