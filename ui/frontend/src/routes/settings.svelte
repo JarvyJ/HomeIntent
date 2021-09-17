@@ -43,6 +43,7 @@
 
     for (const name in schema.properties) {
       if ("$ref" in schema.properties[name]) {
+        if (name === "rhasspy") {continue;} // minor hack to hide Rhasspy for now.
         let settingSchemaName = getSchemaName(schema.properties[name]["$ref"])
         let settingSchema = openapi.components.schemas[settingSchemaName]
         if (name in settingsList) {
@@ -139,7 +140,7 @@
     console.log(settingsCopy)
 
     let response = await fetch('/api/v1/settings', {
-      method: 'PUT',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
       },
@@ -187,9 +188,9 @@
   <div class="col-span-4 mt-5">
     {#key currentSetting}
     {#if currentSetting in settingsList}
-    <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={settingsList[currentSetting].schema}/>
+    <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={settingsList[currentSetting].schema} customComponent={false}/>
     {:else if currentSetting in customSettingsList}
-    <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={customSettingsList[currentSetting].schema}/>
+    <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={customSettingsList[currentSetting].schema} customComponent={true}/>
     {/if}
     {/key}
     <div class="mt-5 text-xl">
