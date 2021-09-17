@@ -1,7 +1,7 @@
 from pathlib import Path
 import sys
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, File, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 from ruamel.yaml import YAML
@@ -203,11 +203,10 @@ class CustomOrDefault(str, Enum):
 
 
 @app.get("/api/v1/rhasspy/audio/effects", response_model=Dict[SoundEffect, CustomOrDefault])
-def get_effects():
+def get_sound_effects_meta():
     output = {}
     for sound_effect in SoundEffect:
-        filename = f"{sound_effect.value.replace('_', '-')}.wav"
-        custom_file_path = Path("/config") / filename
+        custom_file_path = get_custom_sound_effect_path(sound_effect)
 
         if custom_file_path.is_file():
             output[sound_effect] = CustomOrDefault.CUSTOM
@@ -215,6 +214,26 @@ def get_effects():
             output[sound_effect] = CustomOrDefault.DEFAULT
 
     return output
+
+
+def get_custom_sound_effect_path(sound_effect: SoundEffect) -> Path:
+    filename = f"{sound_effect.value.replace('_', '-')}.wav"
+    return Path("/config") / filename
+
+
+@app.post("/api/v1/rhasspy/audio/effects")
+def upload_sound_effects(sound_effect: SoundEffect, file: UploadFile = File(...)):
+    if file.content_type not in ("audio/wave", "audio/wav", "audio/x-wav", "audio/x-pn-wav"):
+        raise HTTPException(400, detail="Audio has to be in wav type")
+    file_path = get_custom_sound_effect_path(sound_effect)
+    file_path.write_bytes(file.file.read())  # using file.file since pathlib is not async
+
+
+@app.post("/api/v1/rhasspy/audio/set-default")
+def set_sound_effect_to_default(sound_effect: SoundEffect):
+    file_path = get_custom_sound_effect_path(sound_effect)
+    if file_path.is_file():
+        file_path.unlink()
 
 
 app.mount(

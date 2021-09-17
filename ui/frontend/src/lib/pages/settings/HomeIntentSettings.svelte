@@ -24,6 +24,7 @@
   import MicFill from "$lib/icons/mic-fill.svelte";
   import HelpText from "./HelpText.svelte";
 
+  let filesToUpload = {}
   let showAll = false
   let microphones = {}
   let speakers = {}
@@ -38,9 +39,13 @@
     const speaker_response = await fetch(`/api/v1/rhasspy/audio/speakers?showAll=${showAll}`);
     speakers = await speaker_response.json();
 
+    getSoundEffectInfo()
+  });
+
+  async function getSoundEffectInfo() {
     const effect_response = await fetch(`/api/v1/rhasspy/audio/effects`)
     effects = await effect_response.json()
-  });
+  }
 
   async function playTestAudio() {
     playbackMessage = "Playing"
@@ -69,6 +74,25 @@
     } else {
       response = await fetch(`/api/v1/rhasspy/audio/play-effects?sound_effect=${effect}`)
     }
+  }
+
+  async function setDefaultSoundEffect(effect) {
+    let response
+      response = await fetch(`/api/v1/rhasspy/audio/set-default?sound_effect=${effect}`, {
+      method: 'POST'})
+    await getSoundEffectInfo()
+  }
+
+  async function uploadSoundEffect(event) {
+    let data = new FormData()
+    data.append('file', event.target.files[0])
+
+    await fetch(`/api/v1/rhasspy/audio/effects?sound_effect=${event.target.name}`, {
+      method: 'POST',
+      body: data
+    }) 
+    await getSoundEffectInfo()
+
   }
 </script>
 <SettingsTitle>Home Intent Settings</SettingsTitle>
@@ -127,12 +151,14 @@
       <p class="">{capitalize_with_underscore(name)}</p>
       <HelpText>Using {capitalize_with_underscore(customOrDefault)}</HelpText>
     </div>
-    <Button>
-      Upload
-    </Button>
+    <label class="ml-auto rounded hover:bg-green-200 bg-hi-green px-3 py-1 cursor-pointer">
+      <span>Upload</span>
+      <input type="file" name={name}
+       class="hidden" accept=".wav" on:change="{uploadSoundEffect}" />
+    </label>
     {#if customOrDefault === "custom"}
     <Button>
-      Use Default
+      <span on:click="{() => setDefaultSoundEffect(name)}">Use Default</span>
     </Button>
     {/if}
   {/each}
