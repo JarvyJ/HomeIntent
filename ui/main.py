@@ -9,6 +9,10 @@ from starlette.staticfiles import StaticFiles
 import uvicorn
 
 from extract_settings import ExtractSettings, merge, pseudo_serialize_settings
+from rhasspy_api import RhasspyAPI
+import subprocess
+from enum import Enum
+from typing import Dict
 
 app = FastAPI(
     docs_url="/openapi",
@@ -24,8 +28,9 @@ app.mount(
 )
 
 CONFIG_FILE = Path("/config/config.yaml")
-
 FullSettings = ExtractSettings.get()
+SETTINGS = FullSettings(**YAML().load(CONFIG_FILE.read_text()))
+RhasspyApi = RhasspyAPI(SETTINGS.rhasspy.url)
 
 
 # displays any errors the user may have put into the config.yaml file manually
@@ -65,7 +70,7 @@ def get_settings():
         return FullSettings()
 
 
-@app.put("/api/v1/settings", response_model=FullSettings, response_model_exclude_unset=True)
+@app.post("/api/v1/settings", response_model=FullSettings, response_model_exclude_unset=True)
 def update_settings(settings: FullSettings):
     """
     This endpoint will convert the JSON back to `/config/config.yaml` discarding any default values
@@ -118,6 +123,98 @@ def remove_disabled_nosettings_components_from_merged_config(config_contents, se
     components_to_remove = current_nosetting_components.difference(updated_nosetting_components)
     for component in components_to_remove:
         del config_contents[component]
+
+
+@app.get("/api/v1/rhasspy/audio/microphones")
+def get_rhasspy_microphones(show_all: bool = False):
+    rhasspy_microphones = RhasspyApi.get("/api/microphones")
+    if show_all:
+        return rhasspy_microphones
+    else:
+        small_list = {}
+        for mic_id, name in rhasspy_microphones.items():
+            if "(hw:" in name:
+                small_list[mic_id] = name
+        print(small_list)
+        return small_list
+
+
+@app.get("/api/v1/rhasspy/audio/speakers")
+def get_rhasspy_speakers(show_all: bool = True):
+    rhasspy_speakers = RhasspyApi.get("/api/speakers")
+    if show_all:
+        return rhasspy_speakers
+    else:
+        small_list = {}
+        for speaker_id, name in rhasspy_speakers.items():
+            if speaker_id.startswith("default:"):
+                small_list[speaker_id] = name
+
+        return small_list
+
+
+@app.get("/api/v1/rhasspy/audio/test-speakers")
+def test_speakers(device: str = None):
+    output = play_file("./alarm2.wav", device)
+    if output.returncode != 0:
+        raise HTTPException(
+            400,
+            detail={
+                "stdout": output.stdout.decode("utf-8"),
+                "stderr": output.stderr.decode("utf-8"),
+            },
+        )
+
+
+def play_file(file, device):
+    if device:
+        output = subprocess.run(
+            ["aplay", "-D", device, "-t", "wav", file], check=False, capture_output=True
+        )
+
+    else:
+        output = subprocess.run(["aplay", "-t", "wav", file], check=False, capture_output=True)
+
+    return output
+
+
+class SoundEffect(str, Enum):
+    BEEP_HIGH = "beep_high"
+    BEEP_LOW = "beep_low"
+    ERROR = "error"
+
+
+@app.get("/api/v1/rhasspy/audio/play-effects")
+def play_effects(sound_effect: SoundEffect, device: str = None):
+    filename = f"{sound_effect.value.replace('_', '-')}.wav"
+    custom_file_path = Path("/config") / filename
+    file_path = Path(__file__).parent.resolve().parent / "home_intent/default_configs" / filename
+
+    if custom_file_path.is_file():
+        play_file(custom_file_path, device)
+    else:
+        play_file(file_path, device)
+    return file_path
+
+
+class CustomOrDefault(str, Enum):
+    CUSTOM = "custom"
+    DEFAULT = "default"
+
+
+@app.get("/api/v1/rhasspy/audio/effects", response_model=Dict[SoundEffect, CustomOrDefault])
+def get_effects():
+    output = {}
+    for sound_effect in SoundEffect:
+        filename = f"{sound_effect.value.replace('_', '-')}.wav"
+        custom_file_path = Path("/config") / filename
+
+        if custom_file_path.is_file():
+            output[sound_effect] = CustomOrDefault.CUSTOM
+        else:
+            output[sound_effect] = CustomOrDefault.DEFAULT
+
+    return output
 
 
 app.mount(
