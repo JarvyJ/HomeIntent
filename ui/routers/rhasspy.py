@@ -77,7 +77,9 @@ class SoundEffect(str, Enum):
 def play_effects(sound_effect: SoundEffect, device: str = None):
     filename = f"{sound_effect.value.replace('_', '-')}.wav"
     custom_file_path = Path("/config") / filename
-    file_path = Path(__file__).parent.resolve().parent / "home_intent/default_configs" / filename
+    file_path = (
+        Path(__file__).parent.parent.resolve().parent / "home_intent/default_configs" / filename
+    )
 
     if custom_file_path.is_file():
         play_file(custom_file_path, device)

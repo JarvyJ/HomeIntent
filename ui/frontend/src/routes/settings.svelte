@@ -43,7 +43,6 @@
 
     for (const name in schema.properties) {
       if ("$ref" in schema.properties[name]) {
-        if (name === "rhasspy") {continue;} // minor hack to hide Rhasspy for now.
         let settingSchemaName = getSchemaName(schema.properties[name]["$ref"])
         let settingSchema = openapi.components.schemas[settingSchemaName]
         if (name in settingsList) {
