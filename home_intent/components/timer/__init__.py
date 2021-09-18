@@ -37,8 +37,12 @@ class Timer:
             "set timer (<time>){seconds:!int} [($partial_time)] seconds",
         ]
     )
-    def set_timer(self, hours=None, minutes=None, seconds=None, partial_time=None):
-        timer_duration = timedelta(hours=hours or 0, minutes=minutes or 0, seconds=seconds or 0,)
+    def set_timer(
+        self, hours: int = None, minutes: int = None, seconds: int = None, partial_time=None
+    ):
+        timer_duration = timedelta(
+            hours=int(hours or 0), minutes=int(minutes or 0), seconds=int(seconds or 0),
+        )
         if timer_duration == timedelta(0):
             raise TimerException("Timer has to be set for more than 0 seconds")
         if partial_time:
