@@ -145,18 +145,18 @@
 
 <div class="text-lg grid grid-cols-4 w-1/2 items-center gap-x-5 gap-y-6">
 
-  {#each Object.entries(effects) as [name, customOrDefault] (name)}
+  {#each Object.entries(effects) as [name, meta] (name)}
     <span class="text-2xl cursor-pointer justify-self-end col-start-1" on:click="{() => playSoundEffect(name)}"><PlayCircleFill /></span>
     <div>
       <p class="">{capitalize_with_underscore(name)}</p>
-      <HelpText>Using {capitalize_with_underscore(customOrDefault)}</HelpText>
+      <HelpText>Using {capitalize_with_underscore(meta.custom_or_default)}</HelpText>
     </div>
     <label class="ml-auto rounded hover:bg-green-200 bg-hi-green px-3 py-1 cursor-pointer">
       <span>Upload</span>
       <input type="file" name={name}
        class="hidden" accept=".wav" on:change="{uploadSoundEffect}" />
     </label>
-    {#if customOrDefault === "custom"}
+    {#if meta.custom_or_default === "custom"}
     <Button>
       <span on:click="{() => setDefaultSoundEffect(name)}">Use Default</span>
     </Button>
