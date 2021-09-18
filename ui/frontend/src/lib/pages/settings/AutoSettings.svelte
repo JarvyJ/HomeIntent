@@ -1,5 +1,6 @@
 <script>
   export let currentSetting = ""
+  export let customComponent
   export let userSettings
   export let schema
 
@@ -14,7 +15,7 @@
   const linkName = currentSetting.replace("_", "-")
 </script>
 
-<SettingsTitle>{humanSettingName} Settings <a href="/docs/integrations/{linkName}" target="_blank"><DocumentationLink /></a></SettingsTitle>
+<SettingsTitle>{humanSettingName} Settings {#if !customComponent}<a href="/docs/integrations/{linkName}" target="_blank"><DocumentationLink /></a>{/if}</SettingsTitle>
 
 <SettingsList>
 {#each Object.entries(schema.properties) as [name, field] (name)}
