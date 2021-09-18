@@ -60,7 +60,11 @@ class HomeIntent:
     def register(self, class_instance, intents: Intents):
         LOGGER.info(f"Verifying sentences' slots for {intents.name}...")
 
-        customization_filestem = "/".join(intents.name.split(".")[1:])
+        if intents.name.startswith("home_intent.components"):
+            customization_filestem = "/".join(intents.name.split(".")[2:])
+        else:
+            customization_filestem = intents.name
+
         customization_file = PosixPath(f"/config/customizations/{customization_filestem}.yaml")
         if customization_file.is_file():
             intents.handle_customization(customization_file, class_instance)
