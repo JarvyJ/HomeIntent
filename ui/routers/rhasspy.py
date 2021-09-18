@@ -43,7 +43,7 @@ def get_rhasspy_speakers(show_all: bool = True):
 
 @router.get("/rhasspy/audio/test-speakers")
 def test_speakers(device: str = None):
-    output = play_file("./alarm2.wav", device)
+    output = play_file("./test-sound.wav", device)
     if output.returncode != 0:
         raise HomeIntentHTTPException(
             400,
