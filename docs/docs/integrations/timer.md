@@ -21,5 +21,5 @@ timer:
 !!! quote "Note"
     We did try allowing "set timer *for* 30 seconds", but found that the "for" would routintely get confused with a "four" and the timer would be set incorrectly. So it's been removed for now.
 
-## Advaned Customization
-The timer components can be customized using the [customization json](../getting-started/advanced-features/component-customization.md) with the filename `/config/customizations/timer.md`. The alarm sound can be changed by placing a wav file at `/config/timer/alarm.wav`.
+## Advanced Customization
+The timer components can be customized using the [customization json](../getting-started/advanced-features/component-customization.md) with the filename `/config/customizations/timer.yaml`. The alarm sound can be changed by placing a wav file at `/config/timer/alarm.wav`.
