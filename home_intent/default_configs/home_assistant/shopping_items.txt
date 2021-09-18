@@ -164,8 +164,7 @@ lettuce
 light bulbs
 lime
 lotion
-lysol cleaning wipes
-lysol toiled bowl cleaner
+cleaning wipes
 margarine
 mayo
 mayonnaise
@@ -285,7 +284,7 @@ thousand island
 thyme
 tide
 tissue
-toilet bowl cleaners
+toilet bowl cleaner
 toilet paper
 tomato
 tomato paste

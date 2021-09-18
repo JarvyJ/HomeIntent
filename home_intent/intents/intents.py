@@ -3,8 +3,7 @@ import logging
 from typing import Callable, Dict, List
 
 from .customization_mixin import IntentCustomizationMixin, SlotCustomization
-from .util import (IntentException, Sentence, _check_if_args_in_sentence_slots,
-                   _sanitize_slot)
+from .util import IntentException, Sentence, _check_if_args_in_sentence_slots, _sanitize_slot
 
 LOGGER = logging.getLogger(__name__)
 
@@ -49,7 +48,7 @@ class Intents(IntentCustomizationMixin):
             if func.__name__ in self.slot_modifications:
                 synonym_values = self._handle_slot_modification(func.__name__, slot_values)
 
-            slot_list = [f"{_sanitize_slot(x)}{{{func.__name__}}}" for x in slot_values]
+            slot_list = [f"({_sanitize_slot(x)}){{{func.__name__}}}" for x in slot_values]
             slot_list.extend(synonym_values)
 
             return slot_list
@@ -142,7 +141,7 @@ class Intents(IntentCustomizationMixin):
                     if slot_addition in slot_dictionary:
                         del slot_dictionary[slot_addition]
                     non_dictionary_additions.append(
-                        f"{_sanitize_slot(slot_addition)}{{{func_name}}}"
+                        f"({_sanitize_slot(slot_addition)}){{{func_name}}}"
                     )
 
                 elif isinstance(slot_addition, dict):
