@@ -66,7 +66,7 @@ class Intents(IntentCustomizationMixin):
             @wraps(func)
             def wrapper(*arg, **kwargs):
                 LOGGER.info(f"Running function {func.__name__}")
-                func(*arg, **kwargs)
+                return func(*arg, **kwargs)
 
             return wrapper
 
