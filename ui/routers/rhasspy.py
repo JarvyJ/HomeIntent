@@ -43,12 +43,14 @@ def get_rhasspy_speakers(show_all: bool = True):
 
 @router.get("/rhasspy/audio/test-speakers")
 def test_speakers(device: str = None):
-    output = play_file("./test-sound.wav", device)
+    test_file = str(Path(__file__).resolve().parent.parent / "test-sound.wav")
+    output = play_file(test_file, device)
     if output.returncode != 0:
         raise HomeIntentHTTPException(
             400,
             title=f"Error playing back sound effect from sound device: {device}",
             detail={
+                "filename": test_file,
                 "stdout": output.stdout.decode("utf-8"),
                 "stderr": output.stderr.decode("utf-8"),
             },
