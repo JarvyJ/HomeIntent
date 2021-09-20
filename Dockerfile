@@ -1,4 +1,6 @@
 FROM python:3.7-slim
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 WORKDIR /usr/src/app/docs
 
 COPY docs/requirements.txt ./
@@ -38,7 +40,6 @@ RUN npm run build
 FROM rhasspy/rhasspy:2.5.10
 WORKDIR /usr/src/app
 
-ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PATH="/venv/bin:$PATH"
 
