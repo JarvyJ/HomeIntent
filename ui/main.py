@@ -36,12 +36,14 @@ app.include_router(rhasspy.router, prefix="/api/v1", tags=["Rhasspy Audio"])
 
 app.mount(
     "/docs/",
-    StaticFiles(directory=f"{Path(__file__).parent.resolve().parent}/docs/site", html=True),
+    StaticFiles(directory=Path(__file__).parent.resolve().parent / "docs/site", html=True),
     name="frontend",
 )
 
 app.mount(
-    "/", StaticFiles(directory="frontend/build", html=True), name="frontend",
+    "/",
+    StaticFiles(directory=Path(__file__).parent.resolve() / "frontend/build", html=True),
+    name="frontend",
 )
 
 if __name__ == "__main__":

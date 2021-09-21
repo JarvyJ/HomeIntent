@@ -99,12 +99,12 @@
 
 <SettingsList>
   <div>
-    <label for="sounds-device" class="font-bold">Sounds Devices</label>
-    <HelpText>The URL for your Home Assistant instance</HelpText>
+    <label for="sounds-device" class="font-bold">Playback Devices</label>
+    <HelpText>Try a 'default:' or 'sysdefault:' first and click the play icon to test it</HelpText>
   </div>
 
   <div>
-    <select bind:value={userSettings.rhasspy.sounds_device} id="sounds-device" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none">
+    <select bind:value={userSettings.rhasspy.sounds_device} id="sounds-device" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none w-full pr-12">
       {#each Object.entries(speakers) as [id, name] (id)}
       <option value="{id}">{name} ({id})</option>
       {/each}
@@ -117,11 +117,11 @@
 
   <div>
     <label for="microphone-device" class="font-bold">Microphone Devices</label>
-    <HelpText>The URL for your Home Assistant instance</HelpText>
+    <HelpText>Select a microphone from the dropdown and click the icon to test it. <br />Be sure to click "Save" once you have your settings dialed in!</HelpText>
   </div>
 
   <div>
-    <select bind:value={userSettings.rhasspy.microphone_device} id="microphone-device" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none">
+    <select bind:value={userSettings.rhasspy.microphone_device} id="microphone-device" class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none w-full pr-12">
       {#each Object.entries(microphones) as [id, name] (id)}
       <option value="{id}">{name}</option>
       {/each}
