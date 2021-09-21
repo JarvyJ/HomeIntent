@@ -1,8 +1,13 @@
 """Start up HomeIntent"""
 import importlib
 import logging
+from logging.handlers import HTTPHandler
 from pathlib import Path
 import sys
+
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3 import Retry
 
 # small workaround so you can launch from commandline or as a module
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -16,6 +21,29 @@ class HomeIntentImportException(Exception):
     pass
 
 
+class CustomHttpHandler(logging.Handler):
+    def __init__(
+        self, url: str, log_format: str = "%(asctime)s %(levelname)s %(name)s %(message)s"
+    ):
+        self.url = url
+        self.session = requests.Session()
+        self.session.headers.update({"Content-Type": "application/json"})
+
+        super().__init__()
+        self.setFormatter(logging.Formatter(log_format))
+
+    def emit(self, record):
+        log_record = self.format(record)
+        try:
+            self.session.post(self.url, json={"data": log_record}, timeout=1)
+
+        # just ignore any errors, if it doesnt post, that's okay. It's just missing a log in the frontend.
+        except requests.Timeout:
+            pass
+        except requests.ConnectionError:
+            pass
+
+
 def main():
     _setup_logging()
     settings = Settings()
@@ -26,8 +54,9 @@ def main():
 
 def _setup_logging():
     logging.basicConfig(
-        format="%(asctime)s %(levelname)s %(threadName)s %(name)s %(message)s", level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s %(message)s", level=logging.INFO,
     )
+    logging.root.addHandler(CustomHttpHandler("http://localhost:11102/api/v1/logs"))
 
 
 def _load_integrations(settings: Settings, home_intent: HomeIntent):

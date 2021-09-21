@@ -7,6 +7,7 @@
   import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
   import NoSettings from "$lib/pages/settings/NoSettings.svelte";
   import AutoSettings from "$lib/pages/settings/AutoSettings.svelte";
+  import SectionBar from '$lib/components/SectionBar.svelte';
   import {mergeDeep} from "$lib/util/merge.js"
 
 
@@ -168,12 +169,11 @@
 
 </script>
 
-<nav class="flex items-center bg-gray-800 text-gray-50 px-4 py-3 border-b">
-  <span class="font-semibold text-3xl">Settings</span>
-  <Button>
+<SectionBar title="Settings">
+<Button>
     <span on:click="{saveSettings}">Save</span>
   </Button>
-</nav>
+</SectionBar>
 
 {#if loaded}
 <div class="bg-gray-900 text-gray-50 grid grid-cols-5">
