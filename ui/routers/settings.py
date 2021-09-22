@@ -1,9 +1,12 @@
+from pathlib import Path
+import subprocess
 import sys
 
 from fastapi import APIRouter
 from ruamel.yaml import YAML
 
 from config import CONFIG_FILE, FullSettings
+from exceptions import HomeIntentHTTPException
 from extract_settings import merge, pseudo_serialize_settings
 
 router = APIRouter()
@@ -88,3 +91,24 @@ def remove_disabled_nosettings_components_from_merged_config(config_contents, se
     components_to_remove = current_nosetting_components.difference(updated_nosetting_components)
     for component in components_to_remove:
         del config_contents[component]
+
+
+@router.get("/restart", status_code=201)
+def restart_home_intent():
+    # supervisorctl -c /usr/src/app/setup/supervisord.conf restart home_intent
+    path = Path(__file__).parent.resolve().parent.parent / "setup/supervisord.conf"
+    output = subprocess.run(
+        ["supervisorctl", "-c", path, "restart", "home_intent"], check=False, capture_output=True
+    )
+    if output.returncode != 0:
+        raise HomeIntentHTTPException(
+            400,
+            title="Error while restarting Home Intent",
+            detail={
+                "supervisord.conf": str(path),
+                "stdout": output.stdout.decode("utf-8"),
+                "stderr": output.stderr.decode("utf-8"),
+            },
+        )
+
+    print("not sure how yet...")

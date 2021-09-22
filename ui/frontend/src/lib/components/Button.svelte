@@ -1,1 +1,1 @@
-<button class="ml-auto rounded hover:bg-green-200 bg-hi-green px-3 py-1"><slot></slot></button>
+<button class="rounded hover:bg-green-200 bg-hi-green px-3 py-1"><slot></slot></button>
