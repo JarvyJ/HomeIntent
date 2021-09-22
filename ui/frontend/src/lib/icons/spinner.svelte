@@ -1,13 +1,12 @@
 <style>
 .spinner {
-  animation: rotate 2s linear infinite;
+  animation: rotate 2.5s linear infinite;
 }
 
 .path {
-    /*stroke: hsl(210, 70, 75);*/
-    stroke: white;
+    stroke: currentColor;
     stroke-linecap: round;
-    animation: dash 1.9s ease-in-out infinite;
+    animation: dash 2s ease-in-out infinite;
   }
 
 @keyframes rotate {

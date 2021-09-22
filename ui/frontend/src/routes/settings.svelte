@@ -197,10 +197,13 @@
 </script>
 
 <SectionBar title="Settings">
-  <span class="ml-auto rounded hover:bg-red-200 bg-red-500 px-3 py-1 mr-4 cursor-pointer" on:click="{restart}"><Spinner /> {restartText}</span>
-  <Button>
-    <span on:click="{saveSettings}">Save</span>
-  </Button>
+  <div class="flex items-center gap-3 ml-auto">
+    <Spinner />
+    <span class="rounded hover:bg-red-200 bg-red-500 px-3 py-1 cursor-pointer animate-pulse" on:click="{restart}">{restartText}</span>
+    <Button>
+      <span on:click="{saveSettings}">Save</span>
+    </Button>
+  </div>
 </SectionBar>
 
 {#if loaded}
