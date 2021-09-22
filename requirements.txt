@@ -10,5 +10,4 @@ uvicorn[standard]==0.15.0
 fastapi==0.68.1
 aiofiles==0.7.0
 python-multipart==0.0.5
-broadcaster==0.2.0
 ruamel-yaml==0.17.16
