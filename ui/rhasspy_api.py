@@ -1,0 +1,1 @@
+../home_intent/rhasspy_api.py
