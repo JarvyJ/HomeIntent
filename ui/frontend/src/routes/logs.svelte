@@ -62,7 +62,7 @@
 
 </script>
 
-<SectionBar title="Logs">
+<SectionBar title="Live Logs">
   <span class="flex items-center ml-auto">
     <Checkbox title="Word Wrap" bind:value={word_wrap} />
     <ul class="flex items-center justify-evenly w-20 ml-8">

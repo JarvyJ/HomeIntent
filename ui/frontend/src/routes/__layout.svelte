@@ -47,7 +47,7 @@
         {/if}
       </a></li>
 
-      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/customize")}"><a class="block" href="/customize"><CustomizeIcon />
+<!--       <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/customize")}"><a class="block" href="/customize"><CustomizeIcon />
         {#if visible}
           <span class="ml-4">Customize</span>
         {/if}
@@ -57,11 +57,11 @@
         {#if visible}
           <span class="ml-4">Satellites</span>
         {/if}
-      </a></li>
+      </a></li> -->
 
       <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/logs")}"><a class="block" href="/logs"><LogsIcon />
         {#if visible}
-          <span class="ml-4">Logs</span>
+          <span class="ml-4">Live Logs</span>
         {/if}
       </a></li>
 
