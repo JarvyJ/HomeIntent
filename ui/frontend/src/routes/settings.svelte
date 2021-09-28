@@ -25,6 +25,7 @@
   import AutoSettings from "$lib/pages/settings/AutoSettings.svelte";
   import SectionBar from '$lib/components/SectionBar.svelte';
   import {mergeDeep} from "$lib/util/merge.js"
+import PageLayout from './PageLayout.svelte';
 
 
   let loaded = false
@@ -196,38 +197,40 @@
 
 </script>
 
-<SectionBar title="Settings">
-  <div class="flex items-center gap-3 ml-auto">
-    <Spinner />
-    <span class="rounded hover:bg-red-200 bg-red-500 px-3 py-1 cursor-pointer animate-pulse" on:click="{restart}">{restartText}</span>
-    <Button>
-      <span on:click="{saveSettings}">Save</span>
-    </Button>
-  </div>
-</SectionBar>
-
-{#if loaded}
-<div class="bg-gray-900 text-gray-50 grid grid-cols-5">
-  <div class="h-screen">
-    <ComponentList bind:settingsList bind:currentSetting/>
-    {#if Object.keys(customSettingsList).length !== 0}
-    <h3 class="text-2xl ml-5 mt-7">Custom Components</h3>
-    <ComponentList bind:settingsList={customSettingsList} bind:currentSetting/>
-    {/if}
-  </div>
-  <div class="col-span-4 mt-5">
-    {#key currentSetting}
-    {#if currentSetting in settingsList}
-    <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={settingsList[currentSetting].schema} customComponent={false}/>
-    {:else if currentSetting in customSettingsList}
-    <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={customSettingsList[currentSetting].schema} customComponent={true}/>
-    {/if}
-    {/key}
-    <div class="mt-5 text-xl">
+<PageLayout title="Settings">
+  <svelte:fragment slot="sectionBar">
+    <div class="flex items-center gap-3 ml-auto">
+      <Spinner />
+      <span class="rounded hover:bg-red-200 bg-red-500 px-3 py-1 cursor-pointer animate-pulse" on:click="{restart}">{restartText}</span>
       <Button>
         <span on:click="{saveSettings}">Save</span>
       </Button>
     </div>
+  </svelte:fragment>
+
+  {#if loaded}
+  <div class="bg-gray-900 text-gray-50 grid grid-cols-5">
+    <div class="h-screen">
+      <ComponentList bind:settingsList bind:currentSetting/>
+      {#if Object.keys(customSettingsList).length !== 0}
+      <h3 class="text-2xl ml-5 mt-7">Custom Components</h3>
+      <ComponentList bind:settingsList={customSettingsList} bind:currentSetting/>
+      {/if}
+    </div>
+    <div class="col-span-4 mt-5">
+      {#key currentSetting}
+      {#if currentSetting in settingsList}
+      <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={settingsList[currentSetting].schema} customComponent={false}/>
+      {:else if currentSetting in customSettingsList}
+      <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={customSettingsList[currentSetting].schema} customComponent={true}/>
+      {/if}
+      {/key}
+      <div class="mt-5 text-xl">
+        <Button>
+          <span on:click="{saveSettings}">Save</span>
+        </Button>
+      </div>
+    </div>
   </div>
-</div>
-{/if}
+  {/if}
+</PageLayout>

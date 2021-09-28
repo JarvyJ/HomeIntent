@@ -2,6 +2,9 @@ from collections import defaultdict
 from typing import Dict, List
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
+from pathlib import Path
+import subprocess
+from exceptions import HomeIntentHTTPException
 
 router = APIRouter()
 
@@ -51,13 +54,39 @@ async def logs_ws(websocket: WebSocket):
         websocket_manager.disconnect("logs", websocket)
 
 
+# TODO: get my dependency injection working, and get this out of here!
+@router.get("/api/v1/restart", status_code=201)
+async def restart_home_intent():
+    # supervisorctl -c /usr/src/app/setup/supervisord.conf restart home_intent
+    path = Path(__file__).parent.resolve().parent.parent / "setup/supervisord.conf"
+    await websocket_manager.broadcast("jobs/restart", "Restarting the Home Intent process...")
+    output = subprocess.run(
+        ["supervisorctl", "-c", path, "restart", "home_intent"], check=False, capture_output=True
+    )
+    if output.returncode != 0:
+        await websocket_manager.broadcast(
+            "jobs/restart", f"Error restarting Home Intent: {output.stdout.decode('utf-8')}"
+        )
+        raise HomeIntentHTTPException(
+            400,
+            title="Error while restarting Home Intent",
+            detail={
+                "supervisord.conf": str(path),
+                "stdout": output.stdout.decode("utf-8"),
+                "stderr": output.stderr.decode("utf-8"),
+            },
+        )
+
+    await websocket_manager.broadcast("jobs/restart", "Process has been started...")
+
+
 @router.post("/api/v1/jobs/restart")
 async def update_restart_status(body: LogFormat):
     await websocket_manager.broadcast("jobs/restart", body.data)
 
 
 @router.websocket("/ws/jobs/restart")
-async def logs_ws(websocket: WebSocket):
+async def restart_ws(websocket: WebSocket):
     await websocket_manager.connect("jobs/restart", websocket)
     try:
         while True:
