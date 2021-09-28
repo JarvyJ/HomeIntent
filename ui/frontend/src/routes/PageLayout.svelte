@@ -3,9 +3,9 @@
 	// pages and have the restart status be correct
 
 	// Waiting on this: https://github.com/sveltejs/kit/issues/627
-	export let title
+	export let title;
 
-	import SectionBar from "$lib/components/SectionBar.svelte";
+	import SectionBar from '$lib/components/SectionBar.svelte';
 </script>
 
 <SectionBar title="{title}"><slot name="sectionBar"></slot></SectionBar>

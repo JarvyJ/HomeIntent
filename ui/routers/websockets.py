@@ -1,10 +1,11 @@
 from collections import defaultdict
-from typing import Dict, List
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from pydantic import BaseModel
+from exceptions import HomeIntentHTTPException
 from pathlib import Path
 import subprocess
-from exceptions import HomeIntentHTTPException
+from typing import Dict, List
+
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from pydantic import BaseModel
 
 router = APIRouter()
 

@@ -1,16 +1,16 @@
 <script>
-  export let title
-  export let description
-  export let example
-  export let value
+  export let title;
+  export let description;
+  export let example;
+  export let value;
 
-  import HelpText from "../HelpText.svelte";
+  import HelpText from '../HelpText.svelte';
 
-  let textAreaValue
+  let textAreaValue;
 
-  $: value = textAreaValue.split("\n")
+  $: value = textAreaValue.split('\n');
   if (value) {
-    textAreaValue = value.join("\n")
+    textAreaValue = value.join('\n');
   }
 </script>
 
@@ -20,12 +20,22 @@
   {#if example}
   <HelpText classes="mt-3">
     Example:
-    <code class="block p-2 bg-gray-300 rounded-md"><pre>
+    <code class="block p-2 bg-gray-300 rounded-md">
+      <pre>
 {example.join("\n")}
-    </pre></code>
+    </pre
+      >
+    </code>
   </HelpText>
   {/if}
 </div>
 
-<textarea id="ignore-entities" name="ignore-entities" class="text-area border border-gray-300 rounded-md focus:outline-none p-1.5"
-rows="5" cols="40" placeholder="Entities should be separated by newlines" bind:value="{textAreaValue}"></textarea>
+<textarea
+  id="ignore-entities"
+  name="ignore-entities"
+  class="text-area border border-gray-300 rounded-md focus:outline-none p-1.5"
+  rows="5"
+  cols="40"
+  placeholder="Entities should be separated by newlines"
+  bind:value="{textAreaValue}"
+></textarea>

@@ -1,3 +1,4 @@
+from exceptions import HomeIntentHTTPException
 from pathlib import Path
 import subprocess
 import sys
@@ -6,7 +7,6 @@ from fastapi import APIRouter
 from ruamel.yaml import YAML
 
 from config import CONFIG_FILE, FullSettings
-from exceptions import HomeIntentHTTPException
 from extract_settings import merge, pseudo_serialize_settings
 
 router = APIRouter()
