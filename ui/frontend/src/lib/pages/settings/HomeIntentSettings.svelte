@@ -2,7 +2,7 @@
   .chevron-down {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23f9fafb' fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position-x: 94%;
+    background-position-x: 97%;
     background-position-y: center;
   }
 </style>
@@ -30,12 +30,15 @@
   let speakers = {};
   let effects = {};
   let playbackMessage = 'Click the play icon to test the audio device';
-  let microphoneMessage = 'Click the mic to test out the microphone';
-  const dropdownStyle = "border chevron-down p-1.5 pr-8 dark:border-gray-500 rounded-md appearance-none w-full pr-12 dark:bg-gray-800";
+  let microphoneMessage = 'Click the mic icon, then speak into the mic for a couple of seconds';
+  const dropdownStyle = "border chevron-down p-1.5 pr-12 dark:border-gray-500 rounded-md appearance-none w-full dark:bg-gray-800";
 
   onMount(async () => {
     const mic_response = await fetch(`/api/v1/rhasspy/audio/microphones?showAll=${showAll}`);
     microphones = await mic_response.json();
+    if (microphones === null || Object.entries(microphones).length === 0) {
+      microphoneMessage = "No mics found! Try restarting Home Intent and then reloading this page."
+    }
 
     const speaker_response = await fetch(`/api/v1/rhasspy/audio/speakers?showAll=${showAll}`);
     speakers = await speaker_response.json();
@@ -58,16 +61,24 @@
     } else {
       response = await fetch(`/api/v1/rhasspy/audio/test-speakers`);
     }
-    if (!response.ok) {
-      playbackMessage = 'Unable to play, try another playback device';
-    } else {
+    if (response.ok) {
       playbackMessage = 'Finished Playing';
+    } else {
+      playbackMessage = 'Unable to play, try another playback device';
     }
   }
 
-  async function recordAndPlayback() {
-    microphoneMessage = 'Recording...';
-    microphoneMessage = 'Playing Back...';
+  async function testMicrophones() {
+    microphoneMessage = 'Recording audio for a couple of seconds... Be sure to say something!';
+    const response = await fetch(
+      `/api/v1/rhasspy/audio/test-microphones`
+    );
+    if (response.ok) {
+      microphones = await response.json();
+      microphoneMessage = "The dropdown has been updated to only show working mics"
+    } else {
+      microphoneMessage = "Unable to record sound. Try restarting"
+    }
   }
 
   async function playSoundEffect(effect) {
@@ -143,7 +154,7 @@
       {/each}
     </select>
     <div>
-      <span class="ml-3 cursor-pointer" on:click="{recordAndPlayback}"><MicFill /></span>
+      <span class="ml-3 cursor-pointer" on:click="{testMicrophones}"><MicFill /></span>
       <span>{microphoneMessage}</span>
     </div>
   </div>

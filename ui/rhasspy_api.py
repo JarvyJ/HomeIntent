@@ -12,7 +12,8 @@ class RhasspyError(Exception):
 class RhasspyAPI:
     def __init__(self, url):
         transport = httpx.AsyncHTTPTransport(retries=3)
-        self.session = httpx.AsyncClient(transport=transport)
+        timeout = httpx.Timeout(60)
+        self.session = httpx.AsyncClient(transport=transport, timeout=timeout)
         self.session.headers.update(
             {"Content-Type": "application/json", "accept": "application/json"}
         )
