@@ -67,13 +67,13 @@
   }
 </script>
 
-<nav class="flex items-center bg-gray-800 text-gray-50 px-4 py-3 border-b z-10">
+<nav class="flex items-center px-4 py-3 border-b border-gray-700">
   <span class="font-semibold text-3xl">{title}</span>
   <slot></slot>
 </nav>
 
 {#if restartSocket.messages.length > 0}
-<div class="m-1 py-4 px-5 border rounded bg-gray-800 text-gray-50 z-0" transition:slide>
+<div class="m-4 py-4 px-5 border rounded bg-gray-800 border-gray-500" transition:slide>
   <div class="text-2xl mb-3">{restartSocket.messages[restartSocket.messages.length - 1]}</div>
   <progress value="{$progress}" class="w-full"></progress>
 </div>

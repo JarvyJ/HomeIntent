@@ -182,7 +182,7 @@
 <PageLayout title="Settings">
   <svelte:fragment slot="sectionBar">
     <div class="flex items-center gap-3 ml-auto">
-      <span class="rounded hover:bg-red-200 bg-red-500 px-3 py-1 cursor-pointer" on:click="{restart}">Restart</span>
+      <span class="rounded hover:bg-red-700 bg-red-500 px-3 py-1 cursor-pointer" on:click="{restart}">Restart</span>
       <Button>
         <span on:click="{saveSettings}">Save</span>
       </Button>
@@ -190,7 +190,7 @@
   </svelte:fragment>
 
   {#if loaded}
-  <div class="bg-gray-900 text-gray-50 grid grid-cols-5">
+  <div class="grid grid-cols-5">
     <div class="h-screen">
       <ComponentList bind:settingsList bind:currentSetting/>
       {#if Object.keys(customSettingsList).length !== 0}

@@ -50,8 +50,8 @@
 
 </script>
 
-<nav class="border-r h-screen fixed bg-gray-800 text-gray-50" style="width: {navWidth}px;">
-  <div class="py-3 px-4 bg-hi-green border-b text-2xl">
+<nav class="border-r border-gray-700 h-screen fixed bg-gray-900 text-gray-50" style="width: {navWidth}px;">
+  <div class="py-3 px-4 bg-hi-green border-b border-gray-700 text-2xl">
     <span on:click="{() => menuExpanded = !menuExpanded}"><HomeIntentWhite /></span>
     {#if menuExpanded} Home Intent {/if}
   </div>
@@ -78,5 +78,7 @@
 </nav>
 
 <main style="margin-left: {navWidth}px;">
-  <slot></slot>
+  <div class="bg-gray-900 text-gray-50">
+    <slot></slot>
+  </div>
 </main>

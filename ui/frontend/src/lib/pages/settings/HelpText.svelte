@@ -2,4 +2,4 @@
 	export let classes = '';
 </script>
 
-<p class="text-sm text-gray-500 {classes}"><slot></slot></p>
+<p class="text-sm text-gray-400 {classes}"><slot></slot></p>

@@ -34,7 +34,7 @@
 <input
   id="{id}"
   type="text"
-  class="border border-gray-300 rounded-md focus:outline-none p-1.5"
+  class="border bg-gray-800 border-gray-500 rounded-md focus:outline-none p-1.5"
   bind:value
   placeholder="{example}"
 />
@@ -42,7 +42,7 @@
 <input
   id="{id}"
   type="url"
-  class="border border-gray-300 rounded-md focus:outline-none p-1.5"
+  class="border bg-gray-800 border-gray-500 rounded-md focus:outline-none p-1.5"
   bind:value
   placeholder="{example}"
 />
@@ -50,7 +50,7 @@
 <textarea
   id="story"
   name="story"
-  class="text-area border border-gray-300 rounded-md focus:outline-none p-1.5"
+  class="text-area border bg-gray-800 border-gray-500 rounded-md focus:outline-none p-1.5"
   rows="5"
   cols="40"
   placeholder="{example}"

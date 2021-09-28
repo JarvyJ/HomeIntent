@@ -6,11 +6,11 @@
   import { capitalize_with_underscore } from '$lib/util/capitalization';
 </script>
 
-<ul class="border m-4 rounded text-xl border-b-0">
+<ul class="border m-4 rounded text-xl border-b-0 border-gray-600">
   {#each Object.entries(settingsList) as [name, setting] (name)} {#if name !== "rhasspy"}
   <!-- Small hack to not show rhasspy in the list, as it is only for advanced users -->
   <li
-    class="py-2 px-3 border-b flex space-x-3"
+    class="py-2 px-3 border-b flex space-x-3 border-gray-600"
     class:border-r-2="{name === currentSetting}"
     class:border-r-hi-green="{name === currentSetting}"
   >

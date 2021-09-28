@@ -103,7 +103,7 @@
         readonly
         class:dont-word-wrap="{!word_wrap}"
         bind:this="{socketElements[name]}"
-        class="w-full h-full p-2 bg-gray-300 rounded-md font-mono text-sm"
+        class="w-full h-full p-2 bg-gray-700 rounded-md font-mono text-sm"
       >
 {info.messages.join("\n")}</textarea
       >
