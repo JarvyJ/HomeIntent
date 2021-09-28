@@ -10,12 +10,14 @@ LOGGER = logging.getLogger(__name__)
 
 
 class IntentHandler:
-    def __init__(self, mqtt_client, settings, intent_function):
+    def __init__(self, mqtt_client, settings, intent_function, startup_messenger):
         self.mqtt_client = mqtt_client
         self.settings = settings
         self.intent_function = intent_function
+        self.startup_messenger = startup_messenger
 
     def setup_mqtt_and_loop(self):
+        self.startup_messenger.update("Connecting to MQTT")
         self.mqtt_client.message_callback_add("hermes/intent/#", self._handle_intent)
         if self.settings.rhasspy.mqtt_username and self.settings.rhasspy.mqtt_password:
             self.mqtt_client.username_pw_set(
@@ -27,6 +29,7 @@ class IntentHandler:
             self.settings.rhasspy.mqtt_host, self.settings.rhasspy.mqtt_port, 60
         )
         LOGGER.info("Waiting to handle intents!")
+        self.startup_messenger.update("Ready to handle intents!")
         self.mqtt_client.loop_forever()
 
     def _handle_intent(self, client, userdata, message: mqtt.MQTTMessage):

@@ -15,6 +15,7 @@
   import LayoutHSplit from "$lib/icons/layout-h-split.svelte"
   import Checkbox from "$lib/components/Checkbox.svelte";
   import { capitalize_with_underscore } from "$lib/util/capitalization";
+import PageLayout from "./PageLayout.svelte";
 
   let horizontal_split = true
   let word_wrap = true
@@ -62,19 +63,20 @@
 
 </script>
 
-<SectionBar title="Live Logs">
-  <span class="flex items-center ml-auto">
+<PageLayout title="Live Logs">
+<svelte:fragment slot="sectionBar">
+  <span class="flex items-center ml-auto gap-4">
     <Checkbox title="Word Wrap" bind:value={word_wrap} />
-    <ul class="flex items-center justify-evenly w-20 ml-8">
-      <li class="block flex-grow">
+    <ul class="flex items-center gap-2">
+      <li>
         <span class:cursor-pointer={horizontal_split} class:hover:bg-green-200={horizontal_split} class:bg-hi-green={!horizontal_split} class="rounded px-2 py-1 text-lg" on:click="{() => horizontal_split = false }"><LayoutSplit /></span>
       </li>
-      <li class="block flex-grow">
+      <li>
         <span class:cursor-pointer={!horizontal_split} class:hover:bg-green-200={!horizontal_split} class:bg-hi-green={horizontal_split} class="rounded px-2 py-1 text-lg" on:click="{() => horizontal_split = true }"><LayoutHSplit /></span>
       </li>
     </ul>
   </span>
-</SectionBar>
+</svelte:fragment>
 
 <div class:grid-cols-2={!horizontal_split} class:grid-cols-1={horizontal_split} class="grid justify-items-stretch w-full h-screen gap-5 p-5">
   {#each Object.entries(sockets) as [name, info] (name)}
@@ -84,3 +86,4 @@
   </div>
   {/each}
 </div>
+</PageLayout>

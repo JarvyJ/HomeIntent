@@ -17,6 +17,7 @@
   import LogsIcon from "$lib/icons/card-list.svelte"
   import DocsIcon from "$lib/icons/journal-richtext.svelte"
   import HomeIntentWhite from "$lib/components/HomeIntentWhite.svelte"
+  import SectionBar from "$lib/components/SectionBar.svelte";
 
   let visible = true;
   let navWidth = 256;
@@ -26,6 +27,16 @@
   } else {
     navWidth = 55;
   }
+
+  const pagesMeta = [
+    {title: "Settings", url: "/settings", icon: SettingsIcon},
+    // {title: "Customize", url: "/customize", icon: CustomizeIcon},
+    // {title: "Satellites", url: "/satellites", icon: SatellitesIcon},
+    {title: "Live Logs", url: "/logs", icon: LogsIcon},
+    {title: "Docs", url: "/docs/", icon: DocsIcon},
+  ]
+
+  $: currentPage = pagesMeta.filter(meta => $page.path.startsWith(meta.url))[0].title
 
 </script>
 
@@ -41,38 +52,15 @@
   <div class="pt-3">
 
     <ul class="text-xl">
-      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/settings")}"><a class="block" href="/settings"><SettingsIcon />
+      {#each pagesMeta as pageMeta}
+      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith(pageMeta.url)}"><a class="block" href={pageMeta.url}><svelte:component this={pageMeta.icon} />
         {#if visible}
-          <span class="ml-4">Settings</span>
+          <span class="ml-4">{pageMeta.title}</span>
         {/if}
       </a></li>
-
-<!--       <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/customize")}"><a class="block" href="/customize"><CustomizeIcon />
-        {#if visible}
-          <span class="ml-4">Customize</span>
-        {/if}
-      </a></li>
-
-      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/satellites")}"><a class="block" href="/satellites"><SatellitesIcon />
-        {#if visible}
-          <span class="ml-4">Satellites</span>
-        {/if}
-      </a></li> -->
-
-      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/logs")}"><a class="block" href="/logs"><LogsIcon />
-        {#if visible}
-          <span class="ml-4">Live Logs</span>
-        {/if}
-      </a></li>
-
-      <li class="py-2 px-4 mx-2 rounded-lg hover:bg-hi-green" class:bg-gray-700="{$page.path.startsWith("/docs")}"><a class="block" href="/docs/" target="_blank"><DocsIcon />
-        {#if visible}
-          <span class="ml-4">Docs</span>
-        {/if}
-      </a></li>
+      {/each}
     </ul>
   </div>
-
 </nav>
 
 

@@ -6,7 +6,7 @@ from pathlib import PosixPath
 from typing import NamedTuple
 
 import paho.mqtt.client as mqtt
-from requests.exceptions import Timeout
+import requests
 
 from home_intent.audio_config import AudioConfig
 from home_intent.intent_handler import IntentHandler
@@ -26,6 +26,25 @@ class RegisteredIntent(NamedTuple):
     intent: Intents
 
 
+class StartupMessenger:
+    def __init__(self, url):
+        self.url = url
+        self.session = requests.Session()
+        self.session.headers.update(
+            {"Content-Type": "application/json", "accept": "application/json"}
+        )
+
+    def update(self, message):
+        try:
+            self.session.post(self.url, json={"data": message}, timeout=1)
+
+        # just ignore any errors, if it doesnt post, that's okay. It's just missing a log in the frontend.
+        except requests.exceptions.Timeout:
+            pass
+        except requests.exceptions.ConnectionError:
+            pass
+
+
 class HomeIntent:
     def __init__(self, settings):
         self.registered_intents = []
@@ -34,7 +53,10 @@ class HomeIntent:
         self.rhasspy_api = RhasspyAPI(settings.rhasspy.url)
         self.mqtt_client = mqtt.Client()
         self.arch = None
-        self.intent_handler = IntentHandler(self.mqtt_client, self.settings, self.intent_function)
+        self.startup_messenger = StartupMessenger("http://localhost:11102/api/v1/jobs/restart")
+        self.intent_handler = IntentHandler(
+            self.mqtt_client, self.settings, self.intent_function, self.startup_messenger
+        )
         self.audio_config = AudioConfig(self.rhasspy_api, self.settings)
         self.all_slots = {}
 
@@ -47,6 +69,8 @@ class HomeIntent:
             self.arch = "arm"
         else:
             raise ValueError("HomeIntent only runs on x86_64 and armv7/aarch64 architectures")
+
+        self.startup_messenger.update("Loading Components...")
 
     def get_config(self, settings_object):
         component_name = settings_object.__module__.split(".")[-1]
@@ -98,6 +122,7 @@ class HomeIntent:
         self.intent_handler.setup_mqtt_and_loop()
 
     def _initialize_rhasspy(self):
+        self.startup_messenger.update("Setting up Rhasspy...")
         LOGGER.info("Checking profile")
         rhasspy_profile = self._load_rhasspy_profile_file()
         installed_profile = self.rhasspy_api.get("/api/profile?layers=profile")
@@ -135,6 +160,7 @@ class HomeIntent:
         return rhasspy_config
 
     def _write_slots_to_rhasspy(self):
+        self.startup_messenger.update("Updating slots in Rhasspy...")
         for registered_intent in self.registered_intents:
             LOGGER.info(f"Getting slots for {registered_intent.intent.name}")
             for slot in registered_intent.intent.all_slots:
@@ -157,6 +183,7 @@ class HomeIntent:
         self.rhasspy_api.post("/api/slots?overwriteAll=true", self.all_slots)
 
     def _write_sentences_to_rhasspy(self):
+        self.startup_messenger.update("Updating sentences in Rhasspy...")
         # this will force clear out the defaults in sentences.ini
         sentences = []
         for registered_intent in self.registered_intents:
@@ -185,10 +212,11 @@ class HomeIntent:
         return all(len(self.all_slots[slot]) > 0 for slot in sentence.slots)
 
     def _train(self):
+        self.startup_messenger.update("Training Rhasspy (can take some time)...")
         LOGGER.info("Training Rhasspy... (can take up to 1m if many devices)")
         try:
             self.rhasspy_api.post("/api/train", timeout=60)
-        except Timeout:
+        except requests.exceptions.Timeout:
             LOGGER.warning(
                 "Timed out waiting for Rhasspy to train. Moving on, we will likely be okay."
             )

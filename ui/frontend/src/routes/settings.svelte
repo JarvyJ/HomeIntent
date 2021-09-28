@@ -3,12 +3,14 @@
 
   import ComponentList from "$lib/pages/settings/ComponentList.svelte";
   import Button from "$lib/components/Button.svelte"
+  import Spinner from '$lib/icons/spinner.svelte';
 
   import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
   import NoSettings from "$lib/pages/settings/NoSettings.svelte";
   import AutoSettings from "$lib/pages/settings/AutoSettings.svelte";
   import SectionBar from '$lib/components/SectionBar.svelte';
   import {mergeDeep} from "$lib/util/merge.js"
+  import PageLayout from './PageLayout.svelte';
 
 
   let loaded = false
@@ -108,9 +110,9 @@
     // did this setting by setting to enable them correctly
     // also could've just done a mergeDeep at the root, but it gets screwy
     // because of the `null` meaning two different things...
-   for (const setting in settings) {
-    if (settings[setting]) {
-      mergeDeep(userSettings[setting], settings[setting])
+    for (const setting in settings) {
+      if (settings[setting]) {
+        mergeDeep(userSettings[setting], settings[setting])
       } else if (componentsWithoutSettings.has(setting)) {
         userSettings[setting] = null
       }
@@ -128,6 +130,14 @@
       customSettingsList[setting].enabled = true
     } else {
       settingsList[setting].enabled = true
+    }
+  }
+
+  async function restart() {
+    let response = await fetch('/api/v1/restart')
+    if (response.status === 400) {
+      let result = await response.json()
+      console.log(result)
     }
   }
 
@@ -169,34 +179,39 @@
 
 </script>
 
-<SectionBar title="Settings">
-<Button>
-    <span on:click="{saveSettings}">Save</span>
-  </Button>
-</SectionBar>
-
-{#if loaded}
-<div class="bg-gray-900 text-gray-50 grid grid-cols-5">
-  <div class="h-screen">
-    <ComponentList bind:settingsList bind:currentSetting/>
-    {#if Object.keys(customSettingsList).length !== 0}
-    <h3 class="text-2xl ml-5 mt-7">Custom Components</h3>
-    <ComponentList bind:settingsList={customSettingsList} bind:currentSetting/>
-    {/if}
-  </div>
-  <div class="col-span-4 mt-5">
-    {#key currentSetting}
-    {#if currentSetting in settingsList}
-    <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={settingsList[currentSetting].schema} customComponent={false}/>
-    {:else if currentSetting in customSettingsList}
-    <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={customSettingsList[currentSetting].schema} customComponent={true}/>
-    {/if}
-    {/key}
-    <div class="mt-5 text-xl">
+<PageLayout title="Settings">
+  <svelte:fragment slot="sectionBar">
+    <div class="flex items-center gap-3 ml-auto">
+      <span class="rounded hover:bg-red-200 bg-red-500 px-3 py-1 cursor-pointer" on:click="{restart}">Restart</span>
       <Button>
         <span on:click="{saveSettings}">Save</span>
       </Button>
     </div>
+  </svelte:fragment>
+
+  {#if loaded}
+  <div class="bg-gray-900 text-gray-50 grid grid-cols-5">
+    <div class="h-screen">
+      <ComponentList bind:settingsList bind:currentSetting/>
+      {#if Object.keys(customSettingsList).length !== 0}
+      <h3 class="text-2xl ml-5 mt-7">Custom Components</h3>
+      <ComponentList bind:settingsList={customSettingsList} bind:currentSetting/>
+      {/if}
+    </div>
+    <div class="col-span-4 mt-5">
+      {#key currentSetting}
+      {#if currentSetting in settingsList}
+      <svelte:component this={settingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={settingsList[currentSetting].schema} customComponent={false}/>
+      {:else if currentSetting in customSettingsList}
+      <svelte:component this={customSettingsList[currentSetting].component} bind:currentSetting bind:userSettings bind:schema={customSettingsList[currentSetting].schema} customComponent={true}/>
+      {/if}
+      {/key}
+      <div class="mt-5 text-xl">
+        <Button>
+          <span on:click="{saveSettings}">Save</span>
+        </Button>
+      </div>
+    </div>
   </div>
-</div>
-{/if}
+  {/if}
+</PageLayout>
