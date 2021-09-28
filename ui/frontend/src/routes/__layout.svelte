@@ -78,7 +78,7 @@
 </nav>
 
 <main style="margin-left: {navWidth}px;">
-  <div class="dark:bg-gray-900 dark:text-gray-50 text-gray-800 bg-gray-50">
+  <div class="dark:bg-gray-900 dark:text-gray-50 text-gray-800 bg-gray-50 min-h-screen">
     <slot></slot>
   </div>
 </main>

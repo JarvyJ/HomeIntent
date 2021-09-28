@@ -15,20 +15,26 @@ RhasspyApi = RhasspyAPI(get_settings().rhasspy.url)
 
 
 @router.get("/rhasspy/audio/microphones")
-async def get_rhasspy_microphones(show_all: bool = False):
-    rhasspy_microphones = await RhasspyApi.get("/api/microphones")
-    if show_all:
-        return rhasspy_microphones
-    else:
-        small_list = {}
-        for mic_id, name in rhasspy_microphones.items():
-            if "(hw:" in name:
-                small_list[mic_id] = name
-        return small_list
+async def get_rhasspy_microphones() -> Dict[int, str]:
+    return await RhasspyApi.get("/api/microphones")
+
+
+@router.get("/rhasspy/audio/test-microphones")
+async def test_rhasspy_microphones() -> Dict[str, str]:
+    """
+    Hit the endpoint, and speak into the microphones, after a few seconds,
+    it'll return the microphones which picked up sound
+    """
+    rhasspy_microphones = await RhasspyApi.get("/api/test-microphones")
+    small_list = {}
+    for mic_id, name in rhasspy_microphones.items():
+        if "(working!)" in name:
+            small_list[mic_id] = name
+    return small_list
 
 
 @router.get("/rhasspy/audio/speakers")
-async def get_rhasspy_speakers(show_all: bool = True):
+async def get_rhasspy_speakers(show_all: bool = True) -> Dict[str, str]:
     rhasspy_speakers = await RhasspyApi.get("/api/speakers")
     if show_all:
         return rhasspy_speakers

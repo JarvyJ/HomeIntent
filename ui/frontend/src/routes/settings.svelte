@@ -191,7 +191,7 @@
 
   {#if loaded}
   <div class="grid grid-cols-5">
-    <div class="h-screen">
+    <div>
       <ComponentList bind:settingsList bind:currentSetting/>
       {#if Object.keys(customSettingsList).length !== 0}
       <h3 class="text-2xl ml-5 mt-7">Custom Components</h3>
