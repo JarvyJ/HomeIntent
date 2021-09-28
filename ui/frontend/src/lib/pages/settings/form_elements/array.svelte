@@ -20,7 +20,7 @@
   {#if example}
   <HelpText classes="mt-3">
     Example:
-    <code class="block p-2 bg-gray-300 rounded-md">
+    <code class="block p-2 dark:bg-gray-700 dark:text-gray-50 rounded-md">
       <pre>
 {example.join("\n")}
     </pre
@@ -33,7 +33,7 @@
 <textarea
   id="ignore-entities"
   name="ignore-entities"
-  class="text-area border border-gray-300 rounded-md focus:outline-none p-1.5"
+  class="border dark:bg-gray-800 dark:border-gray-500 rounded-md focus:outline-none p-1.5"
   rows="5"
   cols="40"
   placeholder="Entities should be separated by newlines"

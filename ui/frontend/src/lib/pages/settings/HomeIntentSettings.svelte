@@ -1,6 +1,6 @@
 <style>
   .chevron-down {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23404749' fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23f9fafb' fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position-x: 94%;
     background-position-y: center;
@@ -31,6 +31,7 @@
   let effects = {};
   let playbackMessage = 'Click the play icon to test the audio device';
   let microphoneMessage = 'Click the mic to test out the microphone';
+  const dropdownStyle = "border chevron-down p-1.5 pr-8 dark:border-gray-500 rounded-md appearance-none w-full pr-12 dark:bg-gray-800";
 
   onMount(async () => {
     const mic_response = await fetch(`/api/v1/rhasspy/audio/microphones?showAll=${showAll}`);
@@ -111,7 +112,7 @@
     <select
       bind:value="{userSettings.rhasspy.sounds_device}"
       id="sounds-device"
-      class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none w-full pr-12"
+      class="{dropdownStyle}"
     >
       {#each Object.entries(speakers) as [id, name] (id)}
       <option value="{id}">{name} ({id})</option>
@@ -135,7 +136,7 @@
     <select
       bind:value="{userSettings.rhasspy.microphone_device}"
       id="microphone-device"
-      class="border chevron-down p-1.5 pr-8 border-gray-300 rounded-md appearance-none w-full pr-12"
+      class="{dropdownStyle}"
     >
       {#each Object.entries(microphones) as [id, name] (id)}
       <option value="{id}">{name}</option>
