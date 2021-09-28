@@ -7,16 +7,16 @@ from typing import Dict
 from fastapi import APIRouter, File, UploadFile
 from pydantic import BaseModel
 
-from config import SETTINGS
+from config import get_settings
 from rhasspy_api import RhasspyAPI
 
 router = APIRouter()
-RhasspyApi = RhasspyAPI(SETTINGS.rhasspy.url)
+RhasspyApi = RhasspyAPI(get_settings().rhasspy.url)
 
 
 @router.get("/rhasspy/audio/microphones")
-def get_rhasspy_microphones(show_all: bool = False):
-    rhasspy_microphones = RhasspyApi.get("/api/microphones")
+async def get_rhasspy_microphones(show_all: bool = False):
+    rhasspy_microphones = await RhasspyApi.get("/api/microphones")
     if show_all:
         return rhasspy_microphones
     else:
@@ -28,8 +28,8 @@ def get_rhasspy_microphones(show_all: bool = False):
 
 
 @router.get("/rhasspy/audio/speakers")
-def get_rhasspy_speakers(show_all: bool = True):
-    rhasspy_speakers = RhasspyApi.get("/api/speakers")
+async def get_rhasspy_speakers(show_all: bool = True):
+    rhasspy_speakers = await RhasspyApi.get("/api/speakers")
     if show_all:
         return rhasspy_speakers
     else:
@@ -101,6 +101,7 @@ class SoundEffectMeta(BaseModel):
 
 @router.get("/rhasspy/audio/effects", response_model=Dict[SoundEffect, SoundEffectMeta])
 def get_sound_effects_meta():
+    # TODO: switch to aiofiles.os.path.isfile when 0.8.0 is released
     output = {}
     for sound_effect in SoundEffect:
         custom_file_path = get_custom_sound_effect_path(sound_effect)
@@ -128,6 +129,7 @@ def upload_sound_effects(sound_effect: SoundEffect, file: UploadFile = File(...)
 
 @router.post("/rhasspy/audio/set-default")
 def set_sound_effect_to_default(sound_effect: SoundEffect):
+    # TODO: switch to aiofiles.os.path.isfile when 0.8.0 is released
     file_path = get_custom_sound_effect_path(sound_effect)
     if file_path.is_file():
         file_path.unlink()
