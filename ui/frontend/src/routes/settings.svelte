@@ -17,7 +17,7 @@
   let customSettingsList = {}
 
   let settingsList = { 
-    "home_intent": {component: HomeIntentSettings, enabled: false, schema: null}
+    home_intent: {component: HomeIntentSettings, enabled: false, schema: null}
   }
   let currentSetting = "home_intent"
 
