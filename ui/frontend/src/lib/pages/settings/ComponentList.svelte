@@ -12,7 +12,7 @@
   <li
     class="py-2 px-3 border-b flex space-x-3 dark:border-gray-600"
     class:border-r-2="{name === currentSetting}"
-    class:border-r-hi-green="{name === currentSetting}"
+    class:dark:border-r-hi-green="{name === currentSetting}"
   >
     {#if name !== "home_intent"}<Toggle bind:enabled="{setting.enabled}" />{/if}<span
       class="flex-grow cursor-pointer"
