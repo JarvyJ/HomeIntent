@@ -12,7 +12,7 @@
 <label class="flex items-center space-x-2">
   <input
     type="checkbox"
-    class="form-tick appearance-none h-6 w-6 border dark:border-gray-300 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none"
+    class="form-tick appearance-none h-6 w-6 border dark:border-gray-500 rounded-md checked:bg-blue-600 checked:border-transparent focus:outline-none"
     bind:checked="{value}"
   />
   <span>{title}</span>
