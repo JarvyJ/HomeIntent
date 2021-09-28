@@ -1,18 +1,3 @@
-<style>
-  .spinner-border {
-    display: inline-block;
-    width: 2rem;
-    height: 2rem;
-    vertical-align: -.125em;
-    border: .25em solid currentColor;
-    border-right-color: currentcolor;
-    border-right-color: transparent;
-    border-radius: 50%;
-    -webkit-animation: .75s linear infinite spinner-border;
-    animation: .75s linear infinite spinner-border;
-  }
-</style>
-
 <script>
   import { onMount } from 'svelte';
 
@@ -25,7 +10,7 @@
   import AutoSettings from "$lib/pages/settings/AutoSettings.svelte";
   import SectionBar from '$lib/components/SectionBar.svelte';
   import {mergeDeep} from "$lib/util/merge.js"
-import PageLayout from './PageLayout.svelte';
+  import PageLayout from './PageLayout.svelte';
 
 
   let loaded = false
@@ -35,7 +20,6 @@ import PageLayout from './PageLayout.svelte';
     "home_intent": {component: HomeIntentSettings, enabled: false, schema: null}
   }
   let currentSetting = "home_intent"
-  let restartText = "Restart"
 
   let openapi = {}
   let userSettings
@@ -150,13 +134,11 @@ import PageLayout from './PageLayout.svelte';
   }
 
   async function restart() {
-    restartText = "Restarting..."
     let response = await fetch('/api/v1/restart')
     if (response.status === 400) {
       let result = await response.json()
       console.log(result)
     }
-    restartText = "Restart"
   }
 
   async function saveSettings() {
@@ -200,8 +182,7 @@ import PageLayout from './PageLayout.svelte';
 <PageLayout title="Settings">
   <svelte:fragment slot="sectionBar">
     <div class="flex items-center gap-3 ml-auto">
-      <Spinner />
-      <span class="rounded hover:bg-red-200 bg-red-500 px-3 py-1 cursor-pointer animate-pulse" on:click="{restart}">{restartText}</span>
+      <span class="rounded hover:bg-red-200 bg-red-500 px-3 py-1 cursor-pointer" on:click="{restart}">Restart</span>
       <Button>
         <span on:click="{saveSettings}">Save</span>
       </Button>
