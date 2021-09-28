@@ -14,13 +14,13 @@ router = APIRouter()
 RhasspyApi = RhasspyAPI(get_settings().rhasspy.url)
 
 
-@router.get("/rhasspy/audio/microphones")
-async def get_rhasspy_microphones() -> Dict[int, str]:
+@router.get("/rhasspy/audio/microphones", response_model=Dict[int, str])
+async def get_rhasspy_microphones():
     return await RhasspyApi.get("/api/microphones")
 
 
-@router.get("/rhasspy/audio/test-microphones")
-async def test_rhasspy_microphones() -> Dict[str, str]:
+@router.get("/rhasspy/audio/test-microphones", response_model=Dict[int, str])
+async def test_rhasspy_microphones():
     """
     Hit the endpoint, and speak into the microphones, after a few seconds,
     it'll return the microphones which picked up sound
@@ -33,8 +33,8 @@ async def test_rhasspy_microphones() -> Dict[str, str]:
     return small_list
 
 
-@router.get("/rhasspy/audio/speakers")
-async def get_rhasspy_speakers(show_all: bool = True) -> Dict[str, str]:
+@router.get("/rhasspy/audio/speakers", response_model=Dict[str, str])
+async def get_rhasspy_speakers(show_all: bool = True):
     rhasspy_speakers = await RhasspyApi.get("/api/speakers")
     if show_all:
         return rhasspy_speakers
