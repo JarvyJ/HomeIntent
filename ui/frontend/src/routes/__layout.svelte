@@ -50,8 +50,8 @@
 
 </script>
 
-<nav class="border-r border-gray-700 h-screen fixed bg-gray-900 text-gray-50" style="width: {navWidth}px;">
-  <div class="py-3 px-4 bg-hi-green border-b border-gray-700 text-2xl">
+<nav class="border-r dark:border-gray-700 h-screen fixed dark:bg-gray-900 dark:text-gray-50" style="width: {navWidth}px;">
+  <div class="py-3 px-4 bg-hi-green border-b dark:border-gray-700 text-2xl">
     <span on:click="{() => menuExpanded = !menuExpanded}"><HomeIntentWhite /></span>
     {#if menuExpanded} Home Intent {/if}
   </div>
@@ -63,7 +63,7 @@
         class="p-2 m-1 rounded-lg hover:bg-hi-green"
         class:px-4={menuExpanded}
         class:mx-2={menuExpanded}
-        class:bg-gray-700="{$page.path.startsWith(pageMeta.url)}"
+        class:dark:bg-gray-700="{$page.path.startsWith(pageMeta.url)}"
       >
         <a class="block" href="{pageMeta.url}"
           ><svelte:component this="{pageMeta.icon}" />
@@ -78,7 +78,7 @@
 </nav>
 
 <main style="margin-left: {navWidth}px;">
-  <div class="bg-gray-900 text-gray-50">
+  <div class="dark:bg-gray-900 dark:text-gray-50">
     <slot></slot>
   </div>
 </main>

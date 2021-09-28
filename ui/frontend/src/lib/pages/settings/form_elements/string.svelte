@@ -7,6 +7,8 @@
 
   import HelpText from '../HelpText.svelte';
 
+  const style = "border dark:bg-gray-800 dark:border-gray-500 rounded-md focus:outline-none p-1.5";
+
   let id = `${title}-id`;
   let inputType;
 
@@ -34,7 +36,7 @@
 <input
   id="{id}"
   type="text"
-  class="border bg-gray-800 border-gray-500 rounded-md focus:outline-none p-1.5"
+  class="{style}"
   bind:value
   placeholder="{example}"
 />
@@ -42,7 +44,7 @@
 <input
   id="{id}"
   type="url"
-  class="border bg-gray-800 border-gray-500 rounded-md focus:outline-none p-1.5"
+  class="{style}"
   bind:value
   placeholder="{example}"
 />
@@ -50,7 +52,7 @@
 <textarea
   id="story"
   name="story"
-  class="text-area border bg-gray-800 border-gray-500 rounded-md focus:outline-none p-1.5"
+  class="{style}"
   rows="5"
   cols="40"
   placeholder="{example}"

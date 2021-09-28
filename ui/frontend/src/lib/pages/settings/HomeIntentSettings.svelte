@@ -31,6 +31,7 @@
   let effects = {};
   let playbackMessage = 'Click the play icon to test the audio device';
   let microphoneMessage = 'Click the mic to test out the microphone';
+  const dropdownStyle = "border chevron-down p-1.5 pr-8 dark:border-gray-500 rounded-md appearance-none w-full pr-12 dark:bg-gray-800";
 
   onMount(async () => {
     const mic_response = await fetch(`/api/v1/rhasspy/audio/microphones?showAll=${showAll}`);
@@ -111,7 +112,7 @@
     <select
       bind:value="{userSettings.rhasspy.sounds_device}"
       id="sounds-device"
-      class="border chevron-down p-1.5 pr-8 border-gray-500 rounded-md appearance-none w-full pr-12 bg-gray-800"
+      class="{dropdownStyle}"
     >
       {#each Object.entries(speakers) as [id, name] (id)}
       <option value="{id}">{name} ({id})</option>
@@ -135,7 +136,7 @@
     <select
       bind:value="{userSettings.rhasspy.microphone_device}"
       id="microphone-device"
-      class="border chevron-down p-1.5 pr-8 border-gray-500 rounded-md appearance-none w-full pr-12 bg-gray-800"
+      class="{dropdownStyle}"
     >
       {#each Object.entries(microphones) as [id, name] (id)}
       <option value="{id}">{name}</option>
