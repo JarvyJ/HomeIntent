@@ -1,19 +1,17 @@
-from exceptions import HomeIntentHTTPException
-from pathlib import Path
-import subprocess
 import sys
+from pathlib import Path
 
 from fastapi import APIRouter
 from ruamel.yaml import YAML
 
-from config import CONFIG_FILE, FullSettings
+from config import FullSettings, get_settings_async, CONFIG_FILE
 from extract_settings import merge, pseudo_serialize_settings
 
 router = APIRouter()
 
 
 @router.get("/settings", response_model=FullSettings, response_model_exclude_unset=True)
-def get_settings():
+async def get_settings():
     """
     The JSON version of `/config/config.yaml`
 
@@ -29,13 +27,7 @@ def get_settings():
     a helper object (`x-components-without-settings`) in `additionalProperties`
 
     """
-    if CONFIG_FILE.is_file():
-        yaml = YAML()
-        config_contents = yaml.load(CONFIG_FILE.read_text("utf-8"))
-        if config_contents:
-            return FullSettings(**config_contents)
-
-    return FullSettings()
+    return await get_settings_async()
 
 
 @router.post("/settings", response_model=FullSettings, response_model_exclude_unset=True)
@@ -44,9 +36,13 @@ def update_settings(settings: FullSettings):
     This endpoint will convert the JSON back to `/config/config.yaml` discarding any default values
     in an attempt to keep the config file more easily human editable.
     """
+    # TODO: eventually see if yaml.dump can support async file streams, until then, keep it sync
+
     yaml = YAML()
-    if CONFIG_FILE.is_file():
-        config_contents = yaml.load(CONFIG_FILE.read_text("utf-8"))
+    config_file = Path(CONFIG_FILE)
+
+    if config_file.is_file():
+        config_contents = yaml.load(config_file.read_text("utf-8"))
 
         # this is really hokey and leaves a lot of room for improvements
         # the general idea is to not change what the user has manually done in config
@@ -65,7 +61,7 @@ def update_settings(settings: FullSettings):
 
     yaml.dump(config_contents, sys.stdout)
     return config_contents
-    # yaml.dump(settings_to_write, CONFIG_FILE.open("w"))
+    # yaml.dump(settings_to_write, config_file.open("w"))
 
 
 def remove_unused_defaults_from_config(config_contents, default_components_to_remove):
