@@ -17,7 +17,7 @@
   let customSettingsList = {}
 
   let settingsList = { 
-    home_intent: {component: HomeIntentSettings, enabled: false, schema: null}
+    home_intent: {component: HomeIntentSettings, enabled: true, schema: null}
   }
   let currentSetting = "home_intent"
 
@@ -56,6 +56,10 @@
             customSettingsList[name] = {component: AutoSettings, enabled: false, schema:settingSchema}
           } else {
             settingsList[name] = {component: AutoSettings, enabled: false, schema:settingSchema}
+            // rhasspy is default enabled
+            if (name === "rhasspy") {
+              settingsList[name].enabled = true
+            }
           }
         }
       }
