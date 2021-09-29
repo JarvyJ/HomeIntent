@@ -183,12 +183,10 @@ def pseudo_serialize_settings(settings_object, settings_schema):
         if normalize[key] == "No-Value-Provided":
             default_keys_to_remove.append(key)
 
-    print(default_keys_to_remove)
-
     for key in default_keys_to_remove:
         del normalize[key]
 
-    return normalize, default_keys_to_remove
+    return normalize
 
 
 if __name__ == "__main__":

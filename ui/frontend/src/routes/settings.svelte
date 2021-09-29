@@ -77,6 +77,7 @@
   }
 
   async function reloadUserSettings() {
+    loaded = false
     userSettings = generateDefaultUserSettings("#/components/schemas/FullSettings")
 
     const settings_response = await fetch(`/api/v1/settings`);
@@ -147,6 +148,7 @@
     // TODO: popup a modal to confirm save
     let settingsCopy = JSON.parse(JSON.stringify(userSettings)) // safe to do as it's all JSON
     disableUnusedSettings(settingsCopy)
+    enableComponentsWithoutSettings(settingsCopy)
     console.log(settingsCopy)
 
     let response = await fetch('/api/v1/settings', {
@@ -160,6 +162,7 @@
       let result = await response.json();
       await reloadUserSettings()
       console.log(result);
+      await restart()
     }
   }
 
@@ -173,6 +176,20 @@
         if (settingsList[setting].enabled === false) {
           delete settings[setting]
         }
+      }
+    }
+  }
+
+  function enableComponentsWithoutSettings(settings) {
+    for (const [name, meta] of Object.entries(settingsList)) {
+      if (componentsWithoutSettings.has(name) && meta.enabled) {
+        settings[name] = null
+      }
+    }
+
+    for (const [name, meta] of Object.entries(customSettingsList)) {
+      if (componentsWithoutSettings.has(name) && meta.enabled) {
+        settings[name] = null
       }
     }
   }

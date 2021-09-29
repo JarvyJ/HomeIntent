@@ -25,12 +25,12 @@ class HomeAssistantSettings(BaseModel):
     ignore_domains: Set[str] = Field(
         set(),
         description="A list of domains that shouldn't be controlled via Home Intent",
-        example=["light.kitchen", "fan.attic", "switch.tv"],
+        example=["shopping_list", "light", "remote"],
     )
     ignore_entities: Set[str] = Field(
         set(),
         description="A list of entities that shouldn't be controlled via Home Intent.",
-        example=["shopping_list", "light", "remote"],
+        example=["light.kitchen", "fan.attic", "switch.tv"],
     )
 
 
