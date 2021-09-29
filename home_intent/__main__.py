@@ -1,13 +1,10 @@
 """Start up HomeIntent"""
 import importlib
 import logging
-from logging.handlers import HTTPHandler
 from pathlib import Path
 import sys
 
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3 import Retry
 
 # small workaround so you can launch from commandline or as a module
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
