@@ -31,8 +31,13 @@ const config = {
 						target: 'http://localhost:11102',
 						secure: false,
 						changeOrigin: true
+	  				},
+					'/ws': {
+						target: 'ws://localhost:11102',
+						secure: false,
+						changeOrigin: true,
+						ws: true
 	  				}
-
 				}
 			}
 		}
