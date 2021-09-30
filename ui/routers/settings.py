@@ -1,12 +1,10 @@
-import json
-import sys
 from pathlib import Path
 
 from fastapi import APIRouter
 from ruamel.yaml import YAML
 
 from config import FullSettings, get_settings_async, CONFIG_FILE
-from extract_settings import merge, pseudo_serialize_settings
+from extract_settings import pseudo_serialize_settings
 
 router = APIRouter()
 
