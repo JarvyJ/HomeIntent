@@ -34,11 +34,8 @@
     { title: 'Settings', url: '/settings', icon: SettingsIcon },
     // {title: "Customize", url: "/customize", icon: CustomizeIcon},
     // {title: "Satellites", url: "/satellites", icon: SatellitesIcon},
-    { title: 'Live Logs', url: '/logs', icon: LogsIcon },
-    { title: 'Docs', url: '/docs/', icon: DocsIcon }
+    { title: 'Live Logs', url: '/logs', icon: LogsIcon }
   ];
-
-  $: currentPage = pagesMeta.filter((meta) => $page.path.startsWith(meta.url))[0].title;
 
   let isMobile = false;
   onMount(async () => {
@@ -73,6 +70,21 @@
         </a>
       </li>
       {/each}
+
+      <li
+        class="p-2 m-1 rounded-lg hover:bg-hi-green"
+        class:px-4={menuExpanded}
+        class:mx-2={menuExpanded}
+      >
+        <a class="block" href="/docs/" rel="external" target="_blank"
+          ><DocsIcon />
+          {#if menuExpanded}
+          <span class="ml-4">Docs</span>
+          {/if}
+        </a>
+      </li>
+
+
     </ul>
   </div>
 </nav>

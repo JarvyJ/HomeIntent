@@ -39,7 +39,7 @@ app.include_router(websockets.router, tags=["Websocket Things"])
 app.mount(
     "/docs/",
     StaticFiles(directory=Path(__file__).parent.resolve().parent / "docs/site", html=True),
-    name="frontend",
+    name="documentation",
 )
 
 app.mount(
