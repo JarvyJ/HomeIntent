@@ -32,7 +32,8 @@
   }, 1500);
 
   onMount(async () => {
-    setupSocket('ws://localhost:11102/ws/jobs/restart');
+    const location = window.location;
+    setupSocket(`ws://${location.host}/ws/jobs/restart`);
   });
 
   function setupSocket(url) {
