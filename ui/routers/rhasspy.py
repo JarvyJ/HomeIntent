@@ -14,6 +14,18 @@ router = APIRouter()
 RhasspyApi = RhasspyAPI(get_settings().rhasspy.url)
 
 
+# this doesn't actually work...
+# maybe i'll do a status page at some point.
+# @router.on_event("startup")
+# async def try_rhasspy_api():
+#     await RhasspyApi.get("/api/version")
+
+
+@router.on_event("shutdown")
+async def close_rhasspy_api():
+    await RhasspyApi.close()
+
+
 @router.get("/rhasspy/audio/microphones", response_model=Dict[int, str])
 async def get_rhasspy_microphones():
     return await RhasspyApi.get("/api/microphones")
