@@ -15,7 +15,7 @@ const config = {
 		adapter: adapter(),
 		prerender: {
 			crawl: true,
-			entries: ["/settings/home_intent", "/"], //enough to trigger a full crawl!
+			entries: ["/settings", "/"], //enough to trigger a full crawl!
 			onError: "continue"
 		},
 		vite: {

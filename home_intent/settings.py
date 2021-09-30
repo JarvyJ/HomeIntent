@@ -8,7 +8,7 @@ import yaml
 # pylint: disable=unused-argument
 
 
-def json_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
+def yaml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
     """
     A simple settings source that loads variables from a JSON file
     at the project's root.
@@ -17,7 +17,12 @@ def json_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
     when reading `config.json`
     """
     encoding = settings.__config__.env_file_encoding
-    return yaml.load(Path("/config/config.yaml").read_text(encoding), Loader=yaml.SafeLoader)
+    config_file = Path("/config/config.yaml")
+
+    if config_file.is_file():
+        return yaml.load(config_file.read_text(encoding), Loader=yaml.SafeLoader)
+    else:
+        return {}
 
 
 class RhasspySettings(BaseModel):
@@ -49,6 +54,6 @@ class Settings(BaseSettings):
             cls, init_settings, env_settings, file_secret_settings,
         ):
             return (
-                json_config_settings_source,
+                yaml_config_settings_source,
                 file_secret_settings,
             )

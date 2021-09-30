@@ -1,4 +1,3 @@
-from functools import lru_cache
 import os
 from ruamel.yaml import YAML
 
@@ -10,7 +9,6 @@ CONFIG_FILE = "/config/config.yaml"
 FullSettings = ExtractSettings.get()
 
 
-@lru_cache
 def get_settings() -> FullSettings:
     if os.path.isfile(CONFIG_FILE):
         with open(CONFIG_FILE, "r") as file:
