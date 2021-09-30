@@ -28,8 +28,9 @@
   let socketElements = { rhasspy: null, home_intent: null };
 
   onMount(() => {
-    setupSocket('rhasspy', 'ws://localhost:12101/api/events/log');
-    setupSocket('home_intent', 'ws://localhost:11102/ws/logs');
+    const loctaion = window.location
+    setupSocket('rhasspy', `ws://${location.hostname}:12101/api/events/log`);
+    setupSocket('home_intent', `ws://${location.host}/ws/logs`);
   });
 
   function setupSocket(name, url) {
