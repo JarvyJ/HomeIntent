@@ -39,6 +39,7 @@ theme:
 markdown_extensions:
   - admonition
   - pymdownx.highlight
+  - pymdownx.tabbed
   - pymdownx.superfences
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji

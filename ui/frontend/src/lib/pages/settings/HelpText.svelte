@@ -1,3 +1,10 @@
+<style>
+	p :global(a) {
+		color: #3c9a47;
+		text-decoration: underline;
+	}
+</style>
+
 <script>
 	export let classes = '';
 </script>

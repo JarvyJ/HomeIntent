@@ -3,8 +3,10 @@ Home Intent can work with any USB powered microphone, however, it'll work best w
 
 Here are a few microphone options that are known to do well:
 
- * Jabra Speak 410 (the 510 and other bluetooth options are more trouble than they are worth)
+ * Jabra Speak 410 (the 510 has bluetooth, but will work wired just fine)
  * Playstation Eye Camera
+
+Some older jabra firmwares have issues with muting/being found on Linux, but upgrading the firmware (using [Jabra Direct](https://www.jabra.com/software-and-services/jabra-direct)) will solve the problem. The irony being that Jabra Direct only runs on Mac/Windows, but the firmware fixes problems on Linux...
 
 If you find any other microphones that perform well, let us know! I want to try out a microphone comparison at some point, and see what performs well at various price points.
 
