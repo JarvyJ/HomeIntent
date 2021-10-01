@@ -52,7 +52,7 @@ Home Intent uses custom beep sound effects for interaction. You can override the
 
     On the main settings page:
 
-    ![Home Intent Settings filled out](/img/ui/home-intent-filled-out.png)
+    ![Home Intent Settings filled out](../img/ui/home-intent-filled-out.png)
 
     Under the "Sound Effects" you can upload your own `.wav` files to override the default sounds. You can click the :material-play-circle: Play icon next to the sound to listen to it.
 

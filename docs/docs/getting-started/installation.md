@@ -36,19 +36,19 @@ After setting up your container configuration, you can finish setting up Home In
 === "UI"
 
     After starting up the container, you can visit the ip address that Home Intent is running on with the port (`11102`) for the Home Intent (eg: http://192.168.1.157:11102) and it will take you to the "Settings" page.
-    ![Home Intent Settings](/img/ui/home-intent-settings.png)
+    ![Home Intent Settings](../img/ui/home-intent-settings.png)
 
     In the "Playback Devices" dropdown you can select one of the audio interfaces that is connected and press the little :material-play-circle: Play icon underneath the dropdown to ensure that it is working correctly. Usually one of the ones that start with "Default" will work. 
 
     Then in the "Microphone Devices", you can select one of the microphones that is connected. If you click on the little :material-microphone: Microphone icon, Home Intent will listen to the devices and update the dropdown with ones that received audio.
 
     From there, you can go to the Home Assistant section (you can save everything at the end):
-    ![Home Assistant Settings](/img/ui/home-assistant-settings.png)
+    ![Home Assistant Settings](../img/ui/home-assistant-settings.png)
 
     Where in the URL section you can add the URL to your Home Assistant instance, and a Bearer token ("Long Lived Access" token) you can get from your [Home Assistant profile page](../integrations/home-assistant.md#getting-a-bearer-token). From there you can see a couple of other options.
 
 
-    ![Home Assistant Toggle](/img/ui/home-assistant-toggle-half.png){ align=left }
+    ![Home Assistant Toggle](../img/ui/home-assistant-toggle-half.png){ align=left }
     Be sure to enable Home Assistant by clicking the toggle next to it (you might as well also enable the Timer!) in the component list, then you can save!
 
     After saving, it'll restart and set everything up for you!
