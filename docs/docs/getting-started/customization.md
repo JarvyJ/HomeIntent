@@ -9,7 +9,7 @@ There is some simple customization that can be done to make Home Intent work bet
 
     In the Home Assistant section in the settings:
 
-    ![Home Assistant Settings](/img/ui/home-assistant-filled-out.png)
+    ![Home Assistant Settings](../img/ui/home-assistant-filled-out.png)
 
     There are two options "Ignore Entities" and "Ignore Domains". You can list any entity you don't want to be voice controlled by putting its entity_id from Home Assistant in the list. You can alos specify entire domains from Home Assistant to not be voice controlled.
 
