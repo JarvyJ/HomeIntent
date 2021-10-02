@@ -21,8 +21,8 @@
   let word_wrap = true;
 
   let sockets = {
-    rhasspy: { socket: null, status: 'Connecting...', messages: [] },
-    home_intent: { socket: null, status: 'Connecting...', messages: [] }
+    home_intent: { socket: null, status: 'Connecting...', messages: [] },
+    rhasspy: { socket: null, status: 'Connecting...', messages: [] }
   };
 
   let socketElements = { rhasspy: null, home_intent: null };
