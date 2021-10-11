@@ -35,6 +35,11 @@ class IntentHandler:
     def _handle_intent(self, client, userdata, message: mqtt.MQTTMessage):
         payload = json.loads(message.payload)
         intent_name = payload["intent"]["intentName"]
+
+        if intent_name not in self.intent_function:
+            LOGGER.info(f"Not a Home Intent intent to handle: {intent_name}")
+            return
+
         slots = {}
         for slot in payload["slots"]:
             slots[slot["slotName"]] = slot["value"]["value"]
