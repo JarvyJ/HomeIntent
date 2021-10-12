@@ -22,10 +22,10 @@ ENV PATH="/venv/bin:$PATH"
 RUN pip3 install --no-cache-dir supervisor
 
 COPY --from=0 /venv /venv
-COPY /tmp/static/docs/site ./docs/site
+COPY tmp/static/docs/site ./docs/site
 COPY setup setup
 COPY home_intent home_intent
 COPY ui ui
-COPY /tmp/static/ui/frontend/build ./ui/frontend/build
+COPY tmp/static/ui/frontend/build ./ui/frontend/build
 
 ENTRYPOINT [ "supervisord", "--configuration", "/usr/src/app/setup/supervisord.conf" ]
