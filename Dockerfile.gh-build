@@ -1,0 +1,29 @@
+FROM python:3.7
+WORKDIR /usr/src/app
+
+ENV LANG=C.UTF-8
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+ENV PATH="/venv/bin:$PATH"
+
+RUN python -m venv /venv --copies
+COPY requirements.txt ./
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+
+
+FROM rhasspy/rhasspy:2.5.10
+WORKDIR /usr/src/app
+
+ENV PYTHONUNBUFFERED=1
+ENV PATH="/venv/bin:$PATH"
+
+COPY --from=0 /venv /venv
+COPY /tmp/.buildx-cache/static/docs/site ./docs/site
+COPY setup setup
+COPY home_intent home_intent
+COPY ui ui
+COPY /tmp/.buildx-cache/static/ui/frontend/build ./ui/frontend/build
+
+ENTRYPOINT [ "bash", "/usr/src/app/setup/setup.sh" ]
