@@ -33,7 +33,7 @@ class RhasspySettings(BaseModel):
     mqtt_password: Optional[str] = None
     microphone_device: Optional[str] = None
     sounds_device: Optional[str] = None
-
+    externally_managed: bool = False
 
 class HomeIntentSettings(BaseModel):
     beeps: bool = True

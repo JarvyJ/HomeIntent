@@ -123,6 +123,9 @@ class HomeIntent:
 
     def _initialize_rhasspy(self):
         self.startup_messenger.update("Setting up Rhasspy...")
+        if self.settings.rhasspy.externally_managed:
+            LOGGER.info("Externally Managed Setting enabled - skipping rhasspy profile processing")
+            return
         LOGGER.info("Checking profile")
         rhasspy_profile = self._load_rhasspy_profile_file()
         installed_profile = self.rhasspy_api.get("/api/profile?layers=profile")
@@ -205,7 +208,7 @@ class HomeIntent:
                     )
 
         LOGGER.info("Updating all sentences in Rhasspy...")
-        self.rhasspy_api.post("/api/sentences", {"sentences.ini": "\n".join(sentences)})
+        self.rhasspy_api.post("/api/sentences", {"intents/home_intent.ini": "\n".join(sentences)})
 
     def _sentence_slots_have_value(self, sentence: Sentence) -> bool:
         # NOTE: all([]) will also return True, so intents without slots will not break
