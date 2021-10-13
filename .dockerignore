@@ -1,8 +1,19 @@
-rhasspy/
-config/
-__pycache__/
+## ignore all
+**
+
+## but include these directories/files
+!/docs/**
+!/home_intent/**
+!/setup/**
+!/tmp/**
+!/ui/**
+!/requirements.txt
+
+## but ignore these dirs/files in those directories
+**/__pycache__/
+**/.pytest_cache
+**/.git
 docs/site
 ui/frontend/node_modules
 ui/frontend/build
 ui/frontend/.svelte-kit
-.git/
