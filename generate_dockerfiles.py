@@ -1,3 +1,5 @@
+from pathlib import Path
+
 RHASSPY_VERSION = "2.5.10"
 
 BUILD_DOCS = """
@@ -66,6 +68,15 @@ def main():
     make_gh_actions_dockerfiles()
 
 
+def write_dockerfile(filename: str, contents: str):
+    file = Path(filename)
+    if file.is_file():
+        file.chmod(0o644)
+
+    file.write_text(contents)
+    file.chmod(0o444)
+
+
 def make_local_dockerfile():
     final_build = FINAL_BULD.format(
         BUILD_IMAGE=f"rhasspy/rhasspy:{RHASSPY_VERSION}",
@@ -86,6 +97,7 @@ def make_local_dockerfile():
 
 {final_build}
 """
+    write_dockerfile("Dockerfile", dockerfile)
 
 
 def make_gh_actions_dockerfiles():
@@ -107,7 +119,7 @@ COPY --from=0 /usr/src/app/docs/site /docs/site
 COPY --from=1 /usr/src/app/ui/frontend/build /ui/frontend/build
 """
 
-    print(dockerfile)
+    write_dockerfile("Dockerfile.static", dockerfile)
 
 
 def make_rhasspy_external_dockerfile():
@@ -126,6 +138,7 @@ def make_rhasspy_external_dockerfile():
 
 {final_build}
 """
+    write_dockerfile("Dockerfile.rhasspy-external", dockerfile)
 
 
 def make_gh_build_dockerfile():
@@ -144,6 +157,7 @@ def make_gh_build_dockerfile():
 
 {final_build}
 """
+    write_dockerfile("Dockerfile.gh-build", dockerfile)
 
 
 if __name__ == "__main__":
