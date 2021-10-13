@@ -114,6 +114,8 @@
 <SettingsTitle>Home Intent Settings</SettingsTitle>
 
 <SettingsList>
+
+  {#if userSettings.rhasspy.externally_managed === false}
   <div>
     <label for="sounds-device" class="font-bold">Playback Devices</label>
     <HelpText>Try a 'default:' or 'sysdefault:' first and click the play icon to test it</HelpText>
@@ -158,6 +160,7 @@
       <span>{microphoneMessage}</span>
     </div>
   </div>
+  {/if}
 
   <BooleanInput
     title="Enable Beta Intents"
@@ -171,6 +174,8 @@
     bind:value="{userSettings.home_intent.enable_all}"
   />
 </SettingsList>
+
+{#if userSettings.rhasspy.externally_managed === false}
 
 <SettingsSection>Sound Effects</SettingsSection>
 
@@ -195,3 +200,5 @@
   </button>
   {/if} {/each}
 </div>
+
+{/if}
