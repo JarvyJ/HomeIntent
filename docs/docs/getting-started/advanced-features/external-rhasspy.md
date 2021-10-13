@@ -29,6 +29,6 @@ rhasspy:
   mqtt_port: 1883
 ```
 
-Notably, the `microphone_device` and `sounds_device` setting will no longer take effect. But you can always change those with the normal Rhasspy settings.
+Notably, the `microphone_device` and `sounds_device` Rhasspy settings will no longer take effect and setting custom sound effects will not work. But you can always change those with the normal Rhasspy settings.
 
 From there you can [finish setting up](../installation.md#setup) integration via the UI or `config.yaml`.
