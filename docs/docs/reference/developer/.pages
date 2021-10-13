@@ -2,3 +2,4 @@ nav:
   - example-component.md
   - additional-homeintent-config.md
   - customization-dev-reference.md
+  - custom-rhasspy-profile.md

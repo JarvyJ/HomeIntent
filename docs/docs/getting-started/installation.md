@@ -5,6 +5,12 @@ Home Intent currently is designed to run in a docker container running on a Rasp
 
 For now, knowledge on using and setting up docker is required. In the future, different setups for installation will be supported!
 
+### Installation Options
+
+  * The default docker based install. Includes everything you need - just continue with this doc!
+  * Connect to an [existing Rhasspy setup](./advanced-features/external-rhasspy.md).
+
+
 ## Installation
 It is easy to get it started with a `docker-compose.yaml` file that runs Home Intent:
 
