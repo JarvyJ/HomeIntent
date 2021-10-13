@@ -47,6 +47,8 @@ WORKDIR /usr/src/app
 ENV PYTHONUNBUFFERED=1
 ENV PATH="/venv/bin:$PATH"
 
+
+
 COPY --from=1 /venv /venv
 COPY --from=0 /usr/src/app/docs/site ./docs/site
 COPY setup setup

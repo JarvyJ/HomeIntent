@@ -23,6 +23,8 @@ WORKDIR /usr/src/app
 ENV PYTHONUNBUFFERED=1
 ENV PATH="/venv/bin:$PATH"
 
+RUN pip3 install --no-cache-dir supervisor
+
 COPY --from=0 /venv /venv
 COPY tmp/static/docs/site ./docs/site
 COPY setup setup
