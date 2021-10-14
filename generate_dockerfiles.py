@@ -1,6 +1,6 @@
 from pathlib import Path
 
-RHASSPY_VERSION = "2.5.10"
+RHASSPY_VERSION = "2.5.11"
 
 BUILD_DOCS = """
 FROM python:3.7
