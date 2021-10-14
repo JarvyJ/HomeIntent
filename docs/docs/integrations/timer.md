@@ -17,6 +17,9 @@ timer:
  * Set timer 90 seconds
  * set timer one and half minutes
  * set timer one hour and thirty minutes
+ * set a four minute timer
+ * set a five and a half hour timer
+
 
 !!! quote "Note"
     We did try allowing "set timer *for* 30 seconds", but found that the "for" would routintely get confused with a "four" and the timer would be set incorrectly. So it's been removed for now.
