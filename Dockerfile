@@ -41,7 +41,7 @@ RUN npm run build
 
 
 
-FROM rhasspy/rhasspy:2.5.10
+FROM rhasspy/rhasspy:2.5.11
 WORKDIR /usr/src/app
 
 ENV PYTHONUNBUFFERED=1

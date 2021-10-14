@@ -6,13 +6,21 @@
         "system": "fsticuffs"
     },
     "microphone": {
+        "pyaudio": {
+            "udp_audio_host": "127.0.0.1",
+            "udp_audio_port": "12202"
+        },
         "system": "pyaudio"
     },
     "sounds": {
         "system": "aplay"
     },
     "speech_to_text": {
-        "system": "kaldi"
+        "kaldi": {
+            "allow_unknown_words": true,
+            "cancel_word": "cancel"
+        },
+        "system": "kaldi",
     },
     "text_to_speech": {
         "picotts": {
@@ -22,7 +30,8 @@
     },
     "wake": {
         "porcupine": {
-            "keyword_path": "jarvis_raspberry-pi.ppn"
+            "keyword_path": "jarvis_raspberry-pi.ppn",
+            "udp_audio": "127.0.0.1:12202"
         },
         "system": "porcupine"
     }
