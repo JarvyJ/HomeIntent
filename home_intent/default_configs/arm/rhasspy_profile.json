@@ -20,7 +20,7 @@
             "allow_unknown_words": true,
             "cancel_word": "cancel"
         },
-        "system": "kaldi",
+        "system": "kaldi"
     },
     "text_to_speech": {
         "picotts": {
