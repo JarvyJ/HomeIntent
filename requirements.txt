@@ -1,6 +1,6 @@
 # for home intent [core]
 requests==2.26.0
-paho-mqtt==1.5.1
+paho-mqtt==1.6.0
 pydantic==1.8.2
 PyYAML==6.0
 humanize==3.12.0 ## needed for the timer
