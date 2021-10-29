@@ -17,16 +17,15 @@
     },
     "speech_to_text": {
         "kaldi": {
-            "allow_unknown_words": true,
-            "cancel_word": "cancel"
+            "cancel_word": "nevermind"
         },
         "system": "kaldi"
     },
     "text_to_speech": {
-        "picotts": {
+        "nanotts": {
             "language": "en-GB"
         },
-        "system": "picotts"
+        "system": "nanotts"
     },
     "wake": {
         "porcupine": {
