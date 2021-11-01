@@ -10,5 +10,5 @@ uvicorn[standard]==0.15.0
 fastapi==0.70.0
 aiofiles==0.7.0
 python-multipart==0.0.5
-ruamel-yaml==0.17.16
+ruamel-yaml==0.17.17
 httpx==0.20.0
