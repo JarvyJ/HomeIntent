@@ -33,6 +33,7 @@ Currently `prefer_toggle` is only used for the following:
  * light
  * remote
  * switch
+ * humidifier
 
 
 ## Example Sentences
@@ -69,6 +70,12 @@ We're not sure what the best sentence approach is for the fan oscillation, so we
  * Turn off (super cool lights)
 
 The group friendly names are in parenthesis.
+
+### Humidifier
+
+ * Set the humidifier to 68%
+ * Set the dehumidifier to 72%
+ * Set the hygrostat to eco
 
 ### Light
 
@@ -122,6 +129,7 @@ The various Home Assistant sub components can also be customized further using [
  * Covers: `/config/customizations/home_assistant/cover.yaml`
  * Fans: `/config/customizations/home_assistant/cover.yaml`
  * Groups: `/config/customizations/home_assistant/group.yaml`
+ * Humidifier: `/config/customizations/home_assistant/humidifier.yaml`
  * Lights: `/config/customizations/home_assistant/light.yaml`
  * Locks: `/config/customizations/home_assistant/lock.yaml`
  * Remote: `/config/customizations/home_assistant/remote.yaml`

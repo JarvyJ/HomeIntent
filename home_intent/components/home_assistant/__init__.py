@@ -2,7 +2,7 @@ from typing import Set
 
 from pydantic import AnyHttpUrl, BaseModel, Field
 
-from . import cover, fan, group, light, lock, remote, shopping_list, switch, weather
+from . import cover, fan, group, humidifier, light, lock, remote, shopping_list, switch, weather
 from .api import HomeAssistantAPI
 
 
@@ -43,6 +43,7 @@ class HomeAssistantComponent:
         self.domains = {x["entity_id"].split(".")[0] for x in self.entities}
         self.domains.update(x["domain"] for x in self.services)
         print(self.domains)
+        print(self.entities)
         self.prefer_toggle = config.prefer_toggle
 
 
@@ -59,6 +60,12 @@ def setup(home_intent):
 
     if "group" not in config.ignore_domains:
         home_intent.register(group.Group(home_assistant_component), group.intents)
+
+    if (
+        "humidifier" in home_assistant_component.domains
+        and "humidifier" not in config.ignore_domains
+    ):
+        home_intent.register(humidifier.Humidifier(home_assistant_component), humidifier.intents)
 
     if "light" in home_assistant_component.domains and "light" not in config.ignore_domains:
         home_intent.register(light.Light(home_assistant_component), light.intents)
