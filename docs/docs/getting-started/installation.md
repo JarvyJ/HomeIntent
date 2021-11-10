@@ -140,5 +140,3 @@ The wakeword Home Intent uses is "Jarvis". We have [example sentences](../integr
  * Jarvis, turn on the kitchen light
  * Jarvis, add milk to the shopping list
  * Jarvis, set the bedroom light to red at 80% brightness
-
-If you ever want to cancel an intent, just say "nevermind" and Home Intent will not execute on the intent!
