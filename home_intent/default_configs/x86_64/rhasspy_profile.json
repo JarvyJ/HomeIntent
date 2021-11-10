@@ -16,9 +16,6 @@
         "system": "aplay"
     },
     "speech_to_text": {
-        "kaldi": {
-            "cancel_word": "nevermind"
-        },
         "system": "kaldi"
     },
     "text_to_speech": {
