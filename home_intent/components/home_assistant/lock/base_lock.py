@@ -9,7 +9,7 @@ class SupportedFeatures(IntFlag):
     SUPPORT_OPEN = auto()
 
 
-class Lock:
+class BaseLock:
     def __init__(self, home_assistant):
         self.ha = home_assistant
         self.entities = [x for x in self.ha.entities if x["entity_id"].startswith("lock.")]
@@ -29,20 +29,17 @@ class Lock:
         }
         return slots
 
-    @intents.sentences(["lock [the] ($lock) [lock]"])
-    def lock_the_lock(self, lock):
+    def _lock_the_lock(self, lock):
         self.ha.api.call_service("lock", "lock", {"entity_id": lock})
         response = self.ha.api.get_entity(lock)
-        return f"Locking the {response['attributes']['friendly_name']}"
+        return response
 
-    @intents.sentences(["unlock [the] ($lock) [lock]"])
-    def unlock_the_lock(self, lock):
+    def _unlock_the_lock(self, lock):
         self.ha.api.call_service("lock", "unlock", {"entity_id": lock})
         response = self.ha.api.get_entity(lock)
-        return f"Unlocking the {response['attributes']['friendly_name']}"
+        return response
 
-    @intents.sentences(["open [the] ($openable_lock) [lock]"])
-    def open_the_lock(self, openable_lock):
+    def _open_the_lock(self, openable_lock):
         self.ha.api.call_service("lock", "open", {"entity_id": openable_lock})
         response = self.ha.api.get_entity(openable_lock)
-        return f"Turning off the {response['attributes']['friendly_name']}"
+        return response

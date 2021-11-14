@@ -87,7 +87,7 @@ def _load_builtin_components(components: set, home_intent: HomeIntent):
                 raise
         else:
             loaded_components.add(component)
-            integration.setup(home_intent)
+            integration.setup(home_intent, home_intent.settings.home_intent.language)
 
     return loaded_components
 
@@ -106,7 +106,7 @@ def _load_custom_components(custom_components: set, home_intent: HomeIntent):
             else:
                 raise
         else:
-            integration.setup(home_intent)
+            integration.setup(home_intent, home_intent.settings.home_intent.language)
 
     assert sys.path.pop() == "/config/custom_components"
 
