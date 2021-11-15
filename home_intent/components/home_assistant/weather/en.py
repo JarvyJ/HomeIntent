@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from .base_weather import (BaseWeather, TimeOfDay, _get_forecast_time_of_day,
-                           intents)
+from .base_weather import BaseWeather, TimeOfDay, _get_forecast_time_of_day, intents
 
 DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -22,7 +21,7 @@ class Weather(BaseWeather):
     @intents.beta
     @intents.sentences(["what is the temperature [(right now|today|outside)]"])
     def temperature_day(self):
-        response = self.ha.api.get_entity(self.entity)
+        response = self._temperature_day()
         return f"The temperature is currently {response['attributes']['temperature']}"
 
     @intents.beta
