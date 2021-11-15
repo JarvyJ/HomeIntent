@@ -65,7 +65,7 @@ def setup(home_intent, language: str):
 
     if "light" in home_assistant_component.domains and "light" not in config.ignore_domains:
         light = import_module(f"{__name__}.light.{language}")
-        home_intent.register(light.Light(home_assistant_component), light.intents)
+        home_intent.register(light.Light(home_assistant_component, language), light.intents)
 
     if "lock" in home_assistant_component.domains and "lock" not in config.ignore_domains:
         lock = import_module(f"{__name__}.lock.{language}")
@@ -81,7 +81,7 @@ def setup(home_intent, language: str):
     ):
         shopping_list = import_module(f"{__name__}.shopping_list.{language}")
         home_intent.register(
-            shopping_list.ShoppingList(home_assistant_component), shopping_list.intents
+            shopping_list.ShoppingList(home_assistant_component, language), shopping_list.intents
         )
 
     if "switch" in home_assistant_component.domains and "switch" not in config.ignore_domains:

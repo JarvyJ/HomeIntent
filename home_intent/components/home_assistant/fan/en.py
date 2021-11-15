@@ -65,12 +65,12 @@ class Fan(BaseFan):
         ["increase the ($speed_fan) [fan] speed", "increase the fan speed for ($speed_fan)"]
     )
     def increase_fan_speed(self, speed_fan):
-        response = self._increase_fan_speed(speed_fan, FAN_SPEED_LIST)
+        response, new_fan_speed = self._increase_fan_speed(speed_fan, FAN_SPEED_LIST)
         return f"Setting the {response['attributes']['friendly_name']} to {new_fan_speed}"
 
     @intents.sentences(
         ["decrease the ($speed_fan) [fan] speed", "decrease the fan speed for ($speed_fan)"]
     )
     def decrease_fan_speed(self, speed_fan):
-        response = self._decrease_fan_speed(speed_fan, FAN_SPEED_LIST)
+        response, new_fan_speed = self._decrease_fan_speed(speed_fan, FAN_SPEED_LIST)
         return f"Setting the {response['attributes']['friendly_name']} to {new_fan_speed}"

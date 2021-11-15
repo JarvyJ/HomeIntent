@@ -2,6 +2,11 @@ from .base_cover import intents, BaseCover
 
 
 class Cover(BaseCover):
+    @intents.dictionary_slots
+    def cover_positions(self):
+        slots = {"half way": 50}
+        return slots
+
     @intents.sentences(["open [the] ($cover_open)"])
     def open_cover(self, cover_open):
         response = self._open_cover(cover_open)

@@ -28,7 +28,7 @@ def get_file(filename, relative_from=__file__, arch_dependent=False, language=No
         return config_file_path
 
     if language:
-        filename = f"{language}/filename"
+        filename = f"{language}/{filename}"
 
     if arch_dependent:
         source_file_path = PosixPath(relative_from).parent / f"default_configs/{ARCH}/{filename}"

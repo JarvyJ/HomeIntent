@@ -92,11 +92,6 @@ class BaseCover:
         }
         return slots
 
-    @intents.dictionary_slots
-    def cover_positions(self):
-        slots = {"half way": 50}
-        return slots
-
     def _open_cover(self, cover_open):
         if SupportedFeatures.SUPPORT_OPEN in self.cover_features[cover_open]:
             self.ha.api.call_service("cover", "open_cover", {"entity_id": cover_open})

@@ -2,10 +2,6 @@ from .base_shopping_list import intents, BaseShoppingList
 
 
 class ShoppingList(BaseShoppingList):
-    def __init__(self, home_assistant, language):
-        self.ha = home_assistant
-        self.language = language
-
     @intents.sentences(["add ($shopping_item) to the [shopping] list"])
     def add_item_to_shopping_list(self, shopping_item):
         self._add_item_to_shopping_list(shopping_item)

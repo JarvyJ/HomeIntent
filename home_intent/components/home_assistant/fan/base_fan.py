@@ -141,7 +141,8 @@ class BaseFan:
         self.ha.api.call_service(
             "fan", "set_speed", {"entity_id": speed_fan, "speed": new_fan_speed},
         )
-        return f"Setting the {response['attributes']['friendly_name']} to {new_fan_speed}"
+        response = self.ha.api.get_entity(speed_fan)
+        return response, new_fan_speed
 
     def _decrease_fan_speed(self, speed_fan, fan_speed_list):
         response = self.ha.api.get_entity(speed_fan)
@@ -156,4 +157,5 @@ class BaseFan:
         self.ha.api.call_service(
             "fan", "set_speed", {"entity_id": speed_fan, "speed": new_fan_speed},
         )
-        return f"Setting the {response['attributes']['friendly_name']} to {new_fan_speed}"
+        response = self.ha.api.get_entity(speed_fan)
+        return response, new_fan_speed
