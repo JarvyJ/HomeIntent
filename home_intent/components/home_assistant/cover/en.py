@@ -4,7 +4,7 @@ from .base_cover import intents, BaseCover
 class Cover(BaseCover):
     @intents.sentences(["open [the] ($cover_open)"])
     def open_cover(self, cover_open):
-        response = self.ha.api.get_entity(cover_open)
+        response = self._open_cover(cover_open)
         return f"Opening the {response['attributes']['friendly_name']}"
 
     @intents.sentences(["close [the] ($cover_close)"])

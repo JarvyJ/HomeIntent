@@ -1,6 +1,6 @@
 from .base_fan import intents, BaseFan
 
-# TODO: are these baked into Home Assistant?
+# TODO: figure out if these change with HA language
 FAN_SPEED_LIST = ["off", "low", "medium", "high"]
 
 
