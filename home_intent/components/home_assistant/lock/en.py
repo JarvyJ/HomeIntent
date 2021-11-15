@@ -1,4 +1,4 @@
-from .base_lock import intents, BaseLock
+from .base_lock import BaseLock, intents
 
 
 class Lock(BaseLock):

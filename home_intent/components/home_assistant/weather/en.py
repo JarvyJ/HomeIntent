@@ -1,5 +1,7 @@
 from datetime import datetime
-from .base_weather import intents, BaseWeather, _get_forecast_time_of_day, TimeOfDay
+
+from .base_weather import (BaseWeather, TimeOfDay, _get_forecast_time_of_day,
+                           intents)
 
 DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 

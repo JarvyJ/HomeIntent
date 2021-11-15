@@ -1,4 +1,4 @@
-from .base_remote import intents, BaseRemote
+from .base_remote import BaseRemote, intents
 
 
 class Remote(BaseRemote):

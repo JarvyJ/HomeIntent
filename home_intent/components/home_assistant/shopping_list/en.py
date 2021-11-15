@@ -1,4 +1,4 @@
-from .base_shopping_list import intents, BaseShoppingList
+from .base_shopping_list import BaseShoppingList, intents
 
 
 class ShoppingList(BaseShoppingList):

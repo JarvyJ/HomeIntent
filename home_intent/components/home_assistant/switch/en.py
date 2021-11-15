@@ -1,4 +1,4 @@
-from .base_switch import intents, BaseSwitch
+from .base_switch import BaseSwitch, intents
 
 
 class Switch(BaseSwitch):

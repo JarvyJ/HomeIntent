@@ -1,4 +1,4 @@
-from .base_light import intents, BaseLight
+from .base_light import BaseLight, intents
 
 
 class Light(BaseLight):

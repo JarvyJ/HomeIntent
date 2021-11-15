@@ -1,4 +1,4 @@
-from .base_fan import intents, BaseFan
+from .base_fan import BaseFan, intents
 
 # TODO: figure out if these change with HA language
 FAN_SPEED_LIST = ["off", "low", "medium", "high"]

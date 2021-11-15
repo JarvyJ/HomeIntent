@@ -1,4 +1,4 @@
-from .base_cover import intents, BaseCover
+from .base_cover import BaseCover, intents
 
 
 class Cover(BaseCover):

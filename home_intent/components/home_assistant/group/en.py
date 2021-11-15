@@ -1,4 +1,4 @@
-from .base_group import intents, BaseGroup
+from .base_group import BaseGroup, intents
 
 
 class Group(BaseGroup):
