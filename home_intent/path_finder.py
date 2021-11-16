@@ -21,13 +21,16 @@ else:
     raise ValueError("HomeIntent only runs on x86_64 and armv7/aarch64 architectures")
 
 
-def get_file(filename, relative_from=__file__, arch_dependentant=False) -> PosixPath:
+def get_file(filename, relative_from=__file__, arch_dependent=False, language=None) -> PosixPath:
     config_file_path = PosixPath(f"/config/{filename}")
     if config_file_path.is_file():
         LOGGER.info(f"Loading custom file: {config_file_path}")
         return config_file_path
 
-    if arch_dependentant:
+    if language:
+        filename = f"{language}/{filename}"
+
+    if arch_dependent:
         source_file_path = PosixPath(relative_from).parent / f"default_configs/{ARCH}/{filename}"
     else:
         source_file_path = PosixPath(relative_from).parent / f"default_configs/{filename}"

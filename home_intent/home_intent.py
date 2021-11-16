@@ -146,7 +146,7 @@ class HomeIntent:
             LOGGER.info("Profile is up to date, nothing to download")
 
     def _load_rhasspy_profile_file(self):
-        config_file_path = get_file("rhasspy_profile.json", arch_dependentant=True)
+        config_file_path = get_file("rhasspy_profile.json", arch_dependent=True)
         rhasspy_config = json.loads(config_file_path.read_text())
         try:
             self.audio_config.add_sounds_microphone_device(rhasspy_config)

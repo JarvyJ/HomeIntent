@@ -35,10 +35,12 @@ class RhasspySettings(BaseModel):
     sounds_device: Optional[str] = None
     externally_managed: bool = False
 
+
 class HomeIntentSettings(BaseModel):
     beeps: bool = True
     enable_beta: bool = False
     enable_all: bool = False
+    language: str = "en"
 
 
 class Settings(BaseSettings):
