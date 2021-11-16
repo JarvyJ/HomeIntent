@@ -4,7 +4,7 @@ from pydantic import BaseModel, conint
 from pydantic.color import Color
 import yaml
 
-from home_intent import Intents, get_file
+from home_intent import Intents
 
 intents = Intents(__name__)
 
@@ -18,12 +18,12 @@ class ColorNames(BaseModel):
 
 
 class BaseLight:
-    def __init__(self, home_assistant, language):
+    def __init__(self, home_assistant, home_intent):
         self.ha = home_assistant
+        self.home_intent = home_intent
         self.entities = [x for x in self.ha.entities if x["entity_id"].startswith("light.")]
         self.color_value_to_name = {}
         self.color_temp_to_name = {}
-        self.language = language
 
     @intents.dictionary_slots
     def light(self):
@@ -36,7 +36,7 @@ class BaseLight:
 
     @intents.dictionary_slots
     def color(self):
-        color_file = get_file("home_assistant/color_names.yaml", language=self.language)
+        color_file = self.home_intent.get_file("home_assistant/color_names.yaml")
         raw_colors = yaml.load(color_file.read_text(), Loader=yaml.SafeLoader)
         color_names = ColorNames(**raw_colors).color_names
         self.color_value_to_name = {str(v): k for k, v in color_names.items()}
@@ -44,9 +44,7 @@ class BaseLight:
 
     @intents.dictionary_slots
     def color_temperature(self):
-        color_temperature_file = get_file(
-            "home_assistant/color_temperature.yaml", language=self.language
-        )
+        color_temperature_file = self.home_intent.get_file("home_assistant/color_temperature.yaml")
         color_temperature_dict = yaml.load(
             color_temperature_file.read_text(), Loader=yaml.SafeLoader
         )

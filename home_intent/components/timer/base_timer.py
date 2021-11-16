@@ -13,14 +13,14 @@ class TimerException(Exception):
 
 
 class BaseTimer:
-    def __init__(self, home_intent: HomeIntent, language):
+    def __init__(self, home_intent: HomeIntent):
         # TODO: keep track of timers and add ability to remove timers
         # self.timers = []
         self.home_intent = home_intent
 
         # for some reason the activate fails for "en", I think because it's not a "translation"
-        if language != "en":
-            humanize.i18n.activate(language)
+        if self.home_intent.language != "en":
+            humanize.i18n.activate(self.home_intent.language)
 
     @intents.dictionary_slots
     def partial_time(self):

@@ -1,16 +1,16 @@
-from home_intent import Intents, get_file
+from home_intent import Intents
 
 intents = Intents(__name__)
 
 
 class BaseShoppingList:
-    def __init__(self, home_assistant, language):
+    def __init__(self, home_assistant, home_intent):
         self.ha = home_assistant
-        self.language = language
+        self.home_intent = home_intent
 
     @intents.slots
     def shopping_item(self):
-        item_file = get_file("home_assistant/shopping_items.txt", language=self.language)
+        item_file = self.home_intent.get_file("home_assistant/shopping_items.txt")
         return item_file.read_text().strip().split("\n")
 
     def _add_item_to_shopping_list(self, shopping_item):
