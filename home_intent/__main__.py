@@ -45,6 +45,7 @@ def main():
     _setup_logging()
     settings = Settings()
     home_intent = HomeIntent(settings)
+    logging.info(f"Using language: {home_intent.language}")
     _load_integrations(settings, home_intent)
     home_intent.initialize()
 
