@@ -1,8 +1,6 @@
 import json
 import logging
 
-from home_intent.path_finder import get_file
-
 LOGGER = logging.getLogger(__name__)
 
 
@@ -11,9 +9,10 @@ class AudioConfigException(Exception):
 
 
 class AudioConfig:
-    def __init__(self, rhasspy_api, settings):
+    def __init__(self, rhasspy_api, settings, get_file):
         self.rhasspy_api = rhasspy_api
         self.settings = settings
+        self.get_file = get_file
 
     def add_sounds_microphone_device(self, rhasspy_config):
         microphone_devices = self.rhasspy_api.get("/api/microphones")
@@ -26,7 +25,19 @@ class AudioConfig:
         _setup_microphone_device(config_microphone_device, microphone_devices, rhasspy_config)
         _setup_sounds_device(config_sounds_device, sounds_devices, rhasspy_config)
         if self.settings.home_intent.beeps:
-            _setup_beeps(rhasspy_config)
+            self.setup_beeps(rhasspy_config)
+
+    def setup_beeps(self, rhasspy_config):
+        beep_high = self.get_file("beep-high.wav", language_dependent=False)
+        beep_low = self.get_file("beep-low.wav", language_dependent=False)
+        error = self.get_file("error.wav", language_dependent=False)
+        if "sounds" in rhasspy_config:
+            beep_config = {
+                "error": str(error.resolve()),
+                "recorded": str(beep_low.resolve()),
+                "wake": str(beep_high.resolve()),
+            }
+            rhasspy_config["sounds"].update(beep_config)
 
 
 def _log_out_audio_config(microphone_devices, sounds_devices):
@@ -86,16 +97,3 @@ def _setup_sounds_device(config_sounds_device, sounds_devices, rhasspy_config):
                 rhasspy_config["sounds"].update({"aplay": {"device": config_sounds_device}})
         else:
             LOGGER.warning("No sounds section in rhasspy_profile.json to add sounds device")
-
-
-def _setup_beeps(rhasspy_config):
-    beep_high = get_file("beep-high.wav")
-    beep_low = get_file("beep-low.wav")
-    error = get_file("error.wav")
-    if "sounds" in rhasspy_config:
-        beep_config = {
-            "error": str(error.resolve()),
-            "recorded": str(beep_low.resolve()),
-            "wake": str(beep_high.resolve()),
-        }
-        rhasspy_config["sounds"].update(beep_config)
