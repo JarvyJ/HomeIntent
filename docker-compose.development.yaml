@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  rhasspy:
+    image: "rhasspy/rhasspy:2.5.11"
+    restart: unless-stopped
+    volumes:
+      - "./development-env/rhasspy:/profiles"
+      - "/etc/localtime:/etc/localtime:ro"
+    ports:
+      - "12101:12101"
+      - "12183:12183"
+    devices:
+      - "/dev/snd:/dev/snd"
+    command: --user-profiles /profiles --profile en
+  
+  homeintent:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: "development-env/Dockerfile.python"
+    depends_on:
+      - rhasspy
+    volumes:
+      - "./home_intent:/usr/src/app/home_intent"
+      - "./development-env/config:/config"
+    environment:
+      - DOCKER_DEV=True
+    command: python3 home_intent
+
+  ui:
+    build:
+      context: .
+      dockerfile: "development-env/Dockerfile.python"
+    volumes:
+      - "./ui:/usr/src/app/ui"
+      - "./home_intent:/usr/src/app/home_intent"
+      - "./docs:/usr/src/app/docs"
+      - "./development-env/config:/config"
+    ports:
+      - "11102:11102"
+    command: python3 ui/main.py
+
+  frontend:
+    build:
+      context: .
+      dockerfile: "development-env/Dockerfile.frontend"
+    volumes:
+      - "./ui/frontend:/usr/src/app/ui/frontend"
+    ports:
+      - "3000:3000"
+    command: /usr/src/app/ui/frontend/install-and-run.sh
+
+
+  docs:
+    build: 
+      context: .
+      dockerfile: "development-env/Dockerfile.docs"
+    volumes:
+      - "./docs:/usr/src/app/docs"
+    ports:
+      - "8000:8000"
+    command: mkdocs serve -a 0.0.0.0:8000

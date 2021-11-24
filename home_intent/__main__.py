@@ -1,6 +1,7 @@
 """Start up HomeIntent"""
 import importlib
 import logging
+import os
 from pathlib import Path
 import sys
 
@@ -41,8 +42,8 @@ class CustomHttpHandler(logging.Handler):
             pass
 
 
-def main():
-    _setup_logging()
+def main(logging_host: str):
+    _setup_logging(logging_host)
     settings = Settings()
     home_intent = HomeIntent(settings)
     logging.info(f"Using language: {home_intent.language}")
@@ -50,11 +51,11 @@ def main():
     home_intent.initialize()
 
 
-def _setup_logging():
+def _setup_logging(logging_host: str):
     logging.basicConfig(
         format="%(asctime)s %(levelname)s %(name)s %(message)s", level=logging.INFO,
     )
-    logging.root.addHandler(CustomHttpHandler("http://localhost:11102/api/v1/logs"))
+    logging.root.addHandler(CustomHttpHandler(f"http://{logging_host}:11102/api/v1/logs"))
 
 
 def _load_integrations(settings: Settings, home_intent: HomeIntent):
@@ -113,4 +114,7 @@ def _load_custom_components(custom_components: set, home_intent: HomeIntent):
 
 
 if __name__ == "__main__":
-    main()
+    logging_host = "localhost"
+    if os.environ.get("DOCKER_DEV") == "True":
+        logging_host = "ui"
+    main(logging_host)

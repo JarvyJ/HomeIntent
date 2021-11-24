@@ -35,18 +35,23 @@ app.include_router(settings.router, prefix="/api/v1", tags=["Settings"])
 app.include_router(rhasspy.router, prefix="/api/v1", tags=["Rhasspy Audio"])
 app.include_router(websockets.router, tags=["Websocket Things"])
 
+built_docs_dir = Path(__file__).parent.resolve().parent / "docs/site"
+if built_docs_dir.exists():
+    app.mount(
+        "/docs/", StaticFiles(directory=built_docs_dir, html=True), name="documentation",
+    )
+else:
+    print("The docs directory must exist (mkdocs build) for the documentation link to work")
 
-app.mount(
-    "/docs/",
-    StaticFiles(directory=Path(__file__).parent.resolve().parent / "docs/site", html=True),
-    name="documentation",
-)
-
-app.mount(
-    "/",
-    StaticFiles(directory=Path(__file__).parent.resolve() / "frontend/build", html=True),
-    name="frontend",
-)
+built_frontend_dir = Path(__file__).parent.resolve() / "frontend/build"
+if built_frontend_dir.exists():
+    app.mount(
+        "/",
+        StaticFiles(directory=built_frontend_dir, html=True),
+        name="frontend",
+    )
+else:
+    print("Frontend must be built (npm run build) to be properly loaded. Will continue with just API: http://localhost:11102/openapi")
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=11102, log_level="info", reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=11102, log_level="info", reload=True)
