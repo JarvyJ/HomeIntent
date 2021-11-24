@@ -22,14 +22,6 @@ class BaseTimer:
         if self.home_intent.language != "en":
             humanize.i18n.activate(self.home_intent.language)
 
-    @intents.dictionary_slots
-    def partial_time(self):
-        return {
-            "and [a] half": "half",
-            "and [a] quarter": "quarter",
-            "and [a] third": "third",
-        }
-
     def _set_timer(
         self,
         hours: int = None,

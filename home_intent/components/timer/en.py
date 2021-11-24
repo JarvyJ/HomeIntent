@@ -2,6 +2,14 @@ from .base_timer import intents, BaseTimer
 
 
 class Timer(BaseTimer):
+    @intents.dictionary_slots
+    def partial_time(self):
+        return {
+            "and [a] half": "half",
+            "and [a] quarter": "quarter",
+            "and [a] third": "third",
+        }
+
     @intents.sentences(
         [
             "time = 0..128",
