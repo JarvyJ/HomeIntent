@@ -56,10 +56,14 @@ class Timer(BaseTimer):
     def set_timer(
         self, hours: int = None, minutes: int = None, seconds: int = None, partial_time=None
     ):
-        return self._set_timer(hours, minutes, seconds, partial_time)
+        human_timer_duration = self._set_timer(
+            "Your timer {0} has ended", hours, minutes, seconds, partial_time
+        )
+        return f"Setting timer {human_timer_duration}"
+
 ```
 
-There is a bit of nuance here. Depending on the language the `partial_time` might not make sense, in which case it can just be ommited from the translation and not passed to `_set_timer`. On the other hand, a translation might exist for `"and a half"`, but it should still map to the english `"half"` in the dictionary as it is acting more like an enum than a string in this situation.
+There is a bit of nuance here. Depending on the language the `partial_time` might not make sense, in which case it can just be omitted from the translation and not passed to `_set_timer`. On the other hand, a translation might exist for `"and a half"`, but it should still map to the english `"half"`. In the dictionary, the `half` acts more like an enum than a string. You can see that in the `get_partial_time_duration` in the `base_timer.py` code below. But in general, the value side of a dictionary slot does not need to be translated.
 
 ## `base_timer.py`
 The `base_timer.py` file includes the main timer functionality and contains code that all the languages can use. In the timer constructor below, we are activating the [`humanize`](https://github.com/jmoiron/humanize) module to load the specific language settings. In this case, the `humanize` module takes care of some of the translation heavy lifting. 
@@ -90,6 +94,7 @@ class BaseTimer:
 
     def _set_timer(
         self,
+        timer_done_message: str,
         hours: int = None,
         minutes: int = None,
         seconds: int = None,
@@ -107,14 +112,17 @@ class BaseTimer:
             )
         human_timer_duration = text_conversion_function(timer_duration)
         timer = ThreadingTimer(
-            timer_duration.total_seconds(), self.complete_timer, (human_timer_duration,),
+            timer_duration.total_seconds(),
+            self.complete_timer,
+            (human_timer_duration, timer_done_message),
         )
         timer.start()
-        return f"Setting timer {human_timer_duration}"
+        return human_timer_duration
 
-    def complete_timer(self, human_timer_duration: str):
+    def complete_timer(self, human_timer_duration: str, timer_done_message: str):
         self.home_intent.play_audio_file("timer/alarm.wav")
-        self.home_intent.say(f"Your timer {human_timer_duration} has ended")
+        self.home_intent.say(timer_done_message.format(human_timer_duration))
+
 
 def get_partial_time_duration(partial_time, hours=None, minutes=None, seconds=None):
     partial_of = None
@@ -132,5 +140,16 @@ def get_partial_time_duration(partial_time, hours=None, minutes=None, seconds=No
     elif partial_time == "third":
         return timedelta(**{partial_of: 1 / 3})
 
-
 ```
+
+## Language Helpers
+There are a couple of things that can help with language specifics including:
+
+### `home_intent.language`
+This keeps track of the two letter ISO639-1 language code and can be used as needed. In the `base_timer.py` example above, it is used in the humanize activation step in the BaseTimer constructor.
+
+### `home_intent.get_file`
+This is further explained in the Home Intent [object reference](../api/home-intent-object.md#home_intentget_filefilename-language_dependenttrue), but to quickly summarize, the `get_file` method will load a file first looking in the Home Intent [`default_configs`](https://github.com/JarvyJ/HomeIntent/tree/main/home_intent/default_configs) directory in the appropriate language code folder. Some external files are language dependent and can get loaded from there as needed.
+
+### `home_intent.play_audio_file`
+The `play_audio_file` method has also been updated to support the `language_dependent` flag to load language specific sounds. However, it defaults to `False`, so it will not look for audio files in the language code folder in `default_configs` by default.

@@ -45,5 +45,5 @@ When loading a file related to a component, it's best to put it in a folder that
 ## `home_intent.say(str)`
 Have Home Intent say something to the user. This method will likely be modified a bit when satellite support is enabled so a sentence is said at the right location.
 
-## `home_intent.play_audio_file(filename)`
-This will load a `.wav` file from the filename using the [`get_file`](./get-file.md) and play it back using Home Intent. It will also need to be modified once satellite support is in.
+## `home_intent.play_audio_file(filename, language_dependent=False)`
+This will load a `.wav` file from the filename using the [`get_file`](./home-intent-object.md#home_intentget_filefilename-language_dependenttrue) and play it back using Home Intent. It can also take in the `language_dependent` flag (but defaults to `False`) to load audio files specific to a language if needed.

@@ -24,6 +24,7 @@ class BaseTimer:
 
     def _set_timer(
         self,
+        timer_done_message: str,
         hours: int = None,
         minutes: int = None,
         seconds: int = None,
@@ -41,14 +42,16 @@ class BaseTimer:
             )
         human_timer_duration = text_conversion_function(timer_duration)
         timer = ThreadingTimer(
-            timer_duration.total_seconds(), self.complete_timer, (human_timer_duration,),
+            timer_duration.total_seconds(),
+            self.complete_timer,
+            (human_timer_duration, timer_done_message),
         )
         timer.start()
-        return f"Setting timer {human_timer_duration}"
+        return human_timer_duration
 
-    def complete_timer(self, human_timer_duration: str):
+    def complete_timer(self, human_timer_duration: str, timer_done_message: str):
         self.home_intent.play_audio_file("timer/alarm.wav")
-        self.home_intent.say(f"Your timer {human_timer_duration} has ended")
+        self.home_intent.say(timer_done_message.format(human_timer_duration))
 
 
 def get_partial_time_duration(partial_time, hours=None, minutes=None, seconds=None):

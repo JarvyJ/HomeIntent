@@ -1,10 +1,12 @@
 # Translating a Component
 Currently only English is supported in Home Intent. We've designed the [structure](./developing-translations.md) of the code to support multiple languages and hope that people can contribute.
 
-Currently translating requires a bit of Docker and git knowledge. We know this is a higher bar for most software translation, but have decided to go for it to allow Python to be used to help bridge translations. Knowing Python is not strictly needed to help with translations, but it would be useful, along with reading the [developing translations guide](./developing-translations.md).
+Currently translating requires a bit of Docker, docker-compose, and git knowledge. We know this is a high bar for contributing, but have decided to go for it to allow Python to be fully used in the translation environment. Knowing Python is not strictly needed to help with translations, but it would be useful as translators may have to refer back to the base classes during translation. 
+
+The [developing translations guide](./developing-translations.md) and [local Home Intent development](../developer/local-development.md) would be good to read beforehand to understand how it all fits together.
 
 ## Enabling another language
-To get stated with translation, you will need to set the `LANGUAGE` environment variable to one of the ISO639-1 language codes. The current supported ones are the following:
+To get stated with translations, you will need to pull down the latest version of the repo, and [setup the `config.yaml`](../developer/local-development.md#basic-development-setup). From there you can update the development [`docker-compose.yaml`](https://github.com/JarvyJ/HomeIntent/blob/main/docker-compose.yaml) file to set the ISO639-1 language codes in Home Intent and Rhasspy. The current supported codes are the following:
 
  - en - English
  - de - German
@@ -17,43 +19,46 @@ To get stated with translation, you will need to set the `LANGUAGE` environment 
  - sv - Swedish
  - cs - Czech
 
-You can do this in the `docker-compose.yaml` file by setting `LANGUAGE` in the `environment` section. Example:
-```yaml hl_lines="18-19"
-version: "3.9"
+You can set the language in Home Intent with the `LANGUAGE` environment variable:
+```yaml hl_lines="15"
+# the other containers...
 
-services:
   homeintent:
-    image: "ghcr.io/jarvyj/homeintent:latest"
-    container_name: homeintent
     restart: unless-stopped
+    build:
+      context: .
+      dockerfile: "development-env/Dockerfile.python"
+    depends_on:
+      - rhasspy
     volumes:
-      - "/PATH_TO_CONFIG/rhasspy:/profiles"
-      - "/PATH_TO_CONFIG/config:/config"
-      - "/etc/localtime:/etc/localtime:ro"
-    ports:
-      - "11102:11102"  # For the Home Intent UI
-      - "12183:12183"  # For communicating over MQTT/satellites
-      - "12101:12101"  # For the Rhasspy UI (optional)
-    devices:
-      - "/dev/snd:/dev/snd"
+      - "./home_intent:/usr/src/app/home_intent"
+      - "./development-env/config:/config"
     environment:
-      - LANGUAGE=en
-```Slots` to see 
+      - DOCKER_DEV=True
+      - LANGUAGE=de
+    command: python3 home_intent
 
-Doing this will tell Home Intent to try and load the language version of a component, otherwise it will fallback to English. This might not be the long term behavior (would people speak english for non-translated components?), but is currently how it is setup.
-
-## Testing Translations
-To work with Home Intent in a translation capacity, the component code will have to be shared between your computer and the container. This can be done by adding another line to the `volumes` section from above:
-
-```yaml hl_lines="5"
-    volumes:
-      - "/PATH_TO_CONFIG/rhasspy:/profiles"
-      - "/PATH_TO_CONFIG/config:/config"
-      - "/etc/localtime:/etc/localtime:ro"
-      - "/PATH_TO_COMPONENTS:/usr/src/app/home_intent/components"
+# some more containers...
 ```
 
-After running with this config for the first time, Docker will copy out the contents from `home_intent/components` to `/PATH_TO_COMPONENTS`.
+In Rhasspy, the `command`'s `profile` argument also needs to be updated to the match the language code:
+```yaml hl_lines="12"
+  rhasspy:
+    image: "rhasspy/rhasspy:2.5.11"
+    restart: unless-stopped
+    volumes:
+      - "./development-env/rhasspy:/profiles"
+      - "/etc/localtime:/etc/localtime:ro"
+    ports:
+      - "12101:12101"
+      - "12183:12183"
+    devices:
+      - "/dev/snd:/dev/snd"
+    command: --user-profiles /profiles --profile de
+```
+
+Doing this will load the different language option in Rhasspy and tell Home Intent to try and load the translated version of a component. If it can't do that it will fallback to English. This might not be the long term behavior, but is currently how it is setup as very few things have been translated.
+
 
 ## Translating Components
 To translate a component, in the components folder (which should exist after kicking off the container for the first time), there are component folders with `en.py` files. You can start by copying the `en.py` file to the language you are translating to (ex: `de.py`, `es.py`, etc), and going through and translating the sentencs/structures to the other language.
@@ -103,7 +108,12 @@ When a sentence is spoken, Rhasspy parses out specific types of variables - the 
 
 ## Testing Translations
 
-From here, you can modify the translation and restart the container to test. If you go to the Rhasspy UI interface: `http://IP_WHERE_RUNNING:12101`, you can click on the `Sentences` tab and click the `intents/home_intent.ini` file to see the sentences and `Slots` tab to see any language specific slots.
+After making changes to the codebase, you can start Home Intent in the Docker container:
+```
+docker-compose up homeintent
+```
+
+After it's running, you can go to the Rhasspy UI ([`http://localhost:12101`](http://localhost:12101)), click on the `Sentences` tab and select `intents/home_intent.ini` from the file dropdown to see the sentences and `Slots` tab to see any language specific slots.
 
 Sentences Tab:
 ![sentences tab in Rhasspy](./sentences.png)
@@ -111,8 +121,11 @@ Sentences Tab:
 Slots Tab:
 ![slots tab in Rhasspy](./slots.png)
 
+From there, you can verbally test the translations and see how well they work. If changes are needed, you can stop running Home Intent with `ctrl+c`, make further changes, and start the container again. Once they are working as expected, the files can be Pull Requested back in, and we can work on getting it merged!
+
+
 ## Translation Considerations
-We always want to keep Home Intent working well and feel professional regardless of what language it is being used in.
+We always want to keep Home Intent working well and feeling professional, so we have some considerations that might help.
 
 ### Common Sentence Structure
 In English all the sentences try to start with verbs ("Turn on the kitchen light", "Set timer 5 minutes", "Open the garage door", etc). The main idea behind this is to have a sentence structure that is consistent across all types of intents and makes the sentence usage "guessable". So the idea with any of the translations is that once folks understand the sentence structure, they should be able to guess all the variations without much effort.
@@ -127,6 +140,4 @@ I'm sure this will affect other languages. If they follow the `prefer_toggle` co
 I'm sure while translating we may come across other language considerations that can be used to further improve the quality of Home Intent. Feel free to start a discussion or open an issue to discuss. We'd love to hear about it!
 
 
-## Checking it back in
-
-TODO: get_file and home_intent.language in developing translations
+TODO: fix the timer the code to not hardcode english...

@@ -26,4 +26,7 @@ class Timer(BaseTimer):
     def set_timer(
         self, hours: int = None, minutes: int = None, seconds: int = None, partial_time=None
     ):
-        return self._set_timer(hours, minutes, seconds, partial_time)
+        human_timer_duration = self._set_timer(
+            "Your timer {0} has ended", hours, minutes, seconds, partial_time
+        )
+        return f"Setting timer {human_timer_duration}"
