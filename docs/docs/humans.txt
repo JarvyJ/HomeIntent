@@ -1,0 +1,17 @@
+/* TEAM */
+    Developer: James Jarvison
+
+/* DEDICATION */
+    Dedicated: To my dad, who was always skeptical. He would've loved this.
+
+/* THANKS */
+    Sounds: Mark Jorgensen
+    Twitter: @markopolodev
+    GitHub: https://github.com/markopolojorgensen
+
+/* Future translators/collab will go here */
+
+/* SITE */
+    Language: English
+    Doctype:HTML5
+    IDE: Sublime Text

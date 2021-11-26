@@ -1,5 +1,6 @@
 rhasspy:
   url: http://rhasspy:12101
   mqtt_host: rhasspy
-  externally_managed: true
 
+home_intent:
+  beeps: false

@@ -25,7 +25,7 @@ else:
 def get_file(filename, relative_from=__file__, arch_dependent=False, language=None) -> PosixPath:
     warnings.warn(
         "get_file imported from the Home Intent package is deprecated and "
-        "will be removed in Home Intent 2021.02.0. "
+        "will be removed in Home Intent 2022.02.0. "
         "Please modify your code to use get_file from the home_intent object instead "
         "(ex: home_intent.get_file from the setup function)"
     )

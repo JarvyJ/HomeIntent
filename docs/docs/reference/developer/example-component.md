@@ -1,5 +1,5 @@
 # Example Component
-Here's an example component (`timer/__init__.py`) and how it works.
+Here's an example component (`timer/__init__.py`) and that could be used as the basis of creating a custom component.
 
 ```python
 from collections import defaultdict
@@ -126,4 +126,6 @@ The `home_intent.get_config` function will load the `TimerSettings` from `config
 The `home_intent.register` function will keep track of the instantiated object and associated intents. When the the register function is called, the slots and sentences are verified, and a bit later on in the Home Intent setup all the slot functions are called to get the slot values.
 
 ## Conventions
-All builtin intents will follow the folder importing structure, so `components/<component_name>/__init__.py`. This keeps the components directory in the codebase easy to navigate and allows us to add meta information later if needed.
+First party intents will follow the folder importing structure, so `components/<component_name>/__init__.py`. This keeps the components directory in the codebase easy to navigate and allows us to add meta information later if needed.
+
+First party intents will also follow the translation structure to properly support [translations](../translations/developing-translations.md).

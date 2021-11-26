@@ -14,24 +14,24 @@ For now, knowledge on using and setting up docker is required. In the future, di
 ## Installation
 It is easy to get it started with a `docker-compose.yaml` file that runs Home Intent:
 
-```docker-compose
+```yaml
 version: "3.9"
 
 services:
   homeintent:
-      image: "ghcr.io/jarvyj/homeintent:latest"
-      container_name: homeintent
-      restart: unless-stopped
-      volumes:
-          - "/PATH_TO_CONFIG/rhasspy:/profiles"
-          - "/PATH_TO_CONFIG/config:/config"
-          - "/etc/localtime:/etc/localtime:ro"
-      ports:
-          - "11102:11102"
-          - "12101:12101"
-      devices:
-          - "/dev/snd:/dev/snd"
-
+    image: "ghcr.io/jarvyj/homeintent:latest"
+    container_name: homeintent
+    restart: unless-stopped
+    volumes:
+      - "/PATH_TO_CONFIG/rhasspy:/profiles"
+      - "/PATH_TO_CONFIG/config:/config"
+      - "/etc/localtime:/etc/localtime:ro"
+    ports:
+      - "11102:11102"  # For the Home Intent UI
+      - "12183:12183"  # For communicating over MQTT/satellites
+      - "12101:12101"  # For the Rhasspy UI (optional)
+    devices:
+      - "/dev/snd:/dev/snd"
 ```
 
 The `/config` directory is where Home Intent configuration lives and the `/profiles` directory is where Rhasspy (the underlying speech system) stores its configs/downloads. The port `11102` exposes the Home Intent web interface, and `12101` exposes the Rhasspy interface.

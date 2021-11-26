@@ -1,5 +1,6 @@
 nav:
   - example-component.md
   - additional-homeintent-config.md
+  - local-development.md
   - customization-dev-reference.md
   - custom-rhasspy-profile.md

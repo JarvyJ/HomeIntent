@@ -1,3 +1,6 @@
+# NOTE: this is the dockerfile for local development,
+# if you are looking for an example docker-compose, take a look at docker-compose.example.yaml
+
 version: "3.9"
 
 services:
@@ -28,7 +31,7 @@ services:
       - DOCKER_DEV=True
     command: python3 home_intent
 
-  ui:
+  api:
     build:
       context: .
       dockerfile: "development-env/Dockerfile.python"
@@ -45,6 +48,8 @@ services:
     build:
       context: .
       dockerfile: "development-env/Dockerfile.frontend"
+    depends_on:
+      - api
     volumes:
       - "./ui/frontend:/usr/src/app/ui/frontend"
     ports:

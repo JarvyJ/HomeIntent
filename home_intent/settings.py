@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from pydantic import AnyHttpUrl, BaseModel, BaseSettings
+from pydantic import AnyHttpUrl, BaseModel, BaseSettings, Field
 import yaml
 
 # diabled for the Settings object as pydantic passes init/env settings in
@@ -61,7 +61,7 @@ class HomeIntentSettings(BaseModel):
     enable_all: bool = False
 
     # there might be nested env var support one day: https://github.com/samuelcolvin/pydantic/pull/3159
-    language: str = get_env_language()
+    language: str = Field(default_factory=get_env_language)
 
 
 class Settings(BaseSettings):

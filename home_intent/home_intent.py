@@ -126,7 +126,7 @@ class HomeIntent:
         notification = {"text": text, "siteId": "default"}
         self.mqtt_client.publish("hermes/tts/say", json.dumps(notification))
 
-    def play_audio_file(self, filename: str, language_dependent: bool, site_id="default"):
+    def play_audio_file(self, filename: str, language_dependent: bool = False, site_id="default"):
         audio_file = self.get_file(filename, language_dependent=language_dependent)
         if audio_file.suffix != ".wav":
             raise HomeIntentException("play_audio_file currently only supports playing .wav files!")
