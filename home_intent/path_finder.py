@@ -1,6 +1,7 @@
 import logging
 import os
 from pathlib import PosixPath
+import warnings
 
 
 class PathFinderException(Exception):
@@ -21,13 +22,22 @@ else:
     raise ValueError("HomeIntent only runs on x86_64 and armv7/aarch64 architectures")
 
 
-def get_file(filename, relative_from=__file__, arch_dependentant=False) -> PosixPath:
+def get_file(filename, relative_from=__file__, arch_dependent=False, language=None) -> PosixPath:
+    warnings.warn(
+        "get_file imported from the Home Intent package is deprecated and "
+        "will be removed in Home Intent 2022.02.0. "
+        "Please modify your code to use get_file from the home_intent object instead "
+        "(ex: home_intent.get_file from the setup function)"
+    )
     config_file_path = PosixPath(f"/config/{filename}")
     if config_file_path.is_file():
         LOGGER.info(f"Loading custom file: {config_file_path}")
         return config_file_path
 
-    if arch_dependentant:
+    if language:
+        filename = f"{language}/{filename}"
+
+    if arch_dependent:
         source_file_path = PosixPath(relative_from).parent / f"default_configs/{ARCH}/{filename}"
     else:
         source_file_path = PosixPath(relative_from).parent / f"default_configs/{filename}"

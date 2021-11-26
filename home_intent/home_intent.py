@@ -4,6 +4,7 @@ import logging
 import os
 from pathlib import PosixPath
 from typing import NamedTuple
+from importlib import import_module
 
 import paho.mqtt.client as mqtt
 import requests
@@ -11,7 +12,6 @@ import requests
 from home_intent.audio_config import AudioConfig
 from home_intent.intent_handler import IntentHandler
 from home_intent.intents import Intents, Sentence
-from home_intent.path_finder import get_file
 from home_intent.rhasspy_api import RhasspyAPI, RhasspyError
 
 LOGGER = logging.getLogger(__name__)
@@ -50,6 +50,7 @@ class HomeIntent:
         self.registered_intents = []
         self.intent_function = {}
         self.settings = settings
+        self.language = settings.home_intent.language
         self.rhasspy_api = RhasspyAPI(settings.rhasspy.url)
         self.mqtt_client = mqtt.Client()
         self.arch = None
@@ -57,7 +58,7 @@ class HomeIntent:
         self.intent_handler = IntentHandler(
             self.mqtt_client, self.settings, self.intent_function, self.startup_messenger
         )
-        self.audio_config = AudioConfig(self.rhasspy_api, self.settings)
+        self.audio_config = AudioConfig(self.rhasspy_api, self.settings, self.get_file)
         self.all_slots = {}
 
         uname = os.uname()
@@ -114,6 +115,59 @@ class HomeIntent:
         # register_sentences callback
         self.registered_intents.append(RegisteredIntent(class_instance, intents))
 
+    def import_module(self, module_name):
+        try:
+            module = import_module(f"{module_name}.{self.settings.home_intent.language}")
+        except ModuleNotFoundError:
+            module = import_module(f"{module_name}.en")
+        return module
+
+    def say(self, text):
+        notification = {"text": text, "siteId": "default"}
+        self.mqtt_client.publish("hermes/tts/say", json.dumps(notification))
+
+    def play_audio_file(self, filename: str, language_dependent: bool = False, site_id="default"):
+        audio_file = self.get_file(filename, language_dependent=language_dependent)
+        if audio_file.suffix != ".wav":
+            raise HomeIntentException("play_audio_file currently only supports playing .wav files!")
+        self.mqtt_client.publish(
+            f"hermes/audioServer/{site_id}/playBytes/homeintent_audio",
+            payload=audio_file.read_bytes(),
+        )
+
+    def get_file(self, filename: str, arch_dependent=False, language_dependent=True) -> PosixPath:
+        config_file_path = PosixPath(f"/config/{filename}")
+        if config_file_path.is_file():
+            LOGGER.info(f"Found file overrided in config: {config_file_path}")
+            return config_file_path
+
+        if language_dependent:
+            composed_filename = f"{self.language}/{filename}"
+        else:
+            composed_filename = filename
+
+        # relative from where this file is located. Man, paths are weird, but pathlib is great!
+        relative_from = __file__
+
+        if arch_dependent:
+            source_file_path = (
+                PosixPath(relative_from).parent / f"default_configs/{self.arch}/{composed_filename}"
+            )
+        else:
+            source_file_path = (
+                PosixPath(relative_from).parent / f"default_configs/{composed_filename}"
+            )
+
+        if source_file_path.is_file():
+            return source_file_path
+        else:
+            if language_dependent:
+                return self.get_file(
+                    f"en/{filename}", arch_dependent=arch_dependent, language_dependent=False
+                )
+
+        raise HomeIntentException(f"Can't find path to file {filename}")
+
     def initialize(self):
         self._initialize_rhasspy()
         self._write_slots_to_rhasspy()
@@ -146,7 +200,9 @@ class HomeIntent:
             LOGGER.info("Profile is up to date, nothing to download")
 
     def _load_rhasspy_profile_file(self):
-        config_file_path = get_file("rhasspy_profile.json", arch_dependentant=True)
+        config_file_path = self.get_file(
+            "rhasspy_profile.json", arch_dependent=True, language_dependent=False
+        )
         rhasspy_config = json.loads(config_file_path.read_text())
         try:
             self.audio_config.add_sounds_microphone_device(rhasspy_config)
@@ -223,19 +279,6 @@ class HomeIntent:
             LOGGER.warning(
                 "Timed out waiting for Rhasspy to train. Moving on, we will likely be okay."
             )
-
-    def say(self, text):
-        notification = {"text": text, "siteId": "default"}
-        self.mqtt_client.publish("hermes/tts/say", json.dumps(notification))
-
-    def play_audio_file(self, filename: str, site_id="default"):
-        audio_file = get_file(filename)
-        if audio_file.suffix != ".wav":
-            raise HomeIntentException("play_audio_file currently only supports playing .wav files!")
-        self.mqtt_client.publish(
-            f"hermes/audioServer/{site_id}/playBytes/homeintent_audio",
-            payload=audio_file.read_bytes(),
-        )
 
     def _enable_sentence(self, sentence: Sentence):
         if self.settings.home_intent.enable_all:

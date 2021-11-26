@@ -23,17 +23,17 @@ const config = {
 				proxy: {
 					// string shorthand
 					'/openapi.json': {
-						target: 'http://localhost:11102',
+						target: 'http://ui:11102',
 						secure: false,
 						changeOrigin: true
 	  				},
 	  				'/api': {
-						target: 'http://localhost:11102',
+						target: 'http://ui:11102',
 						secure: false,
 						changeOrigin: true
 	  				},
 					'/ws': {
-						target: 'ws://localhost:11102',
+						target: 'ws://ui:11102',
 						secure: false,
 						changeOrigin: true,
 						ws: true

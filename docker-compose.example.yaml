@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  homeintent:
+    image: "ghcr.io/jarvyj/homeintent:latest"
+    restart: unless-stopped
+    volumes:
+      - "./rhasspy:/profiles"
+      - "./config:/config"
+      - "/etc/localtime:/etc/localtime:ro"
+    ports:
+      - "11102:11102"  # For the Home Intent UI
+      - "12183:12183"  # For communicating over MQTT/satellites
+      - "12101:12101"  # For the Rhasspy UI (optional)
+    devices:
+      - "/dev/snd:/dev/snd"

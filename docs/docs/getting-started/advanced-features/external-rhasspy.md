@@ -9,7 +9,7 @@ version: "3.9"
 
 services:
   homeintent:
-      image: "ghcr.io/jarvyj/homeintent-rhasspy-external:main"
+      image: "ghcr.io/jarvyj/homeintent-rhasspy-external:latest"
       container_name: homeintent
       restart: unless-stopped
       volumes:

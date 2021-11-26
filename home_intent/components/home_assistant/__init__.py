@@ -2,7 +2,6 @@ from typing import Set
 
 from pydantic import AnyHttpUrl, BaseModel, Field
 
-from . import cover, fan, group, humidifier, light, lock, remote, shopping_list, switch, weather
 from .api import HomeAssistantAPI
 
 
@@ -53,39 +52,49 @@ def setup(home_intent):
     home_assistant_component = HomeAssistantComponent(config)
 
     if "cover" in home_assistant_component.domains and "cover" not in config.ignore_domains:
+        cover = home_intent.import_module(f"{__name__}.cover")
         home_intent.register(cover.Cover(home_assistant_component), cover.intents)
 
     if "fan" in home_assistant_component.domains and "fan" not in config.ignore_domains:
+        fan = home_intent.import_module(f"{__name__}.fan")
         home_intent.register(fan.Fan(home_assistant_component), fan.intents)
 
     if "group" not in config.ignore_domains:
+        group = home_intent.import_module(f"{__name__}.group")
         home_intent.register(group.Group(home_assistant_component), group.intents)
 
     if (
         "humidifier" in home_assistant_component.domains
         and "humidifier" not in config.ignore_domains
     ):
+        humidifier = home_intent.import_module(f"{__name__}.humidifier")
         home_intent.register(humidifier.Humidifier(home_assistant_component), humidifier.intents)
 
     if "light" in home_assistant_component.domains and "light" not in config.ignore_domains:
-        home_intent.register(light.Light(home_assistant_component), light.intents)
+        light = home_intent.import_module(f"{__name__}.light")
+        home_intent.register(light.Light(home_assistant_component, home_intent), light.intents)
 
     if "lock" in home_assistant_component.domains and "lock" not in config.ignore_domains:
+        lock = home_intent.import_module(f"{__name__}.lock")
         home_intent.register(lock.Lock(home_assistant_component), lock.intents)
 
     if "remote" in home_assistant_component.domains and "remote" not in config.ignore_domains:
+        remote = home_intent.import_module(f"{__name__}.remote")
         home_intent.register(remote.Remote(home_assistant_component), remote.intents)
 
     if (
         "shopping_list" in home_assistant_component.domains
         and "shopping_list" not in config.ignore_domains
     ):
+        shopping_list = home_intent.import_module(f"{__name__}.shopping_list")
         home_intent.register(
-            shopping_list.ShoppingList(home_assistant_component), shopping_list.intents
+            shopping_list.ShoppingList(home_assistant_component, home_intent), shopping_list.intents
         )
 
     if "switch" in home_assistant_component.domains and "switch" not in config.ignore_domains:
+        switch = home_intent.import_module(f"{__name__}.switch")
         home_intent.register(switch.Switch(home_assistant_component), switch.intents)
 
     if "weather" in home_assistant_component.domains and "weather" not in config.ignore_domains:
+        weather = home_intent.import_module(f"{__name__}.weather")
         home_intent.register(weather.Weather(home_assistant_component), weather.intents)
