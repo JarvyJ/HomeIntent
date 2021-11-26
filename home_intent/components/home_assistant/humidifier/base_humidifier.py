@@ -9,7 +9,7 @@ class SupportedFeatures(IntFlag):
     SUPPORT_MODE = auto()
 
 
-class Humidifier:
+class BaseHumidifier:
     def __init__(self, home_assistant):
         self.ha = home_assistant
         self.entities = [x for x in self.ha.entities if x["entity_id"].startswith("humidifier.")]
@@ -31,46 +31,31 @@ class Humidifier:
 
         return humidifier_modes
 
-    @intents.on_event("register_sentences")
-    def handle_prefer_toggle(self):
-        if self.ha.prefer_toggle:
-            intents.disable_intent(self.turn_on)
-            intents.disable_intent(self.turn_off)
-        else:
-            intents.disable_intent(self.toggle_humidifier)
-
-    @intents.sentences(["toggle the ($humidifier)", "turn (on | off) [the] ($humidifier)"])
-    def toggle_humidifier(self, humidifier):
+    def _toggle_humidifier(self, humidifier):
         self.ha.api.call_service("humidifier", "toggle", {"entity_id": humidifier})
         response = self.ha.api.get_entity(humidifier)
-        return f"Turning {response['state']} the {response['attributes']['friendly_name']}"
+        return response
 
-    @intents.sentences(["turn off [the] ($humidifier)"])
-    def turn_off(self, humidifier):
+    def _turn_off(self, humidifier):
         self.ha.api.call_service("humidifier", "turn_off", {"entity_id": humidifier})
         response = self.ha.api.get_entity(humidifier)
-        return f"Turning {response['state']} the {response['attributes']['friendly_name']}"
+        return response
 
-    @intents.sentences(["turn on [the] ($humidifier)"])
-    def turn_on(self, humidifier):
+    def _turn_on(self, humidifier):
         self.ha.api.call_service("humidifier", "turn_on", {"entity_id": humidifier})
         response = self.ha.api.get_entity(humidifier)
-        return f"Turning {response['state']} the {response['attributes']['friendly_name']}"
+        return response
 
-    @intents.sentences(
-        ["(set | change | make) the ($humidifier) to (0..100){humidity} [percent] [humidity]"]
-    )
-    def change_humidity(self, humidifier, humidity):
+    def _change_humidity(self, humidifier, humidity):
         self.ha.api.call_service(
             "humidifier", "set_humidity", {"entity_id": humidifier, "humidity": humidity},
         )
         response = self.ha.api.get_entity(humidifier)
-        return f"Setting the {response['attributes']['friendly_name']} to {humidity}% humidity"
+        return response
 
-    @intents.sentences(["(set | change | make) the ($humidifier) to ($humidifier_mode)"])
-    def set_mode(self, humidifier, humidifier_mode):
+    def _set_mode(self, humidifier, humidifier_mode):
         self.ha.api.call_service(
             "humidifier", "set_mode", {"entity_id": humidifier, "mode": humidifier_mode},
         )
         response = self.ha.api.get_entity(humidifier)
-        return f"Setting the {response['attributes']['friendly_name']} to {humidifier_mode}"
+        return response
