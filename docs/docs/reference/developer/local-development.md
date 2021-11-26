@@ -4,7 +4,7 @@ Home Intent can be developed locally by using a series of containers that have a
 NOTE: The examples are using `docker-compose`, newer versions of the Docker cli can use `docker compose` on Mac/Windows.
 
 ## Basic Development Setup
-The development environment is setup to run from the `development-env` directory. Inside there there is a `config` folder that includes `config.example.yaml`. This is a starting `config.yaml` as development is setup using the [external Rhasspy setup](../../getting-started/advanced-features/external-rhasspy.md). Feel free to copy `config.examples.yaml` to `config.yaml` and enable integrations or add customizations to the folder.
+The development environment is setup to run from the `development-env` directory. Inside there there is a `config` folder that includes `config.example.yaml`. This is a starting `config.yaml` intended for development. Feel free to copy `config.examples.yaml` to `config.yaml` and enable integrations or add customizations to the folder.
 
 After you have a `config.yaml` in the `development-env` directory, you can start a full development environment you can spin up by doing the following:
 
@@ -12,7 +12,7 @@ After you have a `config.yaml` in the `development-env` directory, you can start
 docker-compose up
 ```
 
-Below mentions some of the caveats and alternative ways to do development on just a few components if needed.
+Below mentions some of the caveats of containerized development and how to do run certain components as needed. We want to make the local development experience better, and will look for ways to do that in the future!
 
 ## Docs Development
 The docs container will spin up a local mkdocs server and will hot reload as the Markdown files in the `docs` directory are changed. If you want to only work on docs, you can spin it up with the following command:
@@ -57,6 +57,8 @@ If you make changes, you will have to `ctrl+c` out and then restart using the co
 ```
 docker-compose stop homeintent
 ```
+
+The Home Intent development container has the one issue of not sharing the filesystem with Rhasspy, so custom Rhasspy intent/error sounds can't be loaded. It's why `beeps` is set to `false` under `home_intent` in the development `config.yaml`.
 
 ## General Development Recommendations
 When you are done doing any local development, you should probably stop whatever development containers may have been started by doing the following:
