@@ -115,9 +115,9 @@ class BaseClimate:
         response = self.ha.api.get_entity(climate)
         return response
 
-    def _set_hvac_mode(self, climate, climate_hvac_modes):
+    def _set_hvac_mode(self, climate, climate_hvac_mode):
         self.ha.api.call_service(
-            "climate", "set_temperature", {"entity_id": climate, "hvac_mode": climate_hvac_modes}
+            "climate", "set_hvac_mode", {"entity_id": climate, "hvac_mode": climate_hvac_mode}
         )
         response = self.ha.api.get_entity(climate)
         return response
