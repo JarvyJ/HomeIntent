@@ -25,6 +25,11 @@ class BaseClimate:
         }
 
     @intents.dictionary_slots
+    def climate(self):
+        slots = {f"{x['attributes'].get('friendly_name')}": x["entity_id"] for x in self.entities}
+        return slots
+
+    @intents.dictionary_slots
     def climate_target_temperature_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
@@ -93,7 +98,7 @@ class BaseClimate:
         }
         return slots
 
-    def _toggle(self, climate):
+    def _toggle_climate(self, climate):
         response = self.ha.api.get_entity(climate)
         if response["state"] == "off":
             return self._turn_on(climate)
@@ -107,6 +112,13 @@ class BaseClimate:
 
     def _turn_on(self, climate):
         self.ha.api.call_service("climate", "turn_on", {"entity_id": climate})
+        response = self.ha.api.get_entity(climate)
+        return response
+
+    def _set_hvac_mode(self, climate, climate_hvac_modes):
+        self.ha.api.call_service(
+            "climate", "set_temperature", {"entity_id": climate, "hvac_mode": climate_hvac_modes}
+        )
         response = self.ha.api.get_entity(climate)
         return response
 
@@ -157,13 +169,6 @@ class BaseClimate:
                 },
             )
         response = self.ha.api.get_entity(climate_target_temperature_range_entity)
-        return response
-
-    def _set_hvac_mode(self, climate, hvac_modes):
-        self.ha.api.call_service(
-            "climate", "set_temperature", {"entity_id": climate, "hvac_mode": hvac_modes}
-        )
-        response = self.ha.api.get_entity(climate)
         return response
 
     def _set_humidity(self, climate_target_humidity_entity, humidity: int):

@@ -50,6 +50,10 @@ def setup(home_intent):
     config = home_intent.get_config(HomeAssistantSettings)
     home_assistant_component = HomeAssistantComponent(config)
 
+    if "climate" in home_assistant_component.domains and "climate" not in config.ignore_domains:
+        climate = home_intent.import_module(f"{__name__}.climate")
+        home_intent.register(climate.Climate(home_assistant_component), climate.intents)
+
     if "cover" in home_assistant_component.domains and "cover" not in config.ignore_domains:
         cover = home_intent.import_module(f"{__name__}.cover")
         home_intent.register(cover.Cover(home_assistant_component), cover.intents)
