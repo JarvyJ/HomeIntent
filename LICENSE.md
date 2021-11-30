@@ -1,7 +1,7 @@
 # Home Intent License
 Home Intent is dual licensed with the GNU General Public License v3.0 (GPLv3) and Creative Commons Attribution Share Alike 4.0 (CC-BY-SA-4.0).
 
-The Markdown in the `docs` and the associated content on the generated HTML pages are are under the CC-BY-SA-4.0 license, but the code samples included in the pages are GPLv3.
+The Markdown in the `docs` directory and the associated content on the generated HTML pages are are under the CC-BY-SA-4.0 license, but the code samples included in the pages are GPLv3.
 
 The rest of the codebase is under the GPLv3.
 
