@@ -66,6 +66,13 @@ def setup(home_intent):
         group = home_intent.import_module(f"{__name__}.group")
         home_intent.register(group.Group(home_assistant_component), group.intents)
 
+    if (
+        "humidifier" in home_assistant_component.domains
+        and "humidifier" not in config.ignore_domains
+    ):
+        humidifier = home_intent.import_module(f"{__name__}.humidifier")
+        home_intent.register(humidifier.Humidifier(home_assistant_component), humidifier.intents)
+
     if "light" in home_assistant_component.domains and "light" not in config.ignore_domains:
         light = home_intent.import_module(f"{__name__}.light")
         home_intent.register(light.Light(home_assistant_component, home_intent), light.intents)
