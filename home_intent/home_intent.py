@@ -13,6 +13,7 @@ from home_intent.audio_config import AudioConfig
 from home_intent.intent_handler import IntentHandler
 from home_intent.intents import Intents, Sentence
 from home_intent.rhasspy_api import RhasspyAPI, RhasspyError
+from home_intent.updater import update_homeintent
 
 LOGGER = logging.getLogger(__name__)
 
@@ -169,6 +170,7 @@ class HomeIntent:
         raise HomeIntentException(f"Can't find path to file {filename}")
 
     def initialize(self):
+        update_homeintent(self)
         self._initialize_rhasspy()
         self._write_slots_to_rhasspy()
         self._write_sentences_to_rhasspy()
