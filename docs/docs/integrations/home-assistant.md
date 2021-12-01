@@ -73,6 +73,7 @@ The group friendly names are in parenthesis.
 
 ### Humidifier
 
+ * Turn on/off the humidifer
  * Set the humidifier to 68%
  * Set the dehumidifier to 72%
  * Set the hygrostat to eco
