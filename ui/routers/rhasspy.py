@@ -7,6 +7,8 @@ from typing import Dict
 from fastapi import APIRouter, File, UploadFile
 from pydantic import BaseModel
 
+import aiofiles.os
+
 from config import get_settings
 from rhasspy_api import RhasspyAPI
 
@@ -118,13 +120,12 @@ class SoundEffectMeta(BaseModel):
 
 
 @router.get("/rhasspy/audio/effects", response_model=Dict[SoundEffect, SoundEffectMeta])
-def get_sound_effects_meta():
-    # TODO: switch to aiofiles.os.path.isfile when 0.8.0 is released
+async def get_sound_effects_meta():
     output = {}
     for sound_effect in SoundEffect:
         custom_file_path = get_custom_sound_effect_path(sound_effect)
 
-        if custom_file_path.is_file():
+        if await aiofiles.os.path.isfile(custom_file_path):
             output[sound_effect] = SoundEffectMeta(custom_or_default=CustomOrDefault.CUSTOM)
         else:
             output[sound_effect] = SoundEffectMeta(custom_or_default=CustomOrDefault.DEFAULT)
@@ -146,8 +147,7 @@ def upload_sound_effects(sound_effect: SoundEffect, file: UploadFile = File(...)
 
 
 @router.post("/rhasspy/audio/set-default")
-def set_sound_effect_to_default(sound_effect: SoundEffect):
-    # TODO: switch to aiofiles.os.path.isfile when 0.8.0 is released
+async def set_sound_effect_to_default(sound_effect: SoundEffect):
     file_path = get_custom_sound_effect_path(sound_effect)
-    if file_path.is_file():
-        file_path.unlink()
+    if await aiofiles.os.path.isfile(file_path):
+        await aiofiles.os.remove(file_path)
