@@ -29,15 +29,27 @@ After a few years of running various voice assistants, I've noticed that they ca
 
 Currently `prefer_toggle` is only used for the following:
 
+ * climate
  * fan
+ * humidifier
  * light
  * remote
  * switch
- * humidifier
-
 
 ## Example Sentences
 A lot of the examples sentences try to follow the same pattern. There is a lot of "turn on"/"turn off", open/close, and in one case lock/unlock for activating/deactivating most things. Specifics around components can be found below (like to change light color or something).
+
+### Climate
+
+ * Turn on/off the ecobee
+ * Set the hvac to 76 degrees
+ * Set the window ac to cool (HVAC mode)
+ * Set the ecobee high temperature to 80
+ * Set the ecobee low temperature to 76 degrees farenheit
+ * Turn on/off the hvac aux heat
+ * set the ecobee to eco (HVAC preset)
+
+The climate controls are planned for version 2021.12.0. They are currently being tested and we will see how they work. There are some concerns about climate changes being a little more dangerous in voice control if something goes wrong, so we are looking into ways to help mitigate any issues.
 
 ### Cover
 
@@ -127,6 +139,7 @@ A custom defined list of light colors can be placed in `/config/home_assistant/c
 
 The various Home Assistant sub components can also be customized further using [customization json](../getting-started/advanced-features/component-customization.md) if desired. These are the respective filenames:
 
+ * Climate: `/config/customizations/home_assistant/climate.yaml`
  * Covers: `/config/customizations/home_assistant/cover.yaml`
  * Fans: `/config/customizations/home_assistant/cover.yaml`
  * Groups: `/config/customizations/home_assistant/group.yaml`
