@@ -42,7 +42,6 @@ class HomeAssistantComponent:
         self.domains = {x["entity_id"].split(".")[0] for x in self.entities}
         self.domains.update(x["domain"] for x in self.services)
         print(self.domains)
-        print(self.entities)
         self.prefer_toggle = config.prefer_toggle
 
 
