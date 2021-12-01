@@ -2,6 +2,7 @@ import os
 from ruamel.yaml import YAML
 
 import aiofiles
+import aiofiles.os
 
 from extract_settings import ExtractSettings
 
@@ -19,8 +20,7 @@ def get_settings() -> FullSettings:
 
 
 async def get_settings_async() -> FullSettings:
-    # TODO: switch this to aiofiles.os.path when 0.8.0 is released
-    if os.path.isfile(CONFIG_FILE):
+    if await aiofiles.os.path.isfile(CONFIG_FILE):
         async with aiofiles.open(CONFIG_FILE, "r") as file:
             contents = await file.read()
             return FullSettings(**YAML().load(contents))
