@@ -26,7 +26,7 @@ class BaseCover:
         }
 
     @intents.dictionary_slots
-    def cover_open(self):
+    def cover_open_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
@@ -36,7 +36,7 @@ class BaseCover:
         return slots
 
     @intents.dictionary_slots
-    def cover_close(self):
+    def cover_close_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
@@ -46,7 +46,7 @@ class BaseCover:
         return slots
 
     @intents.dictionary_slots
-    def cover_set_position(self):
+    def cover_set_position_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
@@ -56,7 +56,7 @@ class BaseCover:
         return slots
 
     @intents.dictionary_slots
-    def cover_stop(self):
+    def cover_stop_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
@@ -66,7 +66,7 @@ class BaseCover:
         return slots
 
     @intents.dictionary_slots
-    def cover_open_tilt(self):
+    def cover_open_tilt_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
@@ -75,7 +75,7 @@ class BaseCover:
         return slots
 
     @intents.dictionary_slots
-    def cover_close_tilt(self):
+    def cover_close_tilt_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
@@ -84,7 +84,7 @@ class BaseCover:
         return slots
 
     @intents.dictionary_slots
-    def cover_set_tilt_position(self):
+    def cover_set_tilt_position_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities

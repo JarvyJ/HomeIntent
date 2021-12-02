@@ -34,43 +34,51 @@ class Fan(BaseFan):
 
     @intents.sentences(
         [
-            "(start|stop) oscillating the ($oscillating_fan)",
-            "oscillate the ($oscillating_fan)",
-            "(set|change|make) the ($oscillating_fan) [to] [not] oscillate",
-            "turn (on|off) the ($oscillating_fan) oscillation",
+            "(start|stop) oscillating the ($fan_oscillate_entity)",
+            "oscillate the ($fan_oscillate_entity)",
+            "(set|change|make) the ($fan_oscillate_entity) [to] [not] oscillate",
+            "turn (on|off) the ($fan_oscillate_entity) oscillation",
         ]
     )
-    def oscillate_fan(self, oscillating_fan):
-        response = self._oscillate_fan(oscillating_fan)
+    def oscillate_fan(self, fan_oscillate_entity):
+        response = self._oscillate_fan(fan_oscillate_entity)
         oscillation_change = response["attributes"]["oscillating"]
         start_or_stop = "Starting" if oscillation_change else "Stopping"
         return f"{start_or_stop} the oscillation for the {response['attributes']['friendly_name']}"
 
-    @intents.sentences(["(set | change | make) the ($preset_fan) to ($preset_mode)"])
-    def set_preset(self, preset_fan, preset_mode):
-        response = self._set_preset(preset_fan, preset_mode)
-        return f"Setting the {response['attributes']['friendly_name']} to {preset_mode}"
+    @intents.sentences(
+        ["(set | change | make) the ($fan_preset_mode_entity) to ($fan_preset_mode)"]
+    )
+    def set_preset(self, fan_preset_mode_entity, fan_preset_mode):
+        response = self._set_preset(fan_preset_mode_entity, fan_preset_mode)
+        return f"Setting the {response['attributes']['friendly_name']} to {fan_preset_mode}"
 
-    @intents.sentences(["reverse the ($directional_fan) [flow|airflow]"])
-    def reverse_airflow(self, directional_fan):
-        response = self._reverse_airflow(directional_fan)
+    @intents.sentences(["reverse the ($fan_direction_entity) [flow|airflow]"])
+    def reverse_airflow(self, fan_direction_entity):
+        response = self._reverse_airflow(fan_direction_entity)
         return f"Reversing the {response['attributes']['friendly_name']} airflow"
 
-    @intents.sentences(["(set|change|make) the ($speed_fan) [to] ($fan_speed)"])
-    def set_fan_speed(self, speed_fan, fan_speed):
-        response = self._set_fan_speed(speed_fan, fan_speed)
+    @intents.sentences(["(set|change|make) the ($fan_set_speed_entity) [to] ($fan_speed)"])
+    def set_fan_speed(self, fan_set_speed_entity, fan_speed):
+        response = self._set_fan_speed(fan_set_speed_entity, fan_speed)
         return f"Setting the {response['attributes']['friendly_name']} to {fan_speed}"
 
     @intents.sentences(
-        ["increase the ($speed_fan) [fan] speed", "increase the fan speed for ($speed_fan)"]
+        [
+            "increase the ($fan_set_speed_entity) [fan] speed",
+            "increase the fan speed for ($fan_set_speed_entity)",
+        ]
     )
-    def increase_fan_speed(self, speed_fan):
-        response, new_fan_speed = self._increase_fan_speed(speed_fan, FAN_SPEED_LIST)
+    def increase_fan_speed(self, fan_set_speed_entity):
+        response, new_fan_speed = self._increase_fan_speed(fan_set_speed_entity, FAN_SPEED_LIST)
         return f"Setting the {response['attributes']['friendly_name']} to {new_fan_speed}"
 
     @intents.sentences(
-        ["decrease the ($speed_fan) [fan] speed", "decrease the fan speed for ($speed_fan)"]
+        [
+            "decrease the ($fan_set_speed_entity) [fan] speed",
+            "decrease the fan speed for ($fan_set_speed_entity)",
+        ]
     )
-    def decrease_fan_speed(self, speed_fan):
-        response, new_fan_speed = self._decrease_fan_speed(speed_fan, FAN_SPEED_LIST)
+    def decrease_fan_speed(self, fan_set_speed_entity):
+        response, new_fan_speed = self._decrease_fan_speed(fan_set_speed_entity, FAN_SPEED_LIST)
         return f"Setting the {response['attributes']['friendly_name']} to {new_fan_speed}"

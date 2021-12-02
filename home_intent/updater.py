@@ -1,8 +1,11 @@
-from pathlib import Path
 from importlib import import_module
-import json
-from meta import HomeIntentMeta
-from constants import VERSION
+import logging
+from pathlib import Path
+
+from home_intent.constants import VERSION
+from home_intent.meta import HomeIntentMeta
+
+LOGGER = logging.getLogger(__name__)
 
 
 class SemanticVersion:
@@ -37,7 +40,7 @@ class FileVersion:
         return str(self.filename)
 
     def run(self, home_intent):
-        print(f"Running update script for version: {self.version_number}")
+        LOGGER.info(f"Running update script for version: {self.version_number}")
         update_import_path = f'{".".join(self.filename.parts[-3:-1])}.{self.filename.stem}'
         script = import_module(update_import_path)
         script.run(home_intent)
@@ -52,12 +55,12 @@ def update_homeintent(home_intent):
     if last_run_version.version == "2021.12.0":
         last_run_version = SemanticVersion("2021.11.0")
 
-    update_scripts = _get_update_script(home_intent_meta, last_run_version)
+    update_scripts = _get_update_script(last_run_version)
     _perform_updates(update_scripts, home_intent)
     _update_last_run_version(home_intent_meta)
 
 
-def _get_update_script(home_intent_meta, last_run_version):
+def _get_update_script(last_run_version):
     scripts = Path(__file__).parent / "update_scripts"
 
     upgrade_scripts = []
@@ -77,8 +80,11 @@ def _get_update_script(home_intent_meta, last_run_version):
 
 
 def _perform_updates(update_scripts, home_intent):
-    for script in update_scripts:
-        script.run(home_intent)
+    if update_scripts:
+        for script in update_scripts:
+            script.run(home_intent)
+    else:
+        LOGGER.info("No updates to perform this release!")
 
 
 def _update_last_run_version(home_intent_meta):

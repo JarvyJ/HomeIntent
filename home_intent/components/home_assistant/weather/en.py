@@ -7,7 +7,7 @@ DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturda
 
 class Weather(BaseWeather):
     @intents.dictionary_slots
-    def day_of_week(self):
+    def weather_day_of_week(self):
         return {x[1]: x[0] for x in enumerate(DAYS_OF_WEEK)}
 
     @intents.on_event("register_sentences")
@@ -46,18 +46,20 @@ class Weather(BaseWeather):
 
     @intents.beta
     @intents.sentences(
-        ["what is the (weather|forecast) [going to be] (on|for) [next] ($day_of_week:!int)"]
+        ["what is the (weather|forecast) [going to be] (on|for) [next] ($weather_day_of_week:!int)"]
     )
-    def forecast_day(self, day_of_week):
-        forecast = self._forecast_day(day_of_week)
+    def forecast_day(self, weather_day_of_week):
+        forecast = self._forecast_day(weather_day_of_week)
         return _get_forecast_details(forecast)
 
     @intents.beta
     @intents.sentences(
-        ["what is the (weather|forecast) [going to be] (on|for) [next] ($day_of_week:!int) night"]
+        [
+            "what is the (weather|forecast) [going to be] (on|for) [next] ($weather_day_of_week:!int) night"
+        ]
     )
-    def forecast_night(self, day_of_week):
-        forecast = self._forecast_night(day_of_week)
+    def forecast_night(self, weather_day_of_week):
+        forecast = self._forecast_night(weather_day_of_week)
         return _get_forecast_details(forecast)
 
 

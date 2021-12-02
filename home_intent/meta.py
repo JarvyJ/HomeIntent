@@ -1,8 +1,10 @@
-from typing import Dict, Any
-from pathlib import Path
 import json
+from pathlib import Path
+from typing import Any, Dict
+
 from pydantic import BaseSettings
-from constants import VERSION
+
+from home_intent.constants import VERSION
 
 
 def json_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
@@ -25,7 +27,8 @@ class HomeIntentMeta(BaseSettings):
     last_run_version: str = VERSION
 
     def save(self):
-        print(self.json(indent=2))
+        meta_file_path = Path("/config/home_intent_meta.json")
+        meta_file_path.write_text(self.json(indent=2), encoding="utf-8")
 
     class Config:
         env_file_encoding = "utf-8"

@@ -20,7 +20,7 @@ class BaseLock:
         return slots
 
     @intents.dictionary_slots
-    def openable_lock(self):
+    def lock_open_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
@@ -39,7 +39,7 @@ class BaseLock:
         response = self.ha.api.get_entity(lock)
         return response
 
-    def _open_the_lock(self, openable_lock):
-        self.ha.api.call_service("lock", "open", {"entity_id": openable_lock})
-        response = self.ha.api.get_entity(openable_lock)
+    def _open_the_lock(self, lock_open_entity):
+        self.ha.api.call_service("lock", "open", {"entity_id": lock_open_entity})
+        response = self.ha.api.get_entity(lock_open_entity)
         return response

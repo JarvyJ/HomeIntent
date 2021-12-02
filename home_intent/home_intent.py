@@ -95,6 +95,14 @@ class HomeIntent:
         if customization_file.is_file():
             intents.handle_customization(customization_file, class_instance)
 
+        for slot in intents.all_slots:
+            class_name = CamelCase_to_snake_case(class_instance.__class__.__name__)
+            if not (slot == class_name or slot.startswith(f"{class_name}_")):
+                raise HomeIntentException(
+                    f"The slot '{slot}' should start with the snake_case'd version of the "
+                    f"class_name ({class_name}) in the class {intents.name}"
+                )
+
         for sentence_name, sentence in intents.all_sentences.items():
             for slot in sentence.slots:
                 if slot not in intents.all_slots:
@@ -293,3 +301,9 @@ class HomeIntent:
             return True
 
         return False
+
+
+# pylint is angry, but I'm just having a little fun
+# if we ever need more of this, probably use inflection or something.
+def CamelCase_to_snake_case(string: str):
+    return "".join([x if x.islower() else f"_{x.lower()}" for x in string])[1:]

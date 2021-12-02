@@ -28,7 +28,7 @@ class BaseTimer:
         hours: int = None,
         minutes: int = None,
         seconds: int = None,
-        partial_time=None,
+        timer_partial_time=None,
         text_conversion_function=humanize.precisedelta,
     ):
         timer_duration = timedelta(
@@ -36,9 +36,9 @@ class BaseTimer:
         )
         if timer_duration == timedelta(0):
             raise TimerException("Timer has to be set for more than 0 seconds")
-        if partial_time:
+        if timer_partial_time:
             timer_duration = timer_duration + get_partial_time_duration(
-                partial_time, hours, minutes, seconds
+                timer_partial_time, hours, minutes, seconds
             )
         human_timer_duration = text_conversion_function(timer_duration)
         timer = ThreadingTimer(
