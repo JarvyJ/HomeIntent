@@ -69,7 +69,7 @@ from .base_timer import intents, BaseTimer
 
 class Timer(BaseTimer):
     @intents.dictionary_slots
-    def partial_time(self):
+    def timer_partial_time(self):
         return {
             "and [a] half": "half",
             "and [a] quarter": "quarter",
@@ -80,19 +80,22 @@ class Timer(BaseTimer):
         [
             "time = 0..128",
             "set timer [(<time>){hours} hours] [(<time>){minutes} minutes] [(<time>){seconds} seconds]",
-            "set timer (<time>){hours} [($partial_time)] hours",
-            "set timer (<time>){minutes} [($partial_time)] minutes",
-            "set timer (<time>){seconds} [($partial_time)] seconds",
+            "set timer (<time>){hours} [($timer_partial_time)] hours",
+            "set timer (<time>){minutes} [($timer_partial_time)] minutes",
+            "set timer (<time>){seconds} [($timer_partial_time)] seconds",
             "set a [(<time>){hours} hour] [(<time>){minutes} minute] [(<time>){seconds} second] timer",
-            "set a (<time>){hours} [($partial_time)] hour timer",
-            "set a (<time>){minutes} [($partial_time)] minute timer",
-            "set a (<time>){seconds} [($partial_time)] second timer",
+            "set a (<time>){hours} [($timer_partial_time)] hour timer",
+            "set a (<time>){minutes} [($timer_partial_time)] minute timer",
+            "set a (<time>){seconds} [($timer_partial_time)] second timer",
         ]
     )
     def set_timer(
-        self, hours: int = None, minutes: int = None, seconds: int = None, partial_time=None
+        self, hours: int = None, minutes: int = None, seconds: int = None, timer_partial_time=None
     ):
-        return self._set_timer(hours, minutes, seconds, partial_time)
+        human_timer_duration = self._set_timer(
+            "Your timer {0} has ended", hours, minutes, seconds, timer_partial_time
+        )
+        return f"Setting timer {human_timer_duration}"
 
 ```
 
@@ -116,10 +119,10 @@ docker-compose up homeintent
 After it's running, you can go to the Rhasspy UI ([`http://localhost:12101`](http://localhost:12101)), click on the `Sentences` tab and select `intents/home_intent.ini` from the file dropdown to see the sentences and `Slots` tab to see any language specific slots.
 
 Sentences Tab:
-![sentences tab in Rhasspy](./sentences.png)
+![sentences tab in Rhasspy](../../../img/rhasspy-ui/sentences.png)
 
 Slots Tab:
-![slots tab in Rhasspy](./slots.png)
+![slots tab in Rhasspy](../../../img/rhasspy-ui/slots.png)
 
 From there, you can verbally test the translations and see how well they work. If changes are needed, you can stop running Home Intent with `ctrl+c`, make further changes, and start the container again. Once they are working as expected, the files can be Pull Requested back in, and we can work on getting it merged!
 
