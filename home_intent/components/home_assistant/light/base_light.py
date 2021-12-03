@@ -35,7 +35,7 @@ class BaseLight:
         return slots
 
     @intents.dictionary_slots
-    def color(self):
+    def light_color(self):
         color_file = self.home_intent.get_file("home_assistant/color_names.yaml")
         raw_colors = yaml.load(color_file.read_text(), Loader=yaml.SafeLoader)
         color_names = ColorNames(**raw_colors).color_names
@@ -43,7 +43,7 @@ class BaseLight:
         return color_names
 
     @intents.dictionary_slots
-    def color_temperature(self):
+    def light_color_temperature(self):
         color_temperature_file = self.home_intent.get_file("home_assistant/color_temperature.yaml")
         color_temperature_dict = yaml.load(
             color_temperature_file.read_text(), Loader=yaml.SafeLoader

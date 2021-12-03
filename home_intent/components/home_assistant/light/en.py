@@ -25,18 +25,18 @@ class Light(BaseLight):
         response = self._turn_off(light)
         return f"Turning {response['state']} the {response['attributes']['friendly_name']} light"
 
-    @intents.sentences(["(set | change | make) the ($light) [light] [to] ($color)"])
-    def change_color(self, light, color):
-        response, color_name = self._change_color(light, color)
+    @intents.sentences(["(set | change | make) the ($light) [light] [to] ($light_color)"])
+    def change_color(self, light, light_color):
+        response, color_name = self._change_color(light, light_color)
         return f"Setting the {response['attributes']['friendly_name']} to {color_name}"
 
     @intents.sentences(
         [
-            "(set | change | make) the ($light) [light] [to] ($color) [at] (0..100){brightness} [percent] [brightness]"
+            "(set | change | make) the ($light) [light] [to] ($light_color) [at] (0..100){brightness} [percent] [brightness]"
         ]
     )
-    def change_color_brightness(self, light, color, brightness):
-        response, color_name = self._change_color_brightness(light, color, brightness)
+    def change_color_brightness(self, light, light_color, brightness):
+        response, color_name = self._change_color_brightness(light, light_color, brightness)
         return f"Setting the {response['attributes']['friendly_name']} to {color_name} at {brightness}% brightness"
 
     @intents.sentences(
@@ -48,18 +48,20 @@ class Light(BaseLight):
         response = self._change_brightness(light, brightness)
         return f"Setting the {response['attributes']['friendly_name']} to {brightness}% brightness"
 
-    @intents.sentences(["(set | change | make) the ($light) [light] [to] ($color_temperature)"])
-    def change_color_temperature(self, light, color_temperature):
-        response, color_temp_name = self._change_color_temperature(light, color_temperature)
+    @intents.sentences(
+        ["(set | change | make) the ($light) [light] [to] ($light_color_temperature)"]
+    )
+    def change_color_temperature(self, light, light_color_temperature):
+        response, color_temp_name = self._change_color_temperature(light, light_color_temperature)
         return f"Setting the {response['attributes']['friendly_name']} to {color_temp_name}"
 
     @intents.sentences(
         [
-            "(set | change | make) the ($light) [light] [to] ($color_temperature) [at] (0..100){brightness} [percent] [brightness]"
+            "(set | change | make) the ($light) [light] [to] ($light_color_temperature) [at] (0..100){brightness} [percent] [brightness]"
         ]
     )
-    def change_color_temperature_brightness(self, light, color_temperature, brightness):
+    def change_color_temperature_brightness(self, light, light_color_temperature, brightness):
         response, color_temp_name = self._change_color_temperature_brightness(
-            light, color_temperature, brightness
+            light, light_color_temperature, brightness
         )
         return f"Setting the {response['attributes']['friendly_name']} to {color_temp_name} at {brightness}% brightness"

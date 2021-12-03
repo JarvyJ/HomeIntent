@@ -23,7 +23,7 @@ class BaseFan:
         return slots
 
     @intents.dictionary_slots
-    def oscillating_fan(self):
+    def fan_oscillate_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
@@ -33,7 +33,7 @@ class BaseFan:
         return slots
 
     @intents.dictionary_slots
-    def preset_fan(self):
+    def fan_preset_mode_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
@@ -43,7 +43,7 @@ class BaseFan:
         return slots
 
     @intents.slots
-    def preset_mode(self):
+    def fan_preset_mode(self):
         preset_modes = []
 
         for entity in self.entities:
@@ -55,7 +55,7 @@ class BaseFan:
         return preset_modes
 
     @intents.dictionary_slots
-    def directional_fan(self):
+    def fan_direction_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities
@@ -65,7 +65,7 @@ class BaseFan:
         return slots
 
     @intents.dictionary_slots
-    def speed_fan(self):
+    def fan_set_speed_entity(self):
         slots = {
             f"{x['attributes'].get('friendly_name')}": x["entity_id"]
             for x in self.entities

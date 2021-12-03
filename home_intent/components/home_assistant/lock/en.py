@@ -12,7 +12,7 @@ class Lock(BaseLock):
         response = self._unlock_the_lock(lock)
         return f"Unlocking the {response['attributes']['friendly_name']}"
 
-    @intents.sentences(["open [the] ($openable_lock) [lock]"])
-    def open_the_lock(self, openable_lock):
-        response = self._open_the_lock(openable_lock)
+    @intents.sentences(["open [the] ($lock_open_entity) [lock]"])
+    def open_the_lock(self, lock_open_entity):
+        response = self._open_the_lock(lock_open_entity)
         return f"Turning off the {response['attributes']['friendly_name']}"

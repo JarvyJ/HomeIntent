@@ -20,7 +20,7 @@ class Timer:
         self.max_time_days = timedelta(days=config.max_time_days)
 
     @intents.dictionary_slots
-    def partial_time(self):
+    def timer_partial_time(self):
         return {
             "and [a] half": "half",
             "and [a] quarter": "quarter",
@@ -31,18 +31,18 @@ class Timer:
         [
             "time = 0..128",
             "set timer [<time>{hours:!int} (hour | hours)] [<time>{minutes:!int} (minute | minutes)] [<time>{seconds:!int} (second | seconds)]"
-            "set timer <time>{hours:!int} [($partial_time)] (hour | hours)",
-            "set timer <time>{minutes:!int} [($partial_time)] (minute | minutes)",
-            "set timer <time>{seconds:!int} [($partial_time)] (second | seconds)",
+            "set timer <time>{hours:!int} [($timer_partial_time)] (hour | hours)",
+            "set timer <time>{minutes:!int} [($timer_partial_time)] (minute | minutes)",
+            "set timer <time>{seconds:!int} [($timer_partial_time)] (second | seconds)",
         ]
     )
-    def set_timer(self, hours=None, minutes=None, seconds=None, partial_time=None):
+    def set_timer(self, hours=None, minutes=None, seconds=None, timer_partial_time=None):
         timer_duration = timedelta(
             weeks=weeks, days=days, hours=hours, minutes=minutes, seconds=seconds
         )
-        if partial_time:
+        if timer_partial_time:
             timer_duration = timer_duration + get_partial_time_duration(
-                partial_time, hours, minutes, seconds
+                timer_partial_time, hours, minutes, seconds
             )
         create_timer(timer_duration)
 
@@ -70,14 +70,16 @@ The intents object holds on to all the `slots` and `sentences` function referenc
 ### Dictionary Slots
 ```python
     @intents.dictionary_slots
-    def partial_time(self):
+    def timer_partial_time(self):
         return {
             "and [a] half": "half",
             "and [a] quarter": "quarter",
             "and [a] third": "third",
         }
 ```
-Dictionary slots are a dictionary of words and their references that get used as a Rhasspy [slot](https://rhasspy.readthedocs.io/en/latest/training/#slots-lists). They make defining intents more modular as a sentence can just refer to a slot name instead of creating a bunch of variations. This is a rather small example, but slots can have hundreds of potential options. With slots defined in Home Intent, the slot name is the same as the function name - here it's `partial_time` and that will be used in the sentence definition below.
+Dictionary slots are a dictionary of words and their references that get used as a Rhasspy [slot](https://rhasspy.readthedocs.io/en/latest/training/#slots-lists). They make defining intents more modular as a sentence can just refer to a slot name instead of creating a bunch of variations. This is a rather small example, but slots can have hundreds of potential options.
+
+With slots defined in Home Intent, the slot name is the same as the function name - here it's `timer_partial_time` and that will be used in the sentence definition below. One thing to make debugging and slot organization easier is that all slots are required to start with the `snake_case`'d version of the `ClassName`. So here `timer_partial_time` **must** start with `timer` as that is the class name.
 
 The `intents.dictionary_slots` expects a `Dict[str, str]` to be returned. There is also an `intents.slots` which can be used if what is spoken matches the reference. It expects a `List[str]`.
 
@@ -87,18 +89,18 @@ The `intents.dictionary_slots` expects a `Dict[str, str]` to be returned. There 
         [
             "time = 0..128",
             "set timer [<time>{hours:!int} (hour | hours)] [<time>{minutes:!int} (minute | minutes)] [<time>{seconds:!int} (second | seconds)]"
-            "set timer <time>{hours:!int} [($partial_time)] (hour | hours)",
-            "set timer <time>{minutes:!int} [($partial_time)] (minute | minutes)",
-            "set timer <time>{seconds:!int} [($partial_time)] (second | seconds)",
+            "set timer <time>{hours:!int} [($timer_partial_time)] (hour | hours)",
+            "set timer <time>{minutes:!int} [($timer_partial_time)] (minute | minutes)",
+            "set timer <time>{seconds:!int} [($timer_partial_time)] (second | seconds)",
         ]
     )
-    def set_timer(self, hours=None, minutes=None, seconds=None, partial_time=None):
+    def set_timer(self, hours=None, minutes=None, seconds=None, timer_partial_time=None):
         timer_duration = timedelta(
             weeks=weeks, days=days, hours=hours, minutes=minutes, seconds=seconds
         )
-        if partial_time:
+        if timer_partial_time:
             timer_duration = timer_duration + get_partial_time_duration(
-                partial_time, hours, minutes, seconds
+                timer_partial_time, hours, minutes, seconds
             )
         create_timer(timer_duration)
 
@@ -125,7 +127,19 @@ The `home_intent.get_config` function will load the `TimerSettings` from `config
 
 The `home_intent.register` function will keep track of the instantiated object and associated intents. When the the register function is called, the slots and sentences are verified, and a bit later on in the Home Intent setup all the slot functions are called to get the slot values.
 
+## Debugging Components
+If the optional port `12101` is exposed in the Home Intent container, the Rhasspy interface can be used to do some simple debugging. In the Rhasspy web interface at `http://[IP_WHERE_RUNNING]:12101`, clicking on the `Sentences` tab, and selecting `intents/home_intent.ini` - there is a list of all the Home Intent sentences. In the `Slots` section, the dropdown will be associated with the `slot_name` and all associated values can be seen.
+
+Sentences Tab:
+![sentences tab in Rhasspy](../../../img/rhasspy-ui/sentences.png)
+
+Slots Tab:
+![slots tab in Rhasspy](../../../img/rhasspy-ui/slots.png)
+
+
 ## Conventions
 First party intents will follow the folder importing structure, so `components/<component_name>/__init__.py`. This keeps the components directory in the codebase easy to navigate and allows us to add meta information later if needed.
 
-First party intents will also follow the translation structure to properly support [translations](../translations/developing-translations.md).
+All slots must be prefixed with the `snake_case`'d version of their `ClassName`. Above, the `timer_partial_time` has to start with `timer` as it is in the `Timer` class. In the `ShoppingList` component, the slots have to start with `shopping_list`.
+
+First party intents will also follow the translation structure to properly support [translations](../translations/developing-translations.md), custom components do not _need_ to follow this, unless they are trying to get merged in.
