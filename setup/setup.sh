@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+echo "LANGUAGE SET TO ${LANGUAGE:=en}"
+
 # clears the default (example) sentences.ini file for folks using the embedded system
 mkdir -p /profiles/${LANGUAGE} && echo -n > /profiles/${LANGUAGE}/sentences.ini
 
