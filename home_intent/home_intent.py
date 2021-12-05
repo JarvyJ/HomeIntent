@@ -86,17 +86,27 @@ class HomeIntent:
     def register(self, class_instance, intents: Intents):
         LOGGER.info(f"Verifying sentences' slots for {intents.name}...")
 
-        class_name = CamelCase_to_snake_case(class_instance.__class__.__name__)
+        if intents.name.startswith("home_intent.components"):
+            # remove the home_intent.components from the beginning
+            customization_filestem = "/".join(class_instance.__module__.split(".")[2:])
+        else:
+            customization_filestem = intents.name
 
-        customization_file = PosixPath(f"/config/customizations/{class_name}.yaml")
+        if customization_filestem.endswith(f"/{self.settings.home_intent.language}"):
+            # we need to remove the base_{component}.{language} from the end
+            customization_filestem = "/".join(customization_filestem.split("/")[:-1])
+
+        module_name = customization_filestem.split("/")[-1]
+
+        customization_file = PosixPath(f"/config/customizations/{customization_filestem}.yaml")
         if customization_file.is_file():
             intents.handle_customization(customization_file, class_instance)
 
         for slot in intents.all_slots:
-            if not (slot == class_name or slot.startswith(f"{class_name}_")):
+            if not (slot == module_name or slot.startswith(f"{module_name}_")):
                 raise HomeIntentException(
-                    f"The slot '{slot}' should start with the snake_case'd version of the "
-                    f"class_name ({class_name}) in the class {intents.name}"
+                    f"The slot '{slot}' should start with the module name ({module_name}) "
+                    f"in the class {class_instance.__module__}"
                 )
 
         for sentence_name, sentence in intents.all_sentences.items():
@@ -297,9 +307,3 @@ class HomeIntent:
             return True
 
         return False
-
-
-# pylint is angry, but I'm just having a little fun
-# if we ever need more of this, probably use inflection or something.
-def CamelCase_to_snake_case(string: str):
-    return "".join([x if x.islower() else f"_{x.lower()}" for x in string])[1:]
