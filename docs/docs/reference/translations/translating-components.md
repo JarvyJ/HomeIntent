@@ -5,6 +5,8 @@ Currently translating requires a bit of Docker, docker-compose, and git knowledg
 
 The [developing translations guide](./developing-translations.md) and [local Home Intent development](../developer/local-development.md) would be good to read beforehand to understand how it all fits together.
 
+If you want to contribute a translation, feel free to create a new issue in our [GitHub repository](https://github.com/JarvyJ/HomeIntent/issues) so we know who is working on it and any questions related to the translation can be asked.
+
 ## Enabling another language
 To get stated with translations, you will need to pull down the latest version of the repo, and [setup the `config.yaml`](../developer/local-development.md#basic-development-setup). From there you can update the development [`docker-compose.yaml`](https://github.com/JarvyJ/HomeIntent/blob/main/docker-compose.yaml) file to set the ISO639-1 language codes in Home Intent and Rhasspy. The current supported codes are the following:
 
