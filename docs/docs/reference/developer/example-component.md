@@ -79,7 +79,7 @@ The intents object holds on to all the `slots` and `sentences` function referenc
 ```
 Dictionary slots are a dictionary of words and their references that get used as a Rhasspy [slot](https://rhasspy.readthedocs.io/en/latest/training/#slots-lists). They make defining intents more modular as a sentence can just refer to a slot name instead of creating a bunch of variations. This is a rather small example, but slots can have hundreds of potential options.
 
-With slots defined in Home Intent, the slot name is the same as the function name - here it's `timer_partial_time` and that will be used in the sentence definition below. One thing to make debugging and slot organization easier is that all slots are required to start with the `snake_case`'d version of the `ClassName`. So here `timer_partial_time` **must** start with `timer` as that is the class name.
+With slots defined in Home Intent, the slot name is the same as the function name - here it's `timer_partial_time` and that will be used in the sentence definition below. One thing to make debugging and slot organization easier is that all slots are required to start with the module name. So here `timer_partial_time` **must** start with `timer` as that is the module name, since the file lives in `timer/`.
 
 The `intents.dictionary_slots` expects a `Dict[str, str]` to be returned. There is also an `intents.slots` which can be used if what is spoken matches the reference. It expects a `List[str]`.
 
@@ -140,6 +140,6 @@ Slots Tab:
 ## Conventions
 First party intents will follow the folder importing structure, so `components/<component_name>/__init__.py`. This keeps the components directory in the codebase easy to navigate and allows us to add meta information later if needed.
 
-All slots must be prefixed with the `snake_case`'d version of their `ClassName`. Above, the `timer_partial_time` has to start with `timer` as it is in the `Timer` class. In the `ShoppingList` component, the slots have to start with `shopping_list`.
+All slots must be prefixed with the module name of where they live. Above, the `timer_partial_time` has to start with `timer` as it is in the `timer/` folder. For custom components, for both `compontent_name/__init__.py` and `component_name.py`, the module name is just `component_name`.
 
 First party intents will also follow the translation structure to properly support [translations](../translations/developing-translations.md), custom components do not _need_ to follow this, unless they are trying to get merged in.
