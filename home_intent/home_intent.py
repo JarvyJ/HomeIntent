@@ -86,17 +86,13 @@ class HomeIntent:
     def register(self, class_instance, intents: Intents):
         LOGGER.info(f"Verifying sentences' slots for {intents.name}...")
 
-        if intents.name.startswith("home_intent.components"):
-            customization_filestem = "/".join(intents.name.split(".")[2:])
-        else:
-            customization_filestem = intents.name
+        class_name = CamelCase_to_snake_case(class_instance.__class__.__name__)
 
-        customization_file = PosixPath(f"/config/customizations/{customization_filestem}.yaml")
+        customization_file = PosixPath(f"/config/customizations/{class_name}.yaml")
         if customization_file.is_file():
             intents.handle_customization(customization_file, class_instance)
 
         for slot in intents.all_slots:
-            class_name = CamelCase_to_snake_case(class_instance.__class__.__name__)
             if not (slot == class_name or slot.startswith(f"{class_name}_")):
                 raise HomeIntentException(
                     f"The slot '{slot}' should start with the snake_case'd version of the "

@@ -43,7 +43,7 @@ class AudioConfig:
 def _log_out_audio_config(microphone_devices, sounds_devices):
     # Figure we should always show this so people can switch without unsetting first.
     LOGGER.info(
-        "\nThese are the attached microphones (I think the default has an asterisk):\n"
+        "\nThese are the attached microphones (The default has an asterisk):\n"
         f"{json.dumps(microphone_devices, indent=True)}\n"
         "\nTo configure a microphone, set 'microphone_device' to the corresponding number "
         "above in the 'rhasspy' section in '/config/config.yaml'\n"
