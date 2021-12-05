@@ -36,7 +36,7 @@ From there, you can go to the UI on port `11102` and finish setting up and get g
 
 ## Integrations
 
-  * [Home Assistant](https://homeintent.io/integrations/home-assistant/).
+  * [Home Assistant](https://homeintent.io/integrations/home-assistant/)
     * Climate, cover, fan, group, humidifier, light, lock, remote, shopping list, and switch are all supported!
   * [Timer](https://homeintent.io/integrations/timer/)
 
