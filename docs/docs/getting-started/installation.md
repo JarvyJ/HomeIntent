@@ -140,3 +140,5 @@ The wakeword Home Intent uses is "Jarvis". We have [example sentences](../integr
  * Jarvis, turn on the kitchen light
  * Jarvis, add milk to the shopping list
  * Jarvis, set the bedroom light to red at 80% brightness
+
+After playing around and getting things setup/configured, if you add a new entity in Home Assistant (ex: a light or smart switch), you will need to restart Home Intent for it to pick up the new entity.
