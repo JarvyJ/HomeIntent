@@ -61,7 +61,7 @@ class HomeIntentSettings(BaseModel):
     enable_all: bool = False
 
     # there might be nested env var support one day: https://github.com/samuelcolvin/pydantic/pull/3159
-    language: str = Field(default_factory=get_env_language)
+    language: Optional[str] = Field(default_factory=get_env_language)
 
 
 class Settings(BaseSettings):

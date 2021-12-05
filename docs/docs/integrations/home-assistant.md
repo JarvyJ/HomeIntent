@@ -16,13 +16,16 @@ In Home Assistant, if you go to your "Profile" page (by clicking your username) 
 
 ## Configuration
 
-| Option          | Description                                                                       | Required/Default |
-|:----------------|:----------------------------------------------------------------------------------|:-----------------|
-| url             | The URL for your Home Assistant instance                                          | REQUIRED         |
-| bearer_token    | The long-lived access token that Home Intent uses to interact with Home Assistant | REQUIRED         |
-| prefer_toggle   | Prefer to `toggle` instead using `on` or `off` when handling intents              | `true`           |
-| ignore_domains  | A list of domains from Home Assistant to ignore                                   |                  |
-| ignore_entities | Specific entity id's from Home Assistant to ignore                                |                  |
+| Option          | Description                                                                       | Required/Default            |
+|:----------------|:----------------------------------------------------------------------------------|:----------------------------|
+| url             | The URL for your Home Assistant instance                                          | REQUIRED                    |
+| bearer_token    | The long-lived access token that Home Intent uses to interact with Home Assistant | REQUIRED                    |
+| prefer_toggle   | Prefer to `toggle` instead using `on` or `off` when handling intents              | `true`                      |
+| ignore_domains  | A list of domains from Home Assistant to ignore                                   | `climate, lock, humidifier` |
+| ignore_entities | Specific entity id's from Home Assistant to ignore                                |                             |
+
+### New Home Assistant Entity
+If you add a new entity in Home Assistant and want to control it via Home Intent, you need to restart Home Intent for it to pick up on new/modified entities. This can easily be done by clicking "Restart" in the Home Intent UI or restarting the container running Home Intent.
 
 ### On `prefer_toggle`
 After a few years of running various voice assistants, I've noticed that they can really struggle with "on" and "off". It's particularly annoying when you're trying to turn off a light at night and nothing happens. At some point I played with switching it over to "toggle" instead of doing an "on" or "off" and everything works a lot better. This is why `prefer_toggle` defaults to `True`.
@@ -36,10 +39,35 @@ Currently `prefer_toggle` is only used for the following:
  * remote
  * switch
 
+### On `ignore_domains` defaults
+Ignore domains by default includes `climate`, `lock`, and `humidifer` so you can consider the overall risk (financial, safety, or otherwise) if an entity is accidentally triggered (by someone else or from system confusion) in your household.
+
+You can change the setting in the Settings page in the UI or via `config.yaml` in the `home_assistant` section.
+
+To enable just `lock`:
+```yaml
+home_assistant:
+  ignore_domains:
+  - 'climate'
+  - 'humidifier'
+```
+
+To enable all of them:
+```yaml
+home_assistant:
+  ignore_domains:
+    - ''
+```
+
 ## Example Sentences
 A lot of the examples sentences try to follow the same pattern. There is a lot of "turn on"/"turn off", open/close, and in one case lock/unlock for activating/deactivating most things. Specifics around components can be found below (like to change light color or something).
 
 ### Climate
+
+!!! warning "Climate is ignored by default"
+
+    The climate control is ignored by default and can be enabled by removing it from the [`ignore_domains`](#on-ignore_domains-defaults) setting.
+
 
  * Turn on/off the ecobee
  * Set the hvac to 76 degrees
@@ -49,7 +77,6 @@ A lot of the examples sentences try to follow the same pattern. There is a lot o
  * Turn on/off the hvac aux heat
  * set the ecobee to eco (HVAC preset)
 
-The climate controls are planned for version 2021.12.0. They are currently being tested and we will see how they work. There are some concerns about climate changes being a little more dangerous in voice control if something goes wrong, so we are looking into ways to help mitigate any issues.
 
 ### Cover
 
@@ -85,6 +112,10 @@ The group friendly names are in parenthesis.
 
 ### Humidifier
 
+!!! warning "Humidifier is ignored by default"
+
+    The humidifier control is ignored by default and can be enabled by removing it from the [`ignore_domains`](#on-ignore_domains-defaults) setting.
+
  * Turn on/off the humidifer
  * Set the humidifier to 68%
  * Set the dehumidifier to 72%
@@ -102,6 +133,10 @@ The group friendly names are in parenthesis.
 A full list of colors can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/colors.txt) as well as the [color temperatures](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/color_temperature.yaml).
 
 ### Lock
+
+!!! warning "Lock is ignored by default"
+
+    The lock control is ignored by default and can be enabled by removing it from the [`ignore_domains`](#on-ignore_domains-defaults) setting.
 
  * Lock the front door
  * Unlock the kitchen door

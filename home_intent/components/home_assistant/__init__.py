@@ -22,8 +22,13 @@ class HomeAssistantSettings(BaseModel):
         'Reason to use <a href="/docs/integrations/home-assistant/#on-prefer_toggle" target="_blank">prefer toggle</a>',
     )
     ignore_domains: Set[str] = Field(
-        set(),
-        description="A list of domains that shouldn't be controlled via Home Intent",
+        {"climate", "lock", "humidifier"},
+        description="A list of domains that shouldn't be controlled via Home Intent. "
+        "<br /> <br />"
+        "Climate, Lock, and Humidifier are "
+        '<a href="/docs/integrations/home-assistant/#on-ignore_domains-defaults" target="_blank">ignored by default</a> '
+        "so you can consider the "
+        "overall risk if an entity is accidentally triggered in your household.",
         example=["shopping_list", "light", "remote"],
     )
     ignore_entities: Set[str] = Field(
