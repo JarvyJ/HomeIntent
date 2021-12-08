@@ -32,34 +32,34 @@ class Climate(BaseClimate):
 
     @intents.sentences(
         [
-            "(set | change | make) the ($climate_target_temperature_entity) [(temperature|temp)] to (0..250){temperature} [degrees] [(farenheit|celsius)]"
+            "(set | change | make) the ($climate_target_temperature_entity) [(temperature|temp)] to (0..250){temperature} [degrees] [(fahrenheit|celsius)]"
         ]
     )
     def set_target_temperature(self, climate_target_temperature_entity, temperature):
         response = self._set_target_temperature(climate_target_temperature_entity, temperature)
-        return f"Setting the {response['attributes']['friendly_name']} to {temperature}%"
+        return f"Setting the {response['attributes']['friendly_name']} to {temperature}"
 
     @intents.sentences(
         [
-            "(set | change | make) the ($climate_target_temperature_range_entity) low [(temperature|temp)] to (0..250){temperature} [degrees] [(farenheit|celsius)]"
+            "(set | change | make) the ($climate_target_temperature_range_entity) low [(temperature|temp)] to (0..250){temperature} [degrees] [(fahrenheit|celsius)]"
         ]
     )
     def set_target_temperature_low(self, climate_target_temperature_range_entity, temperature):
         response = self._set_target_temperature_low(
             climate_target_temperature_range_entity, temperature
         )
-        return f"Setting the {response['attributes']['friendly_name']} to {temperature}%"
+        return f"Setting the {response['attributes']['friendly_name']} low temperature to {temperature}"
 
     @intents.sentences(
         [
-            "(set | change | make) the ($climate_target_temperature_range_entity) high [(temperature|temp)] to (0..250){temperature} [degrees] [(farenheit|celsius)]"
+            "(set | change | make) the ($climate_target_temperature_range_entity) high [(temperature|temp)] to (0..250){temperature} [degrees] [(fahrenheit|celsius)]"
         ]
     )
-    def _set_target_temperature_high(self, climate_target_temperature_range_entity, temperature):
+    def set_target_temperature_high(self, climate_target_temperature_range_entity, temperature):
         response = self._set_target_temperature_high(
             climate_target_temperature_range_entity, temperature
         )
-        return f"Setting the {response['attributes']['friendly_name']} to {temperature}%"
+        return f"Setting the {response['attributes']['friendly_name']} high temperature to {temperature}"
 
     @intents.sentences(
         [

@@ -142,11 +142,13 @@ class BaseClimate:
             SupportedFeatures.SUPPORT_TARGET_TEMPERATURE_RANGE
             in self.climate_device_features[climate_target_temperature_range_entity]
         ):
+            response = self.ha.api.get_entity(climate_target_temperature_range_entity)
             self.ha.api.call_service(
                 "climate",
                 "set_temperature",
                 {
                     "entity_id": climate_target_temperature_range_entity,
+                    "target_temp_low": response["attributes"]["target_temp_low"],
                     "target_temp_high": temperature,
                 },
             )
@@ -160,12 +162,14 @@ class BaseClimate:
             SupportedFeatures.SUPPORT_TARGET_TEMPERATURE_RANGE
             in self.climate_device_features[climate_target_temperature_range_entity]
         ):
+            response = self.ha.api.get_entity(climate_target_temperature_range_entity)
             self.ha.api.call_service(
                 "climate",
                 "set_temperature",
                 {
                     "entity_id": climate_target_temperature_range_entity,
                     "target_temp_low": temperature,
+                    "target_temp_high": response["attributes"]["target_temp_high"],
                 },
             )
         response = self.ha.api.get_entity(climate_target_temperature_range_entity)
