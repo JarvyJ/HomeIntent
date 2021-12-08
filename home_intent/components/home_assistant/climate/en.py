@@ -37,7 +37,7 @@ class Climate(BaseClimate):
     )
     def set_target_temperature(self, climate_target_temperature_entity, temperature):
         response = self._set_target_temperature(climate_target_temperature_entity, temperature)
-        return f"Setting the {response['attributes']['friendly_name']} to {temperature}%"
+        return f"Setting the {response['attributes']['friendly_name']} to {temperature}"
 
     @intents.sentences(
         [
