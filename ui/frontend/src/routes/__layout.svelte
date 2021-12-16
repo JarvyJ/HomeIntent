@@ -31,10 +31,10 @@
   }
 
   const pagesMeta = [
-    { title: 'Settings', url: '/settings', icon: SettingsIcon },
+    { title: 'Settings', url: '/settings/', icon: SettingsIcon },
     // {title: "Customize", url: "/customize", icon: CustomizeIcon},
     // {title: "Satellites", url: "/satellites", icon: SatellitesIcon},
-    { title: 'Live Logs', url: '/logs', icon: LogsIcon }
+    { title: 'Live Logs', url: '/logs/', icon: LogsIcon }
   ];
 
   let isMobile = false;
