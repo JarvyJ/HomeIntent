@@ -25,7 +25,7 @@ def run(home_intent):
         "timer_partial_time": [],
     }
 
-    if home_intent.settings.home_assistant:
+    if "home_assistant" in home_intent.settings:
         LOGGER.info("Found previous version using Home Assistant. Clearing up unused values")
         home_intent.rhasspy_api.post("/api/slots?overwriteAll=true", body=slot_update)
     else:

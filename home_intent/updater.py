@@ -52,7 +52,7 @@ def update_homeintent(home_intent):
     # a little bit of bootstrapping...
     # TODO: remove this for the 2022.01.0 release
     last_run_version = SemanticVersion(home_intent_meta.last_run_version)
-    if last_run_version.version == "2021.12.0":
+    if last_run_version.version.startswith("2021.12"):
         last_run_version = SemanticVersion("2021.11.0")
 
     update_scripts = _get_update_script(last_run_version)

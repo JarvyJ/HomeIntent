@@ -295,6 +295,14 @@ class HomeIntent:
             LOGGER.warning(
                 "Timed out waiting for Rhasspy to train. Moving on, we will likely be okay."
             )
+        except RhasspyError as rhasspy_error:
+            if "TrainingFailedException" in str(rhasspy_error):
+                # TODO: properly identify if this is the first boot.
+                LOGGER.warning(
+                    "Rhasspy training failed. This can happen on first boot due to no sentences being registered."
+                )
+            else:
+                raise
 
     def _enable_sentence(self, sentence: Sentence):
         if self.settings.home_intent.enable_all:
