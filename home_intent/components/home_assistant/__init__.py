@@ -6,7 +6,11 @@ from .api import HomeAssistantAPI
 
 
 class HomeAssistantSettings(BaseModel):
-    url: AnyHttpUrl = Field(..., description="The URL for your Home Assistant instance")
+    url: AnyHttpUrl = Field(
+        ...,
+        description="The URL for your Home Assistant instance",
+        example="ex: http://192.168.1.165:8123",
+    )
     bearer_token: str = Field(
         ...,
         description="The long-lived access token that Home Intent uses to interact with Home Assistant"

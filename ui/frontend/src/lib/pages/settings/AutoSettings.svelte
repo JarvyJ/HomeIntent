@@ -28,6 +28,7 @@
     this="{FormElement[field.type]}"
     {...field}
     bind:value="{userSettings[currentSetting][name]}"
+    required={schema.required.includes(name)}
   />
   {/each}
 </SettingsList>
