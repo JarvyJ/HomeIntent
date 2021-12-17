@@ -46,7 +46,7 @@ class Intents(IntentCustomizationMixin):
             slot_dictionary = func(*arg, **kwargs)
 
             slot_list = [
-                f"{_sanitize_slot(x)}:{slot_dictionary[x]}}}"
+                f"{_sanitize_slot(x)}:{slot_dictionary[x]}"
                 for x in slot_dictionary
             ]
             return slot_list
