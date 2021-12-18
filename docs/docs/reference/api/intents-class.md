@@ -14,7 +14,7 @@ Dictionary slots expect a dictionary of what is spoken to what is returned to th
 Example:
 ```python
 @intents.dictionary_slots
-def partial_time(self):
+def light(self):
     return {
         "Bedroom Light": "light.bedroom",
         "Kitchen": "light.kitchen",
@@ -22,16 +22,50 @@ def partial_time(self):
     }
 ```
 
+This allows you to use the following in the associated sentence:
+
+```python
+@intents.sentences(["turn (on|off) the ($light)", "toggle the ($light)"])
+```
+
+which will then pass in the specific spoken light (ex: `light.bedroom`) to the associated sentence function in the `light` parameter.
 
 ## `@intents.slots`
-The regular slots are useful when the text that is spoken is the same as the text that is returned to the sentence method.
+The regular slots are useful when the text that is spoken is the same as the text that is returned in the sentence method.
 
 Example:
 ```python
 @intents.slots
-def shopping_item(self):
+def shopping_list_item(self):
     return ["apples", "applesauce", "asparagus", "bacon"]
 ```
+
+This works with the following sentence:
+```python
+@intents.sentences(["add ($shopping_list_item) to the [shopping] list"])
+```
+
+which will pass the specific shopping list item (ex: `apples`) to the associated function via `shopping_list_item` parameter.
+
+## `@intents.repeatable_dictionary_slots`
+Both `@intents.dictionary_slots` and `@intents.slots` can only be used once in a sentence - as they are a named association with the value in Rhasspy. For cases where a slot needs to  appear multiple times in the same sentence, `repeatable_dictionary_slots` can be used.
+
+```python
+@intents.repeatable_dictionary_slots
+def number(self):
+    return {
+        "one": "1",
+        "two": "2",
+        "three": "3",
+    }
+```
+
+So then it can be used multiple times in a sentence:
+```python
+@intents.sentences(["multiply ($number){first} times ($number){second}"])
+```
+
+and the number value (so `1` or `2`) would be passed in as `first` and `second` in the associated parameters.
 
 ## `@intents.sentences(List[str])`
 This decorator takes in a list of strings that can be spoken to trigger an intent. After the intent is triggered, the method that is decorated will execute. The sentences follow the [sentence structure](https://rhasspy.readthedocs.io/en/latest/training/) Rhasspy uses. 

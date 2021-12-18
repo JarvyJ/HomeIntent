@@ -38,6 +38,22 @@ class Intents(IntentCustomizationMixin):
         self.all_slots[func.__name__] = wrapper
         return wrapper
 
+    def repeatable_dictionary_slots(self, func):
+        LOGGER.debug(f"Registering {func.__name__}")
+
+        @wraps(func)
+        def wrapper(*arg, **kwargs):
+            slot_dictionary = func(*arg, **kwargs)
+
+            slot_list = [
+                f"{_sanitize_slot(x)}:{slot_dictionary[x]}"
+                for x in slot_dictionary
+            ]
+            return slot_list
+
+        self.all_slots[func.__name__] = wrapper
+        return wrapper
+
     def slots(self, func):
         LOGGER.debug(f"Registering {func.__name__}")
 
