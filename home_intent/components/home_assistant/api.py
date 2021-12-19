@@ -23,7 +23,6 @@ class HomeAssistantAPI:
                 f"Unable to connect to Home Assistant server at {url} - "
                 "Ensure it is running and try again!"
             )
-        # TODO: add session auto retry logic from urllib3
 
     def get(self, url):
         response = self.session.get(f"{self.base_url}{url}")

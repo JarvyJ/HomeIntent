@@ -1,7 +1,8 @@
-from typing import Set
+from typing import Dict, List, Optional, Set
 
 from pydantic import AnyHttpUrl, BaseModel, Field
 
+from . import script
 from .api import HomeAssistantAPI
 
 
@@ -36,6 +37,7 @@ class HomeAssistantSettings(BaseModel):
         description="A list of entities that shouldn't be controlled via Home Intent.",
         example=["light.kitchen", "fan.attic", "switch.tv"],
     )
+    scripts: Optional[Dict[str, script.ScriptActions]] = Field(..., description=None)
 
 
 class HomeAssistantComponent:
@@ -97,6 +99,11 @@ def setup(home_intent):
         shopping_list = home_intent.import_module(f"{__name__}.shopping_list")
         home_intent.register(
             shopping_list.ShoppingList(home_assistant_component, home_intent), shopping_list.intents
+        )
+
+    if hasattr(config, "scripts") and "script" not in config.ignore_domains:
+        home_intent.register(
+            script.Script(home_assistant_component, config.scripts), script.intents
         )
 
     if "switch" in home_assistant_component.domains and "switch" not in config.ignore_domains:
