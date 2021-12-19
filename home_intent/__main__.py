@@ -47,8 +47,14 @@ def main(logging_host: str):
     settings = Settings()
     home_intent = HomeIntent(settings)
     logging.info(f"Using language: {home_intent.language}")
-    _load_integrations(settings, home_intent)
-    home_intent.initialize()
+    try:
+        _load_integrations(settings, home_intent)
+        home_intent.initialize()
+    except Exception as any_exception:
+        # log out to the exception and then exit
+        # this should hopefully get the log to the user
+        logging.exception(any_exception)
+        raise
 
 
 def _setup_logging(logging_host: str):
@@ -116,5 +122,5 @@ def _load_custom_components(custom_components: set, home_intent: HomeIntent):
 if __name__ == "__main__":
     logging_host = "localhost"
     if os.environ.get("DOCKER_DEV") == "True":
-        logging_host = "ui"
+        logging_host = "api"
     main(logging_host)
