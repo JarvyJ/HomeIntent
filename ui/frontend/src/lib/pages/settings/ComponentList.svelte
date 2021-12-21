@@ -14,7 +14,7 @@
     class:border-r-2="{name === currentSetting}"
     class:dark:border-r-hi-green="{name === currentSetting}"
   >
-    {#if name !== "home_intent"}<Toggle bind:enabled="{settingsList[name].enabled}" />{/if}<span
+    {#if name !== "home_intent"}<Toggle bind:enabled="{settingsList[name].enabled}" on:change="{() => currentSetting = name}" />{/if}<span
       class="flex-grow cursor-pointer"
       on:click|preventDefault="{() => currentSetting = name}"
       >{capitalize_with_underscore(name)}</span

@@ -19,6 +19,7 @@
     home_intent: { component: HomeIntentSettings, enabled: true, schema: null }
   };
   let currentSetting = 'home_intent';
+  let errors = [];
 
   let openapi = {};
   let userSettings;
@@ -168,10 +169,28 @@
       body: JSON.stringify(settingsCopy)
     });
     if (response.ok) {
+      errors = [];
       let result = await response.json();
       await reloadUserSettings();
       console.log(result);
       await restart();
+
+    } else if (response.status == 422) {
+      let result = await response.json();
+      let error_messages = []
+      // console.log(result)
+      for (const detail of result.detail) {
+        detail.loc.shift()
+        let message = detail.msg;
+        console.log(detail.type)
+        if (detail.type === "value_error.url.scheme") {
+          message = "missing http or https"
+        }
+        let error_message = detail.loc.join(" -> ") + ": " + message;
+        error_messages.push(error_message)
+      }
+      errors = error_messages
+      console.log(errors)
     }
   }
 
@@ -250,6 +269,8 @@
       {#if !settingsList[currentSetting].enabled}
         <span class="ml-2">Ensure the integration is enabled before saving!</span>
       {/if}
+
+
       {:else if currentSetting in customSettingsList}
       <svelte:component
         this="{customSettingsList[currentSetting].component}"
@@ -269,6 +290,13 @@
         <span class="ml-2">Ensure the integration is enabled before saving!</span>
       {/if}
       {/if}
+
+      <div class="mt-4 text-red-600">
+      {#each errors as error}
+        <p>{error}</p>
+      {/each}
+    </div>
+
     </div>
   </div>
   {/if}
