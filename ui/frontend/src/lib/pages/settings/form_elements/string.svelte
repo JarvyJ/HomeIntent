@@ -4,6 +4,7 @@
   export let format = '';
   export let example = '';
   export let value;
+  export let required;
 
   import HelpText from '../HelpText.svelte';
 
@@ -27,7 +28,7 @@
 </script>
 
 <div>
-  <label for="{id}" class="font-bold">{title}</label>
+  <label for="{id}" class="font-bold">{#if required}<span title="Required" class="text-pink-800">*</span>{/if} {title}</label>
   <HelpText>{@html description}</HelpText>
 </div>
 
@@ -39,6 +40,7 @@
   class="{style}"
   bind:value
   placeholder="{example}"
+  required="{required}"
 />
 {:else if inputType === "url"}
 <input
@@ -47,6 +49,7 @@
   class="{style}"
   bind:value
   placeholder="{example}"
+  required="{required}"
 />
 {:else if inputType === "longtext"}
 <textarea
@@ -56,6 +59,7 @@
   rows="5"
   cols="40"
   placeholder="{example}"
+  required="{required}"
   bind:value
 ></textarea>
 {/if}
