@@ -1,17 +1,15 @@
 const config = {
-	mode: "jit",
-	purge: [
-		"./src/**/*.{html,js,svelte,ts}",
-	],
+	mode: 'jit',
+	purge: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
 		extend: {
-		     colors: {
-        		'hi-green': '#43ae4f',
-      		}
-		},
+			colors: {
+				'hi-green': '#43ae4f'
+			}
+		}
 	},
 	plugins: [],
-	darkMode: 'class',
+	darkMode: 'class'
 };
 
 module.exports = config;

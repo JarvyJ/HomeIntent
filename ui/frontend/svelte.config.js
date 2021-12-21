@@ -5,9 +5,11 @@ import adapter from '@sveltejs/adapter-static';
 const config = {
 	// Consult https://github.com/sveltejs/svelte-preprocess
 	// for more information about preprocessors
-	preprocess: [preprocess({
-		"postcss": true
-	})],
+	preprocess: [
+		preprocess({
+			postcss: true
+		})
+	],
 
 	kit: {
 		// hydrate the <div id="svelte"> element in src/app.html
@@ -15,8 +17,8 @@ const config = {
 		adapter: adapter(),
 		prerender: {
 			crawl: true,
-			entries: ["/settings", "/"], //enough to trigger a full crawl!
-			onError: "continue"
+			entries: ['/settings', '/'], //enough to trigger a full crawl!
+			onError: 'continue'
 		},
 		vite: {
 			server: {
@@ -26,22 +28,22 @@ const config = {
 						target: 'http://api:11102',
 						secure: false,
 						changeOrigin: true
-	  				},
-	  				'/api': {
+					},
+					'/api': {
 						target: 'http://api:11102',
 						secure: false,
 						changeOrigin: true
-	  				},
+					},
 					'/ws': {
 						target: 'ws://api:11102',
 						secure: false,
 						changeOrigin: true,
 						ws: true
-	  				}
+					}
 				}
 			}
 		}
-	},
+	}
 };
 
 export default config;

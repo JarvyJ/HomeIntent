@@ -8,5 +8,5 @@
 	import SectionBar from '$lib/components/SectionBar.svelte';
 </script>
 
-<SectionBar title="{title}"><slot name="sectionBar"></slot></SectionBar>
-<slot></slot>
+<SectionBar {title}><slot name="sectionBar" /></SectionBar>
+<slot />
