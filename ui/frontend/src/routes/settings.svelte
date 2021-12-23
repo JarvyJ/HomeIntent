@@ -238,6 +238,7 @@
     <div class="grid grid-cols-5">
       <ComponentListMenu bind:settingsList bind:customSettingsList bind:currentSetting />
       <div class="col-span-4 mt-5">
+        {#key currentSetting}
         {#if currentSetting in settingsList}
           <svelte:component
             this={settingsList[currentSetting].component}
@@ -255,6 +256,7 @@
             customComponent={true}
           />
         {/if}
+        {/key}
         <SaveButton
           menu={false}
           bind:settingsList
