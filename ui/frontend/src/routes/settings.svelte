@@ -1,16 +1,14 @@
 <script>
   import { onMount } from "svelte";
 
-  import ComponentList from "$lib/pages/settings/ComponentList.svelte";
-  import Button from "$lib/components/Button.svelte";
-  import Spinner from "$lib/icons/spinner.svelte";
-
   import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
-  import NoSettings from "$lib/pages/settings/NoSettings.svelte";
   import AutoSettings from "$lib/pages/settings/AutoSettings.svelte";
-  import SectionBar from "$lib/components/SectionBar.svelte";
+  import NoSettings from "$lib/pages/settings/NoSettings.svelte";
+  import SaveButton from "$lib/pages/settings/SaveButton.svelte";
   import { mergeDeep } from "$lib/util/merge.js";
   import PageLayout from "./PageLayout.svelte";
+  import RestartButton from "$lib/pages/settings/RestartButton.svelte";
+  import ComponentListMenu from "$lib/pages/settings/ComponentListMenu.svelte";
 
   let loaded = false;
   let customSettingsList = {};
@@ -225,30 +223,20 @@
 <PageLayout title="Settings">
   <svelte:fragment slot="sectionBar">
     <div class="flex items-center gap-3 ml-auto">
-      <span class="rounded hover:bg-red-700 bg-red-500 px-3 py-1 cursor-pointer" on:click={restart}
-        >Restart</span
-      >
-      <button
-        class="rounded hover:bg-green-700 bg-hi-green px-3 py-1 disabled:opacity-50 disabled:cursor-not-allowed"
-        on:click={saveSettings}
-        disabled={currentSetting in settingsList
-          ? !settingsList[currentSetting].enabled
-          : !customSettingsList[currentSetting].enabled}
-      >
-        Save
-      </button>
+      <RestartButton restart="restart" />
+      <SaveButton
+        menu={true}
+        bind:settingsList
+        bind:customSettingsList
+        bind:currentSetting
+        saveSettings="saveSettings"
+      />
     </div>
   </svelte:fragment>
 
   {#if loaded}
     <div class="grid grid-cols-5">
-      <div>
-        <ComponentList bind:settingsList bind:currentSetting />
-        {#if Object.keys(customSettingsList).length !== 0}
-          <h3 class="text-2xl ml-5 mt-7">Custom Components</h3>
-          <ComponentList bind:settingsList={customSettingsList} bind:currentSetting />
-        {/if}
-      </div>
+      <ComponentListMenu bind:settingsList bind:customSettingsList bind:currentSetting />
       <div class="col-span-4 mt-5">
         {#if currentSetting in settingsList}
           <svelte:component
@@ -258,16 +246,6 @@
             bind:schema={settingsList[currentSetting].schema}
             customComponent={false}
           />
-          <button
-            class="rounded hover:bg-green-700 bg-hi-green px-3 py-1 mt-5 text-xl disabled:opacity-50 disabled:cursor-not-allowed"
-            on:click={saveSettings}
-            disabled={!settingsList[currentSetting].enabled}
-          >
-            Save
-          </button>
-          {#if !settingsList[currentSetting].enabled}
-            <span class="ml-2">Ensure the integration is enabled before saving!</span>
-          {/if}
         {:else if currentSetting in customSettingsList}
           <svelte:component
             this={customSettingsList[currentSetting].component}
@@ -276,18 +254,14 @@
             bind:schema={customSettingsList[currentSetting].schema}
             customComponent={true}
           />
-          <button
-            class="rounded hover:bg-green-700 bg-hi-green px-3 py-1 mt-5 text-xl disabled:opacity-50 disabled:cursor-not-allowed"
-            on:click={saveSettings}
-            disabled={!customSettingsList[currentSetting].enabled}
-          >
-            Save
-          </button>
-          {#if !customSettingsList[currentSetting].enabled}
-            <span class="ml-2">Ensure the integration is enabled before saving!</span>
-          {/if}
         {/if}
-
+        <SaveButton
+          menu={false}
+          bind:settingsList
+          bind:customSettingsList
+          bind:currentSetting
+          saveSettings="saveSettings"
+        />
         <div class="mt-4 text-red-600">
           {#each errors as error}
             <p>{error}</p>
