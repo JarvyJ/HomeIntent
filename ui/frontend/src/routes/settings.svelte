@@ -1,24 +1,22 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount } from "svelte";
 
-  import ComponentList from '$lib/pages/settings/ComponentList.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import Spinner from '$lib/icons/spinner.svelte';
-
-  import HomeIntentSettings from '$lib/pages/settings/HomeIntentSettings.svelte';
-  import NoSettings from '$lib/pages/settings/NoSettings.svelte';
-  import AutoSettings from '$lib/pages/settings/AutoSettings.svelte';
-  import SectionBar from '$lib/components/SectionBar.svelte';
-  import { mergeDeep } from '$lib/util/merge.js';
-  import PageLayout from './PageLayout.svelte';
+  import HomeIntentSettings from "$lib/pages/settings/HomeIntentSettings.svelte";
+  import AutoSettings from "$lib/pages/settings/AutoSettings.svelte";
+  import NoSettings from "$lib/pages/settings/NoSettings.svelte";
+  import SaveButton from "$lib/pages/settings/SaveButton.svelte";
+  import { mergeDeep } from "$lib/util/merge.js";
+  import PageLayout from "./PageLayout.svelte";
+  import RestartButton from "$lib/pages/settings/RestartButton.svelte";
+  import ComponentListMenu from "$lib/pages/settings/ComponentListMenu.svelte";
 
   let loaded = false;
   let customSettingsList = {};
 
   let settingsList = {
-    home_intent: { component: HomeIntentSettings, enabled: true, schema: null }
+    home_intent: { component: HomeIntentSettings, enabled: true, schema: null },
   };
-  let currentSetting = 'home_intent';
+  let currentSetting = "home_intent";
   let errors = [];
 
   let openapi = {};
@@ -32,11 +30,11 @@
 
     let fullSettings = openapi.components.schemas.FullSettings;
     componentsWithoutSettings = new Set(
-      fullSettings.additionalProperties['x-components-without-settings']
+      fullSettings.additionalProperties["x-components-without-settings"]
     );
-    customComponents = new Set(fullSettings.additionalProperties['x-custom-components']);
+    customComponents = new Set(fullSettings.additionalProperties["x-custom-components"]);
 
-    setupComponentList('#/components/schemas/FullSettings');
+    setupComponentList("#/components/schemas/FullSettings");
     setupComponentsWithoutSettings();
 
     await reloadUserSettings();
@@ -47,8 +45,8 @@
     let schema = openapi.components.schemas[schemaName];
 
     for (const name in schema.properties) {
-      if ('$ref' in schema.properties[name]) {
-        let settingSchemaName = getSchemaName(schema.properties[name]['$ref']);
+      if ("$ref" in schema.properties[name]) {
+        let settingSchemaName = getSchemaName(schema.properties[name]["$ref"]);
         let settingSchema = openapi.components.schemas[settingSchemaName];
         if (name in settingsList) {
           settingsList[name].schema = settingSchema;
@@ -58,12 +56,12 @@
             customSettingsList[name] = {
               component: AutoSettings,
               enabled: false,
-              schema: settingSchema
+              schema: settingSchema,
             };
           } else {
             settingsList[name] = { component: AutoSettings, enabled: false, schema: settingSchema };
             // rhasspy is default enabled
-            if (name === 'rhasspy') {
+            if (name === "rhasspy") {
               settingsList[name].enabled = true;
             }
           }
@@ -73,7 +71,7 @@
   }
 
   function getSchemaName(fullSchemaName) {
-    return fullSchemaName.split('/').pop();
+    return fullSchemaName.split("/").pop();
   }
 
   function setupComponentsWithoutSettings() {
@@ -88,7 +86,7 @@
 
   async function reloadUserSettings() {
     loaded = false;
-    userSettings = generateDefaultUserSettings('#/components/schemas/FullSettings');
+    userSettings = generateDefaultUserSettings("#/components/schemas/FullSettings");
 
     const settings_response = await fetch(`/api/v1/settings`);
     if (settings_response.ok) {
@@ -105,10 +103,10 @@
     let schema = openapi.components.schemas[schemaName];
     let model = {};
     for (const name in schema.properties) {
-      if ('$ref' in schema.properties[name]) {
-        model[name] = generateDefaultUserSettings(schema.properties[name]['$ref']);
-      } else if ('default' in schema.properties[name]) {
-        model[name] = schema.properties[name]['default'];
+      if ("$ref" in schema.properties[name]) {
+        model[name] = generateDefaultUserSettings(schema.properties[name]["$ref"]);
+      } else if ("default" in schema.properties[name]) {
+        model[name] = schema.properties[name]["default"];
       } else {
         model[name] = null;
       }
@@ -145,7 +143,7 @@
   }
 
   async function restart() {
-    let response = await fetch('/api/v1/restart');
+    let response = await fetch("/api/v1/restart");
     if (response.status === 400) {
       let result = await response.json();
       console.log(result);
@@ -161,12 +159,12 @@
     enableComponentsWithoutSettings(settingsCopy);
     console.log(settingsCopy);
 
-    let response = await fetch('/api/v1/settings', {
-      method: 'POST',
+    let response = await fetch("/api/v1/settings", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json;charset=utf-8'
+        "Content-Type": "application/json;charset=utf-8",
       },
-      body: JSON.stringify(settingsCopy)
+      body: JSON.stringify(settingsCopy),
     });
     if (response.ok) {
       errors = [];
@@ -174,23 +172,22 @@
       await reloadUserSettings();
       console.log(result);
       await restart();
-
     } else if (response.status == 422) {
       let result = await response.json();
-      let error_messages = []
+      let error_messages = [];
       // console.log(result)
       for (const detail of result.detail) {
-        detail.loc.shift()
+        detail.loc.shift();
         let message = detail.msg;
-        console.log(detail.type)
+        console.log(detail.type);
         if (detail.type === "value_error.url.scheme") {
-          message = "missing http or https"
+          message = "missing http or https";
         }
         let error_message = detail.loc.join(" -> ") + ": " + message;
-        error_messages.push(error_message)
+        error_messages.push(error_message);
       }
-      errors = error_messages
-      console.log(errors)
+      errors = error_messages;
+      console.log(errors);
     }
   }
 
@@ -226,78 +223,53 @@
 <PageLayout title="Settings">
   <svelte:fragment slot="sectionBar">
     <div class="flex items-center gap-3 ml-auto">
-      <span
-        class="rounded hover:bg-red-700 bg-red-500 px-3 py-1 cursor-pointer"
-        on:click="{restart}"
-        >Restart</span
-      >
-      <button
-        class="rounded hover:bg-green-700 bg-hi-green px-3 py-1 disabled:opacity-50 disabled:cursor-not-allowed"
-        on:click="{saveSettings}"
-        disabled={currentSetting in settingsList ? !settingsList[currentSetting].enabled : !customSettingsList[currentSetting].enabled}
-      >
-        Save
-      </button>
+      <RestartButton restart="restart" />
+      <SaveButton
+        menu={true}
+        bind:settingsList
+        bind:customSettingsList
+        bind:currentSetting
+        saveSettings="saveSettings"
+      />
     </div>
   </svelte:fragment>
 
   {#if loaded}
-  <div class="grid grid-cols-5">
-    <div>
-      <ComponentList bind:settingsList bind:currentSetting />
-      {#if Object.keys(customSettingsList).length !== 0}
-      <h3 class="text-2xl ml-5 mt-7">Custom Components</h3>
-      <ComponentList bind:settingsList="{customSettingsList}" bind:currentSetting />
-      {/if}
+    <div class="grid grid-cols-5">
+      <ComponentListMenu bind:settingsList bind:customSettingsList bind:currentSetting />
+      <div class="col-span-4 mt-5">
+        {#key currentSetting}
+        {#if currentSetting in settingsList}
+          <svelte:component
+            this={settingsList[currentSetting].component}
+            bind:currentSetting
+            bind:userSettings
+            bind:schema={settingsList[currentSetting].schema}
+            customComponent={false}
+          />
+        {:else if currentSetting in customSettingsList}
+          <svelte:component
+            this={customSettingsList[currentSetting].component}
+            bind:currentSetting
+            bind:userSettings
+            bind:schema={customSettingsList[currentSetting].schema}
+            customComponent={true}
+          />
+        {/if}
+        {/key}
+        <SaveButton
+          menu={false}
+          bind:settingsList
+          bind:customSettingsList
+          bind:currentSetting
+          saveSettings="saveSettings"
+        />
+        <div class="mt-4 text-red-600">
+          {#each errors as error}
+            <p>{error}</p>
+          {/each}
+        </div>
+      </div>
     </div>
-    <div class="col-span-4 mt-5">
-      {#if currentSetting in settingsList}
-      <svelte:component
-        this="{settingsList[currentSetting].component}"
-        bind:currentSetting
-        bind:userSettings
-        bind:schema="{settingsList[currentSetting].schema}"
-        customComponent="{false}"
-      />
-      <button
-        class="rounded hover:bg-green-700 bg-hi-green px-3 py-1 mt-5 text-xl disabled:opacity-50 disabled:cursor-not-allowed"
-        on:click="{saveSettings}"
-        disabled={!settingsList[currentSetting].enabled}
-      >
-        Save
-      </button>
-      {#if !settingsList[currentSetting].enabled}
-        <span class="ml-2">Ensure the integration is enabled before saving!</span>
-      {/if}
-
-
-      {:else if currentSetting in customSettingsList}
-      <svelte:component
-        this="{customSettingsList[currentSetting].component}"
-        bind:currentSetting
-        bind:userSettings
-        bind:schema="{customSettingsList[currentSetting].schema}"
-        customComponent="{true}"
-      />
-      <button
-        class="rounded hover:bg-green-700 bg-hi-green px-3 py-1 mt-5 text-xl disabled:opacity-50 disabled:cursor-not-allowed"
-        on:click="{saveSettings}"
-        disabled={!customSettingsList[currentSetting].enabled}
-      >
-        Save
-      </button>
-      {#if !customSettingsList[currentSetting].enabled}
-        <span class="ml-2">Ensure the integration is enabled before saving!</span>
-      {/if}
-      {/if}
-
-      <div class="mt-4 text-red-600">
-      {#each errors as error}
-        <p>{error}</p>
-      {/each}
-    </div>
-
-    </div>
-  </div>
   {/if}
 </PageLayout>

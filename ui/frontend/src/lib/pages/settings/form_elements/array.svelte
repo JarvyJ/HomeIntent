@@ -4,13 +4,13 @@
   export let example;
   export let value;
 
-  import HelpText from '../HelpText.svelte';
+  import HelpText from "../HelpText.svelte";
 
   let textAreaValue;
 
-  $: value = textAreaValue.split('\n');
+  $: value = textAreaValue.split("\n");
   if (value) {
-    textAreaValue = value.join('\n');
+    textAreaValue = value.join("\n");
   }
 </script>
 
@@ -18,15 +18,14 @@
   <label for="ignore-entities" class="font-bold">{title}</label>
   <HelpText>{@html description}</HelpText>
   {#if example}
-  <HelpText classes="mt-3">
-    Example:
-    <code class="block p-2 dark:bg-gray-700 dark:text-gray-50 rounded-md">
-      <pre>
+    <HelpText classes="mt-3">
+      Example:
+      <code class="block p-2 dark:bg-gray-700 dark:text-gray-50 rounded-md">
+        <pre>
 {example.join("\n")}
-    </pre
-      >
-    </code>
-  </HelpText>
+    </pre>
+      </code>
+    </HelpText>
   {/if}
 </div>
 
@@ -37,5 +36,5 @@
   rows="5"
   cols="40"
   placeholder="Entities should be separated by newlines"
-  bind:value="{textAreaValue}"
-></textarea>
+  bind:value={textAreaValue}
+/>
