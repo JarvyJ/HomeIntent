@@ -32,7 +32,7 @@ class Light(BaseLight):
 
     @intents.sentences(
         [
-            "(set | change | make) the ($light) [light] [to] ($light_color) [at] (0..100){brightness} [percent] [brightness]"
+            "(set | change | make) the ($light) [light] [to] ($light_color) [at] (0..100){brightness} percent [brightness]"
         ]
     )
     def change_color_brightness(self, light, light_color, brightness):
@@ -41,7 +41,7 @@ class Light(BaseLight):
 
     @intents.sentences(
         [
-            "(set | change | make) the ($light) [light] to (0..100){brightness} [percent] [brightness]"
+            "(set | change | make) the ($light) [light] to (0..100){brightness} percent [brightness]"
         ]
     )
     def change_brightness(self, light, brightness):
@@ -57,7 +57,7 @@ class Light(BaseLight):
 
     @intents.sentences(
         [
-            "(set | change | make) the ($light) [light] [to] ($light_color_temperature) [at] (0..100){brightness} [percent] [brightness]"
+            "(set | change | make) the ($light) [light] [to] ($light_color_temperature) [at] (0..100){brightness} percent [brightness]"
         ]
     )
     def change_color_temperature_brightness(self, light, light_color_temperature, brightness):
