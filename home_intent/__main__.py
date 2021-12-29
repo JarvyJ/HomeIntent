@@ -21,7 +21,10 @@ class HomeIntentImportException(Exception):
 
 class CustomHttpHandler(logging.Handler):
     def __init__(
-        self, url: str, log_format: str = "%(asctime)s %(levelname)s %(name)s %(message)s"
+        # self, url: str, log_format: str = "%(asctime)s %(levelname)s %(name)s %(message)s"
+        self,
+        url: str,
+        log_format: str = "%(message)s",
     ):
         self.url = url
         self.session = requests.Session()
@@ -33,7 +36,16 @@ class CustomHttpHandler(logging.Handler):
     def emit(self, record):
         log_record = self.format(record)
         try:
-            self.session.post(self.url, json={"data": log_record}, timeout=1)
+            self.session.post(
+                self.url,
+                json={
+                    "data": log_record,
+                    "log_level": record.levelname,
+                    "time": record.created,
+                    "logger": record.name,
+                },
+                timeout=1,
+            )
 
         # just ignore any errors, if it doesnt post, that's okay. It's just missing a log in the frontend.
         except requests.Timeout:
@@ -59,7 +71,8 @@ def main(logging_host: str):
 
 def _setup_logging(logging_host: str):
     logging.basicConfig(
-        format="%(asctime)s %(levelname)s %(name)s %(message)s", level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+        level=logging.INFO,
     )
     logging.root.addHandler(CustomHttpHandler(f"http://{logging_host}:11102/api/v1/logs"))
 

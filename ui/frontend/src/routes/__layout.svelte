@@ -48,4 +48,10 @@
     width: 1em;
     height: 1em;
   }
+
+  :global(p a) {
+    color: #3c9a47;
+    text-decoration: underline;
+  }
+
 </style>

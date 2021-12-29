@@ -1,8 +1,9 @@
-from collections import defaultdict
+from collections import defaultdict, deque
 from exceptions import HomeIntentHTTPException
 from pathlib import Path
 import subprocess
-from typing import Dict, List
+from typing import Dict, List, Deque
+from enum import Enum
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
@@ -33,15 +34,49 @@ class SocketMan:
 websocket_manager = SocketMan()
 
 
+class LogLevel(str, Enum):
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+
+
 class LogFormat(BaseModel):
     data: str
+    log_level: LogLevel
+    time: float
+    logger: str
 
+
+exceptions: Deque[LogFormat] = deque(maxlen=32)
+logs: Deque[LogFormat] = deque(maxlen=1024)
 
 # I could use some DI to get the websocket_manager into here, but for now I'm going to leave
 # this here. If the websocket stuff starts getting out of hand, I'll start splitting it apart
 @router.post("/api/v1/logs")
 async def push_logs_to_websocket(body: LogFormat):
+    print(body)
     await websocket_manager.broadcast("logs", body.data)
+    logs.append(body)
+    if body.log_level in (LogLevel.WARNING, LogLevel.ERROR, LogLevel.CRITICAL):
+        await websocket_manager.broadcast("exceptions", body.data)
+        exception_message = body.data.split("\nTraceback", 1)[0]
+        exceptions.append(
+            LogFormat(
+                data=exception_message, log_level=body.log_level, time=body.time, logger=body.logger
+            )
+        )
+
+
+@router.get("/api/v1/logs", response_model=List[LogFormat])
+def get_logs():
+    return logs
+
+
+@router.get("/api/v1/exceptions", response_model=List[LogFormat])
+def get_exceptions():
+    return exceptions
 
 
 @router.websocket("/ws/logs")
@@ -53,6 +88,17 @@ async def logs_ws(websocket: WebSocket):
 
     except WebSocketDisconnect:
         websocket_manager.disconnect("logs", websocket)
+
+
+@router.websocket("/ws/exceptions")
+async def exceptions_ws(websocket: WebSocket):
+    await websocket_manager.connect("exceptions", websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+
+    except WebSocketDisconnect:
+        websocket_manager.disconnect("exceptions", websocket)
 
 
 # TODO: get my dependency injection working, and get this out of here!
