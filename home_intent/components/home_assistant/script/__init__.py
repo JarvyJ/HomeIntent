@@ -31,7 +31,7 @@ class Script:
             if script not in ha_scripts:
                 raise HomeAssistantScriptException(
                     f"Couldn't find your script ({script}) in Home Assistant. "
-                    "Make sure the script name matches what's in Home Assistant"
+                    "Make sure the script exists and the name matches in Home Assistant"
                 )
 
     @intents.dictionary_slots

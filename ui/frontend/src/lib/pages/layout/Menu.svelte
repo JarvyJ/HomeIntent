@@ -13,7 +13,7 @@
     { title: "Settings", url: "/settings/", icon: SettingsIcon },
     // {title: "Customize", url: "/customize", icon: CustomizeIcon},
     // {title: "Satellites", url: "/satellites", icon: SatellitesIcon},
-    { title: "Live Logs", url: "/logs/", icon: LogsIcon },
+    { title: "Logs", url: "/logs/", icon: LogsIcon },
   ];
 </script>
 
@@ -24,7 +24,7 @@
         class="p-2 m-1 rounded-lg hover:bg-hi-green"
         class:px-4={menuExpanded}
         class:mx-2={menuExpanded}
-        class:dark:bg-gray-700={$page.path.startsWith(pageMeta.url)}
+        class:dark:bg-gray-700={$page.path.startsWith(pageMeta.url.slice(0, -1))}
       >
         <a class="block" href={pageMeta.url}
           ><svelte:component this={pageMeta.icon} />
