@@ -12,6 +12,8 @@
 
   const humanSettingName = capitalize_with_underscore(currentSetting);
   const linkName = currentSetting.replace("_", "-");
+
+  console.log(schema)
 </script>
 
 <SettingsTitle
