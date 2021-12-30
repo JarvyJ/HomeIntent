@@ -4,11 +4,18 @@ from requests.adapters import HTTPAdapter
 from urllib3 import Retry
 
 
+class HomeAssistantAPIException(Exception):
+    pass
+
+
 class HomeAssistantAPI:
     def __init__(self, url, bearer_token):
         self.session = Session()
         self.session.headers.update(
-            {"Content-Type": "application/json", "Authorization": f"Bearer {bearer_token}",}
+            {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {bearer_token}",
+            }
         )
         self.base_url = url
 
@@ -18,11 +25,18 @@ class HomeAssistantAPI:
 
         try:
             self.get("/api/")
-        except requests.exceptions.ConnectionError as error:
-            raise Exception(
+        except requests.exceptions.ConnectionError:
+            raise HomeAssistantAPIException(
                 f"Unable to connect to Home Assistant server at {url} - "
                 "Ensure it is running and try again!"
             )
+        except requests.HTTPError as error:
+            if error.response.status_code == 401:
+                raise HomeAssistantAPIException(
+                    "401 Unauthorized. Ensure your Home Assistant bearer token is correct"
+                )
+            else:
+                raise
 
     def get(self, url):
         response = self.session.get(f"{self.base_url}{url}")

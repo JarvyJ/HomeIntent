@@ -187,7 +187,6 @@
         error_messages.push(error_message);
       }
       errors = error_messages;
-      console.log(errors);
     }
   }
 
@@ -223,13 +222,13 @@
 <PageLayout title="Settings">
   <svelte:fragment slot="sectionBar">
     <div class="flex items-center gap-3 ml-auto">
-      <RestartButton restart="restart" />
+      <RestartButton restart={restart} />
       <SaveButton
         menu={true}
         bind:settingsList
         bind:customSettingsList
         bind:currentSetting
-        saveSettings="saveSettings"
+        saveSettings={saveSettings}
       />
     </div>
   </svelte:fragment>
@@ -257,18 +256,20 @@
           />
         {/if}
         {/key}
-        <SaveButton
-          menu={false}
-          bind:settingsList
-          bind:customSettingsList
-          bind:currentSetting
-          saveSettings="saveSettings"
-        />
+        {#if errors.length > 0}
         <div class="mt-4 text-red-600">
           {#each errors as error}
             <p>{error}</p>
           {/each}
         </div>
+        {/if}
+        <SaveButton
+          menu={false}
+          bind:settingsList
+          bind:customSettingsList
+          bind:currentSetting
+          saveSettings={saveSettings}
+        />
       </div>
     </div>
   {/if}

@@ -130,8 +130,12 @@ async def restart_home_intent():
     await websocket_manager.broadcast("jobs/restart", "Process has been started...")
 
 
+class JobFormat(BaseModel):
+    data: str
+
+
 @router.post("/api/v1/jobs/restart")
-async def update_restart_status(body: LogFormat):
+async def update_restart_status(body: JobFormat):
     await websocket_manager.broadcast("jobs/restart", body.data)
 
 

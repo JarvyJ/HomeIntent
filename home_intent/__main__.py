@@ -75,6 +75,7 @@ def _setup_logging(logging_host: str):
         level=logging.INFO,
     )
     logging.root.addHandler(CustomHttpHandler(f"http://{logging_host}:11102/api/v1/logs"))
+    logging.getLogger("urllib3.connectionpool").setLevel(logging.ERROR)
 
 
 def _load_integrations(settings: Settings, home_intent: HomeIntent):

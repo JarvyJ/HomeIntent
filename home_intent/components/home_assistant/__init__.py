@@ -105,7 +105,7 @@ def setup(home_intent):
             shopping_list.ShoppingList(home_assistant_component, home_intent), shopping_list.intents
         )
 
-    if hasattr(config, "scripts") and "script" not in config.ignore_domains:
+    if hasattr(config, "scripts") and config.scripts and "script" not in config.ignore_domains:
         home_intent.register(
             script.Script(home_assistant_component, config.scripts), script.intents
         )
