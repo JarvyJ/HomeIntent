@@ -19,7 +19,7 @@ class HomeAssistantAPI:
         )
         self.base_url = url
 
-        retries = Retry(backoff_factor=1)
+        retries = Retry(backoff_factor=0.2, total=7)
         self.session.mount("http://", HTTPAdapter(max_retries=retries))
         self.session.mount("https://", HTTPAdapter(max_retries=retries))
 
@@ -28,7 +28,7 @@ class HomeAssistantAPI:
         except requests.exceptions.ConnectionError:
             raise HomeAssistantAPIException(
                 f"Unable to connect to Home Assistant server at {url} - "
-                "Ensure it is running and try again!"
+                "Ensure the URL is correct, Home Assistant is running and try again!"
             )
         except requests.HTTPError as error:
             if error.response.status_code == 401:
@@ -39,7 +39,7 @@ class HomeAssistantAPI:
                 raise
 
     def get(self, url):
-        response = self.session.get(f"{self.base_url}{url}")
+        response = self.session.get(f"{self.base_url}{url}", timeout=5)
         response.raise_for_status()
         return response.json()
 

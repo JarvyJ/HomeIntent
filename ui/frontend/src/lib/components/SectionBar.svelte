@@ -18,7 +18,7 @@
 
   setInterval(() => {
     if ($progress < 1) {
-      progress.update((n) => n + 0.005);
+      progress.update((n) => n + 0.002);
     }
     if (
       sockets["restart"].messages[sockets["restart"].messages.length - 1] ===
@@ -93,7 +93,7 @@
 </nav>
 
 {#if sockets.restart.messages.length > 0}
-<div class="m-4 py-4 px-5 border rounded dark:bg-gray-800 dark:border-gray-500" transition:slide>
+<div class="m-4 py-4 px-5 border rounded dark:bg-gray-800 dark:border-gray-500" transition:slide="{{duration: 700}}">
   <div class="text-2xl mb-3">{sockets.restart.messages[sockets.restart.messages.length - 1]}</div>
   <progress value="{$progress}" class="w-full" />
   {#if sockets.exceptions.messages.length > 0}
@@ -106,6 +106,11 @@
       <span class="text-pink-700">{exception.log_level}</span> - <a href="/logs/">Go to Logs</a>
     </p>
   </div>
-  {/each} {/if}
+  {/each}
+  <div class="flex mt-2">
+    <button class="rounded hover:bg-red-700 bg-red-500 px-3 py-1 cursor-pointer" on:click={() => sockets.restart.messages = []}
+    >Close</button>
+  </div>
+  {/if}
 </div>
 {/if}
