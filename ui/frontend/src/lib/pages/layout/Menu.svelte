@@ -24,7 +24,7 @@
         class="p-2 m-1 rounded-lg hover:bg-hi-green"
         class:px-4={menuExpanded}
         class:mx-2={menuExpanded}
-        class:dark:bg-gray-700={$page.path.startsWith(pageMeta.url)}
+        class:dark:bg-gray-700={$page.path.startsWith(pageMeta.url.slice(0, -1))}
       >
         <a class="block" href={pageMeta.url}
           ><svelte:component this={pageMeta.icon} />

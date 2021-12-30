@@ -56,17 +56,15 @@ logs: Deque[LogFormat] = deque(maxlen=1024)
 # this here. If the websocket stuff starts getting out of hand, I'll start splitting it apart
 @router.post("/api/v1/logs")
 async def push_logs_to_websocket(body: LogFormat):
-    print(body)
-    await websocket_manager.broadcast("logs", body.data)
+    await websocket_manager.broadcast("logs", body.json())
     logs.append(body)
     if body.log_level in (LogLevel.WARNING, LogLevel.ERROR, LogLevel.CRITICAL):
-        await websocket_manager.broadcast("exceptions", body.data)
         exception_message = body.data.split("\nTraceback", 1)[0]
-        exceptions.append(
-            LogFormat(
-                data=exception_message, log_level=body.log_level, time=body.time, logger=body.logger
-            )
+        truncated_exception = LogFormat(
+            data=exception_message, log_level=body.log_level, time=body.time, logger=body.logger
         )
+        exceptions.append(truncated_exception)
+        await websocket_manager.broadcast("exceptions", truncated_exception.json())
 
 
 @router.get("/api/v1/logs", response_model=List[LogFormat])
@@ -77,6 +75,11 @@ def get_logs():
 @router.get("/api/v1/exceptions", response_model=List[LogFormat])
 def get_exceptions():
     return exceptions
+
+
+@router.delete("/api/v1/exceptions")
+def delete_exceptions():
+    exceptions.clear()
 
 
 @router.websocket("/ws/logs")
