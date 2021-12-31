@@ -9,7 +9,7 @@ home_assistant:
 ```
 
 !!! note
-The `url` is the URL that you use to access Home Assistant. It supports `https` if using a common certificate provider (like Let's Encrypt). Currently there is no support for a self-signed certificate.
+    The `url` is the URL that you use to access Home Assistant. It supports `https` if using a common certificate provider (like Let's Encrypt). Currently there is no support for a self-signed certificate.
 
 ## Getting a bearer token
 
@@ -35,12 +35,12 @@ After a few years of running various voice assistants, I've noticed that they ca
 
 Currently `prefer_toggle` is only used for the following:
 
-- climate
-- fan
-- humidifier
-- light
-- remote
-- switch
+  * climate
+  * fan
+  * humidifier
+  * light
+  * remote
+  * switch
 
 ### On `ignore_domains` defaults
 
@@ -96,34 +96,34 @@ A lot of the examples sentences try to follow the same pattern. There is a lot o
 
     The climate control is ignored by default and can be enabled by removing it from the [`ignore_domains`](#on-ignore_domains-defaults) setting.
 
-- Turn on/off the ecobee
-- Set the hvac to 76 degrees
-- Set the window ac to cool (HVAC mode)
-- Set the ecobee high temperature to 80
-- Set the ecobee low temperature to 76 degrees farenheit
-- Turn on/off the hvac aux heat
-- set the ecobee to eco (HVAC preset)
+  * Turn on/off the ecobee
+  * Set the hvac to 76 degrees
+  * Set the window ac to cool (HVAC mode)
+  * Set the ecobee high temperature to 80
+  * Set the ecobee low temperature to 76 degrees farenheit
+  * Turn on/off the hvac aux heat
+  * set the ecobee to eco (HVAC preset)
 
 ### Cover
 
-- Open the garage door
-- Close the pergola roof
-- Stop the living room window (works for tilt or open/close)
-- Tilt open the living room window
-- Open the hall window half way
+  * Open the garage door
+  * Close the pergola roof
+  * Stop the living room window (works for tilt or open/close)
+  * Tilt open the living room window
+  * Open the hall window half way
 
 ### Fan
 
-- Turn on/off the living room fan
-- Toggle the ceiling fan
-- \*Set the kitchen fan to [not] oscillate
-- \*Start/stop oscillating the attic fan
-- \*Oscillate the attic fan
-- \*Turn on/off the attic fan osccilation
-- Set/make/change the living room fan to sleep
-- Reverse the ceiling fan
-- Increase/Decrease the kitchen fan
-- Set/make/change the living room fan to high/medium/low
+  * Turn on/off the living room fan
+  * Toggle the ceiling fan
+  * \*Set the kitchen fan to [not] oscillate
+  * \*Start/stop oscillating the attic fan
+  * \*Oscillate the attic fan
+  * \*Turn on/off the attic fan osccilation
+  * Set/make/change the living room fan to sleep
+  * Reverse the ceiling fan
+  * Increase/Decrease the kitchen fan
+  * Set/make/change the living room fan to high/medium/low
 
 Home Intent will only allow the specific fans that can oscillate to be set for oscillation. Same thing with presets and fan speeds.
 
@@ -131,9 +131,9 @@ We're not sure what the best sentence approach is for the fan oscillation, so we
 
 ### Group
 
-- Toggle the (basement lights)
-- Turn on the (basement lights)
-- Turn off (super cool lights)
+  * Toggle the (basement lights)
+  * Turn on the (basement lights)
+  * Turn off (super cool lights)
 
 The group friendly names are in parenthesis.
 
@@ -143,19 +143,19 @@ The group friendly names are in parenthesis.
 
     The humidifier control is ignored by default and can be enabled by removing it from the [`ignore_domains`](#on-ignore_domains-defaults) setting.
 
-- Turn on/off the humidifer
-- Set the humidifier to 68%
-- Set the dehumidifier to 72%
-- Set the hygrostat to eco
+  * Turn on/off the humidifer
+  * Set the humidifier to 68%
+  * Set the dehumidifier to 72%
+  * Set the hygrostat to eco
 
 ### Light
 
-- Turn on the kitchen light
-- Set the master bedroom light to 80% brightness
-- Make the den red
-- Change the bathroom light to blue
-- Make the kitchen daylight
-- set the kitchen to warm white at 80% brightness
+  * Turn on the kitchen light
+  * Set the master bedroom light to 80% brightness
+  * Make the den red
+  * Change the bathroom light to blue
+  * Make the kitchen daylight
+  * set the kitchen to warm white at 80% brightness
 
 A full list of colors can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/colors.txt) as well as the [color temperatures](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/color_temperature.yaml).
 
@@ -165,33 +165,33 @@ A full list of colors can be found [in the source](https://github.com/JarvyJ/Hom
 
     The lock control is ignored by default and can be enabled by removing it from the [`ignore_domains`](#on-ignore_domains-defaults) setting.
 
-- Lock the front door
-- Unlock the kitchen door
-- Open the front gate (for locks that support opening as well)
+  * Lock the front door
+  * Unlock the kitchen door
+  * Open the front gate (for locks that support opening as well)
 
 ### Remote
 
-- Turn on the tv
-- Turn off the tv
+  * Turn on the tv
+  * Turn off the tv
 
 ### Shopping List
 
 Requires the [shopping_list](https://www.home-assistant.io/integrations/shopping_list/) component in Home Assistant
 
-- Add oreos to the shopping list
-- Check oreos off the list
-- Uncheck oreos from the shopping list
-- Mark bleach off the shopping list
-- Check everything off the list
-- Unmark everything from the shopping list
+  * Add oreos to the shopping list
+  * Check oreos off the list
+  * Uncheck oreos from the shopping list
+  * Mark bleach off the shopping list
+  * Check everything off the list
+  * Unmark everything from the shopping list
 
 Either Check or mark can be used as well as uncheck or unmark. The word shopping is always optional. A full list of shopping items can be found [in the source](https://github.com/JarvyJ/HomeIntent/blob/main/home_intent/default_configs/home_assistant/shopping_items.txt).
 
 ### Switch
 
-- Turn on the fan
-- Turn off the plants
-- toggle basement fan
+  * Turn on the fan
+  * Turn off the plants
+  * toggle basement fan
 
 ## Advanced Customization
 
@@ -201,13 +201,13 @@ A custom defined list of light colors can be placed in `/config/home_assistant/c
 
 The various Home Assistant sub components can also be customized further using [customization json](../getting-started/advanced-features/component-customization.md) if desired. These are the respective filenames:
 
-- Climate: `/config/customizations/home_assistant/climate.yaml`
-- Covers: `/config/customizations/home_assistant/cover.yaml`
-- Fans: `/config/customizations/home_assistant/cover.yaml`
-- Groups: `/config/customizations/home_assistant/group.yaml`
-- Humidifier: `/config/customizations/home_assistant/humidifier.yaml`
-- Lights: `/config/customizations/home_assistant/light.yaml`
-- Locks: `/config/customizations/home_assistant/lock.yaml`
-- Remote: `/config/customizations/home_assistant/remote.yaml`
-- Shopping List: `/config/customizations/home_assistant/shopping_list.yaml`
-- Switches: `/config/customizations/home_assistant/switch.yaml`
+  * Climate: `/config/customizations/home_assistant/climate.yaml`
+  * Covers: `/config/customizations/home_assistant/cover.yaml`
+  * Fans: `/config/customizations/home_assistant/cover.yaml`
+  * Groups: `/config/customizations/home_assistant/group.yaml`
+  * Humidifier: `/config/customizations/home_assistant/humidifier.yaml`
+  * Lights: `/config/customizations/home_assistant/light.yaml`
+  * Locks: `/config/customizations/home_assistant/lock.yaml`
+  * Remote: `/config/customizations/home_assistant/remote.yaml`
+  * Shopping List: `/config/customizations/home_assistant/shopping_list.yaml`
+  * Switches: `/config/customizations/home_assistant/switch.yaml`

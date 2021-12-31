@@ -8,8 +8,8 @@ For now, knowledge on using and setting up docker is required. In the future, di
 
 ### Installation Options
 
-- The default docker based install. Includes everything you need - just continue with this doc!
-- Connect to an [existing Rhasspy setup](./advanced-features/external-rhasspy.md).
+  * The default docker based install. Includes everything you need - just continue with this doc!
+  * Connect to an [existing Rhasspy setup](./advanced-features/external-rhasspy.md).
 
 ## Installation
 
@@ -138,9 +138,9 @@ After setting up your container configuration, you can finish setting up Home In
 
 The wakeword Home Intent uses is "Jarvis". We have [example sentences](../integrations/home-assistant.md#example-sentences) on the integration page for all the components, but here are a few to get you started:
 
-- Jarvis, set timer one minute
-- Jarvis, turn on the kitchen light
-- Jarvis, add milk to the shopping list
-- Jarvis, set the bedroom light to red at 80% brightness
+  * Jarvis, set timer one minute
+  * Jarvis, turn on the kitchen light
+  * Jarvis, add milk to the shopping list
+  * Jarvis, set the bedroom light to red at 80% brightness
 
 After playing around and getting things setup/configured, if you add a new entity in Home Assistant (ex: a light or smart switch), you will need to restart Home Intent for it to pick up the new entity.
