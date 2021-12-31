@@ -1,17 +1,18 @@
 # Getting Started
 
 ## Supported Configs
+
 Home Intent currently is designed to run in a docker container running on a Raspberry Pi 3B or 4 (armv7/arm64). We also offer an amd64 build. This can either be the same machine that runs Home Assistant or a different one.
 
 For now, knowledge on using and setting up docker is required. In the future, different setups for installation will be supported!
 
 ### Installation Options
 
-  * The default docker based install. Includes everything you need - just continue with this doc!
-  * Connect to an [existing Rhasspy setup](./advanced-features/external-rhasspy.md).
-
+- The default docker based install. Includes everything you need - just continue with this doc!
+- Connect to an [existing Rhasspy setup](./advanced-features/external-rhasspy.md).
 
 ## Installation
+
 It is easy to get it started with a `docker-compose.yaml` file that runs Home Intent:
 
 ```yaml
@@ -26,9 +27,9 @@ services:
       - "/PATH_TO_CONFIG/config:/config"
       - "/etc/localtime:/etc/localtime:ro"
     ports:
-      - "11102:11102"  # For the Home Intent UI
-      - "12183:12183"  # For communicating over MQTT/satellites
-      - "12101:12101"  # For the Rhasspy UI (optional)
+      - "11102:11102" # For the Home Intent UI
+      - "12183:12183" # For communicating over MQTT/satellites
+      - "12101:12101" # For the Rhasspy UI (optional)
     devices:
       - "/dev/snd:/dev/snd"
 ```
@@ -36,6 +37,7 @@ services:
 The `/config` directory is where Home Intent configuration lives and the `/profiles` directory is where Rhasspy (the underlying speech system) stores its configs/downloads. The port `11102` exposes the Home Intent web interface, and `12101` exposes the Rhasspy interface.
 
 ## Setup
+
 After setting up your container configuration, you can finish setting up Home Intent either via the UI or editing `config.yaml` (which lives in `/config/config.yaml` in the container)
 
 === "UI"
@@ -43,7 +45,7 @@ After setting up your container configuration, you can finish setting up Home In
     After starting up the container, you can visit the ip address that Home Intent is running on with the port (`11102`) for the Home Intent (eg: http://192.168.1.157:11102) and it will take you to the "Settings" page.
     ![Home Intent Settings](../img/ui/home-intent-settings.png)
 
-    In the "Playback Devices" dropdown you can select one of the audio interfaces that is connected and press the little :material-play-circle: Play icon underneath the dropdown to ensure that it is working correctly. Usually one of the ones that start with "Default" will work. 
+    In the "Playback Devices" dropdown you can select one of the audio interfaces that is connected and press the little :material-play-circle: Play icon underneath the dropdown to ensure that it is working correctly. Usually one of the ones that start with "Default" will work.
 
     Then in the "Microphone Devices", you can select one of the microphones that is connected. If you click on the little :material-microphone: Microphone icon, Home Intent will listen to the devices and update the dropdown with ones that received audio.
 
@@ -133,11 +135,12 @@ After setting up your container configuration, you can finish setting up Home In
     ```
 
 ## Using Home Intent
+
 The wakeword Home Intent uses is "Jarvis". We have [example sentences](../integrations/home-assistant.md#example-sentences) on the integration page for all the components, but here are a few to get you started:
 
- * Jarvis, set timer one minute
- * Jarvis, turn on the kitchen light
- * Jarvis, add milk to the shopping list
- * Jarvis, set the bedroom light to red at 80% brightness
+- Jarvis, set timer one minute
+- Jarvis, turn on the kitchen light
+- Jarvis, add milk to the shopping list
+- Jarvis, set the bedroom light to red at 80% brightness
 
 After playing around and getting things setup/configured, if you add a new entity in Home Assistant (ex: a light or smart switch), you will need to restart Home Intent for it to pick up the new entity.

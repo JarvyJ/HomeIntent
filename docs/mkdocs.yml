@@ -9,10 +9,9 @@ theme:
   custom_dir: overrides/
 
   features:
-  - navigation.tabs
-  - navigation.sections
-  - navigation.instant
-
+    - navigation.tabs
+    - navigation.sections
+    - navigation.instant
 
   palette:
     - media: "(prefers-color-scheme: light)"
@@ -39,7 +38,8 @@ theme:
 markdown_extensions:
   - admonition
   - pymdownx.highlight
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.superfences
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
@@ -60,4 +60,3 @@ extra:
 
     - icon: fontawesome/solid/rss
       link: https://github.com/JarvyJ/HomeIntent/releases.atom
-
