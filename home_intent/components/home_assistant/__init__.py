@@ -42,7 +42,6 @@ class HomeAssistantSettings(BaseModel):
         example=["light.kitchen", "fan.attic", "switch.tv"],
     )
     scripts: Optional[Dict[str, script.ScriptActions]] = Field(
-        ...,
         description="An association of scripts in Home Assistant, sentences to trigger them, and the associated response",
         example={
             "script.test_script": {
