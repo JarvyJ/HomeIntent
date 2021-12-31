@@ -41,7 +41,15 @@ class HomeAssistantSettings(BaseModel):
         description="A list of entities that shouldn't be controlled via Home Intent.",
         example=["light.kitchen", "fan.attic", "switch.tv"],
     )
-    scripts: Optional[Dict[str, script.ScriptActions]] = Field(..., description=None)
+    scripts: Optional[Dict[str, script.ScriptActions]] = Field(
+        description="An association of scripts in Home Assistant, sentences to trigger them, and the associated response",
+        example={
+            "script.test_script": {
+                "sentences": ["It's movie time", "I want to watch a movie"],
+                "response": "You can now watch your movie.",
+            }
+        },
+    )
 
 
 class HomeAssistantComponent:
