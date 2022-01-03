@@ -24,11 +24,13 @@ services:
       dockerfile: "development-env/Dockerfile.python"
     depends_on:
       - rhasspy
+      - api
     volumes:
       - "./home_intent:/usr/src/app/home_intent"
       - "./development-env/config:/config"
     environment:
       - DOCKER_DEV=True
+      - LANGUAGE=en
     command: python3 home_intent
 
   api:

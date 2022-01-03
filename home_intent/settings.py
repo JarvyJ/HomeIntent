@@ -32,8 +32,12 @@ def yaml_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
 
 
 class RhasspySettings(BaseModel):
-    url: AnyHttpUrl = "http://localhost:12101"
-    mqtt_host: str = "localhost"
+    url: AnyHttpUrl = (
+        "http://rhasspy:12101"
+        if os.environ.get("DOCKER_DEV") == "True"
+        else "http://localhost:12101"
+    )
+    mqtt_host: str = "rhasspy" if os.environ.get("DOCKER_DEV") == "True" else "localhost"
     mqtt_port: int = 12183
     mqtt_username: Optional[str] = None
     mqtt_password: Optional[str] = None
@@ -74,7 +78,10 @@ class Settings(BaseSettings):
 
         @classmethod
         def customise_sources(
-            cls, init_settings, env_settings, file_secret_settings,
+            cls,
+            init_settings,
+            env_settings,
+            file_secret_settings,
         ):
             return (
                 yaml_config_settings_source,

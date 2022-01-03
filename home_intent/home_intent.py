@@ -92,7 +92,8 @@ class HomeIntent:
         else:
             customization_filestem = intents.name
 
-        if customization_filestem.endswith(f"/{self.settings.home_intent.language}"):
+        # Minor hack to support English fallback
+        if customization_filestem.endswith((f"/{self.settings.home_intent.language}", "/en")):
             # we need to remove the base_{component}.{language} from the end
             customization_filestem = "/".join(customization_filestem.split("/")[:-1])
 
@@ -221,14 +222,14 @@ class HomeIntent:
         )
         rhasspy_config = json.loads(config_file_path.read_text())
         try:
-            self.audio_config.add_sounds_microphone_device(rhasspy_config)
+            self.audio_config.add_audio_settings_to_config(rhasspy_config)
         except RhasspyError:
             LOGGER.info("Installing profile for first boot")
             self.rhasspy_api.post("/api/profile", rhasspy_config)
 
             LOGGER.info("Restarting Rhasspy...")
             self.rhasspy_api.post("/api/restart")
-            self.audio_config.add_sounds_microphone_device(rhasspy_config)
+            self.audio_config.add_audio_settings_to_config(rhasspy_config)
 
         LOGGER.debug(json.dumps(rhasspy_config, indent=True))
 
@@ -271,7 +272,10 @@ class HomeIntent:
                 LOGGER.info(f"Running register func: {register_func}")
                 register_func(registered_intent.class_instance)
 
-            for (sentence_name, sentence,) in registered_intent.intent.all_sentences.items():
+            for (
+                sentence_name,
+                sentence,
+            ) in registered_intent.intent.all_sentences.items():
                 if self._enable_sentence(sentence) and self._sentence_slots_have_value(sentence):
                     # the rhasspy API does '\n' for newlines
                     sentences_string = "\n".join(sentence.sentences)
