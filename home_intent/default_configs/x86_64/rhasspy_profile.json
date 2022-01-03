@@ -19,10 +19,6 @@
         "system": "kaldi"
     },
     "text_to_speech": {
-        "nanotts": {
-            "language": "en-GB"
-        },
-        "system": "nanotts"
     },
     "wake": {
         "porcupine": {

@@ -3,6 +3,14 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
+ISO639_1_TO_IETF_BCP_47 = {
+    "en": "en-GB",
+    "de": "de-DE",
+    "es": "es-ES",
+    "fr": "fr-FR",
+    "it": "it-IT",
+}
+
 
 class AudioConfigException(Exception):
     pass
@@ -14,7 +22,7 @@ class AudioConfig:
         self.settings = settings
         self.get_file = get_file
 
-    def add_sounds_microphone_device(self, rhasspy_config):
+    def add_audio_settings_to_config(self, rhasspy_config):
         microphone_devices = self.rhasspy_api.get("/api/microphones")
         sounds_devices = self.rhasspy_api.get("/api/speakers")
 
@@ -24,6 +32,10 @@ class AudioConfig:
         _log_out_audio_config(microphone_devices, sounds_devices)
         _setup_microphone_device(config_microphone_device, microphone_devices, rhasspy_config)
         _setup_sounds_device(config_sounds_device, sounds_devices, rhasspy_config)
+        if self.settings.home_intent.language in ISO639_1_TO_IETF_BCP_47:
+            _setup_nanotts_language(self.settings.home_intent.language, rhasspy_config)
+        else:
+            _setup_espeak_language(self.settings.home_intent.language, rhasspy_config)
         if self.settings.home_intent.beeps:
             self.setup_beeps(rhasspy_config)
 
@@ -97,3 +109,31 @@ def _setup_sounds_device(config_sounds_device, sounds_devices, rhasspy_config):
                 rhasspy_config["sounds"].update({"aplay": {"device": config_sounds_device}})
         else:
             LOGGER.warning("No sounds section in rhasspy_profile.json to add sounds device")
+
+
+def _setup_nanotts_language(language, rhasspy_config):
+    if "text_to_speech" in rhasspy_config:
+        rhasspy_config["text_to_speech"]["system"] = "nanotts"
+        if "nanotts" in rhasspy_config["text_to_speech"]:
+            rhasspy_config["text_to_speech"]["nanotts"]["language"] = ISO639_1_TO_IETF_BCP_47[
+                language
+            ]
+
+        else:
+            rhasspy_config["text_to_speech"].update(
+                {"nanotts": {"language": ISO639_1_TO_IETF_BCP_47[language]}}
+            )
+    else:
+        LOGGER.warning("Can only auto-setup language if 'text_to_speech' is set in profile.json")
+
+
+def _setup_espeak_language(language, rhasspy_config):
+    if "text_to_speech" in rhasspy_config:
+        rhasspy_config["text_to_speech"]["system"] = "espeak"
+        if "espeak" in rhasspy_config["text_to_speech"]:
+            rhasspy_config["text_to_speech"]["espeak"]["voice"] = language
+
+        else:
+            rhasspy_config["text_to_speech"].update({"espeak": {"voice": language}})
+    else:
+        LOGGER.warning("Can only auto-setup language if 'text_to_speech' is set in profile.json")
