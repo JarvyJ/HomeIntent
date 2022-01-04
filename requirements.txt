@@ -1,5 +1,5 @@
 # for home intent [core]
-requests==2.26.0
+requests==2.27.0
 paho-mqtt==1.6.1
 pydantic==1.8.2
 PyYAML==6.0
