@@ -24,6 +24,7 @@ class BaseTimer:
 
     def _set_timer(
         self,
+        satellite_id,
         timer_done_message: str,
         hours: int = None,
         minutes: int = None,
@@ -32,7 +33,9 @@ class BaseTimer:
         text_conversion_function=humanize.precisedelta,
     ):
         timer_duration = timedelta(
-            hours=int(hours or 0), minutes=int(minutes or 0), seconds=int(seconds or 0),
+            hours=int(hours or 0),
+            minutes=int(minutes or 0),
+            seconds=int(seconds or 0),
         )
         if timer_duration == timedelta(0):
             raise TimerException("Timer has to be set for more than 0 seconds")
@@ -44,14 +47,14 @@ class BaseTimer:
         timer = ThreadingTimer(
             timer_duration.total_seconds(),
             self.complete_timer,
-            (human_timer_duration, timer_done_message),
+            (human_timer_duration, timer_done_message, satellite_id),
         )
         timer.start()
         return human_timer_duration
 
-    def complete_timer(self, human_timer_duration: str, timer_done_message: str):
+    def complete_timer(self, human_timer_duration: str, timer_done_message: str, satellite_id: str):
         self.home_intent.play_audio_file("timer/alarm.wav")
-        self.home_intent.say(timer_done_message.format(human_timer_duration))
+        self.home_intent.say(timer_done_message.format(human_timer_duration), satellite_id)
 
 
 def get_partial_time_duration(partial_time, hours=None, minutes=None, seconds=None):

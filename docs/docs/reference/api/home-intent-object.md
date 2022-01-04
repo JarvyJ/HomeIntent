@@ -42,8 +42,26 @@ In the example above, Home Intent will check for the file in `/config/home_assis
 ### Conventions
 When loading a file related to a component, it's best to put it in a folder that references the component's name. In the example above, files will be loaded from the `home_assistant` folder in `/config` or Home Intent's `default_configs` folder.
 
-## `home_intent.say(str)`
-Have Home Intent say something to the user. This method will likely be modified a bit when satellite support is enabled so a sentence is said at the right location.
+## `home_intent.say(str, satellite_id)`
+Have Home Intent say something to the user. This method takes in a `satellite_id` so it is said at the correct location. To get the satellite id where an intent is spoken, a decorator can be added to the intent function above the `sentences` decorator and the `satellite_id` will get passed into the function on execution:
+
+```python hl_lines="1 10"
+    @intents.satellite_id
+    @intents.sentences(
+        [
+            "time = 0..128",
+            "set timer [(<time>){hours} hours] [(<time>){minutes} minutes] [(<time>){seconds} seconds]",
+        ]
+    )
+    def set_timer(
+        self,
+        satellite_id,
+        hours: int = None,
+        minutes: int = None,
+        seconds: int = None,
+        timer_partial_time=None,
+    ):
+```
 
 ## `home_intent.play_audio_file(filename, language_dependent=False)`
 This will load a `.wav` file from the filename using the [`get_file`](./home-intent-object.md#home_intentget_filefilename-language_dependenttrue) and play it back using Home Intent. It can also take in the `language_dependent` flag (but defaults to `False`) to load audio files specific to a language if needed.

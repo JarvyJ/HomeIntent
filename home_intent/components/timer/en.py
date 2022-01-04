@@ -10,6 +10,7 @@ class Timer(BaseTimer):
             "and [a] third": "third",
         }
 
+    @intents.satellite_id
     @intents.sentences(
         [
             "time = 0..128",
@@ -24,9 +25,14 @@ class Timer(BaseTimer):
         ]
     )
     def set_timer(
-        self, hours: int = None, minutes: int = None, seconds: int = None, timer_partial_time=None
+        self,
+        satellite_id,
+        hours: int = None,
+        minutes: int = None,
+        seconds: int = None,
+        timer_partial_time=None,
     ):
         human_timer_duration = self._set_timer(
-            "Your timer {0} has ended", hours, minutes, seconds, timer_partial_time
+            satellite_id, "Your timer {0} has ended", hours, minutes, seconds, timer_partial_time
         )
         return f"Setting timer {human_timer_duration}"

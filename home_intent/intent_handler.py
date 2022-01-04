@@ -1,5 +1,7 @@
 import json
 import logging
+from typing import Dict
+from home_intent.intents import Sentence
 
 import paho.mqtt.client as mqtt
 
@@ -13,7 +15,7 @@ class IntentHandler:
     def __init__(self, mqtt_client, settings, intent_function, startup_messenger):
         self.mqtt_client = mqtt_client
         self.settings = settings
-        self.intent_function = intent_function
+        self.intent_function: Dict[str, Sentence] = intent_function
         self.startup_messenger = startup_messenger
 
     def setup_mqtt_and_loop(self):
@@ -46,7 +48,11 @@ class IntentHandler:
         LOGGER.info(f"Handling intent: {intent_name}")
         LOGGER.debug(slots)
         try:
-            response = self.intent_function[intent_name](**slots)
+            if self.intent_function[intent_name].needs_satellite_id:
+                slots["satellite_id"] = payload["siteId"]
+
+            response = self.intent_function[intent_name].func(**slots)
+
         except Exception as exception:  # pylint: disable=broad-except
             LOGGER.exception(exception)
             _error(client, payload["siteId"], payload["sessionId"], exception, payload["input"])
