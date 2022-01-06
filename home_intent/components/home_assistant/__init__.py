@@ -1,4 +1,6 @@
+import json
 from typing import Dict, List, Optional, Set
+from pathlib import Path
 
 from pydantic import AnyHttpUrl, BaseModel, Field
 
@@ -53,7 +55,7 @@ class HomeAssistantSettings(BaseModel):
 
 
 class HomeAssistantComponent:
-    def __init__(self, config: HomeAssistantSettings):
+    def __init__(self, config: HomeAssistantSettings, language: str):
         self.api = HomeAssistantAPI(config.url, config.bearer_token)
         self.services = self.api.get("/api/services")
         all_entities = self.api.get("/api/states")
@@ -63,11 +65,20 @@ class HomeAssistantComponent:
         print(self.domains)
         self.prefer_toggle = config.prefer_toggle
 
+        api_translation_file = Path(__file__).parent / f"./api_translations/{language}.json"
+        if api_translation_file.is_file():
+            self.api_translation = json.load(api_translation_file.open())
+        else:
+            # the empty dict will cause exceptions to be thrown to here.
+            self.api_translation = {}
+
 
 def setup(home_intent):
     # only needed if there are additional settings!
     config = home_intent.get_config(HomeAssistantSettings)
-    home_assistant_component = HomeAssistantComponent(config)
+    home_assistant_component = HomeAssistantComponent(
+        config, home_intent.settings.home_intent.language
+    )
 
     if "climate" in home_assistant_component.domains and "climate" not in config.ignore_domains:
         climate = home_intent.import_module(f"{__name__}.climate")
