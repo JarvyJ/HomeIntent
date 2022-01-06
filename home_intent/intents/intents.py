@@ -3,7 +3,13 @@ import logging
 from typing import Callable, Dict, List
 
 from .customization_mixin import IntentCustomizationMixin, SlotCustomization
-from .util import IntentException, Sentence, _check_if_args_in_sentence_slots, _sanitize_slot
+from .util import (
+    IntentException,
+    Sentence,
+    _check_if_args_in_sentence_slots,
+    _sanitize_slot,
+    _get_required_args,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -45,10 +51,7 @@ class Intents(IntentCustomizationMixin):
         def wrapper(*arg, **kwargs):
             slot_dictionary = func(*arg, **kwargs)
 
-            slot_list = [
-                f"{_sanitize_slot(x)}:{slot_dictionary[x]}"
-                for x in slot_dictionary
-            ]
+            slot_list = [f"{_sanitize_slot(x)}:{slot_dictionary[x]}" for x in slot_dictionary]
             return slot_list
 
         self.all_slots[func.__name__] = wrapper
@@ -94,6 +97,27 @@ class Intents(IntentCustomizationMixin):
         self.all_sentences[func.__name__].disabled = True
         self.all_sentences[func.__name__].beta = True
         self.all_sentences[func.__name__].disabled_reason = "BETA"
+
+        def inner(func):
+            @wraps(func)
+            def wrapper(*arg, **kwargs):
+                return func(*arg, **kwargs)
+
+            return wrapper
+
+        return inner
+
+    def satellite_id(self, func):
+        if func.__name__ not in self.all_sentences:
+            raise IntentException("Put the satellite_id decorator above the sentences decorator")
+
+        required_args = _get_required_args(func)
+        if "satellite_id" not in required_args:
+            raise IntentException(
+                f"satellite_id should be added into the {func.__name__} argument list"
+            )
+
+        self.all_sentences[func.__name__].needs_satellite_id = True
 
         def inner(func):
             @wraps(func)

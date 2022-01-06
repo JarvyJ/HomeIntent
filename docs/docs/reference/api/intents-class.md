@@ -88,6 +88,8 @@ In the example `shopping_item` is expected to be passed in to the `add_item_to_s
 
 and we're still figuring out how sentences that return state information should work, as very few of these are currently implemented.
 
+## `@intents.satellite_id`
+This decorator will pass in the `satellite_id` of the area that the sentence is spoken. This is useful if you need to [`say`](./home-intent-object.md#home_intentsaystr-satellite_id) something to the user at a later time.
 
 ## `@intents.on_event("register_sentences")`
 This method registers a callback method that will be executed after the slot methods have been executed. It can come in handy for disabling an intent if there are no slots to execute on, which can help the overall experience as a sentence that can't do anything shouldn't be registered in Rhasspy. To aid in disabling intents, there are two helper methods `intents.disable_intent` and `intents.disable_all`.

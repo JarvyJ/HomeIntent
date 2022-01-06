@@ -3,7 +3,7 @@ import json
 import logging
 import os
 from pathlib import PosixPath
-from typing import NamedTuple
+from typing import NamedTuple, Dict
 from importlib import import_module
 
 import paho.mqtt.client as mqtt
@@ -49,7 +49,7 @@ class StartupMessenger:
 class HomeIntent:
     def __init__(self, settings):
         self.registered_intents = []
-        self.intent_function = {}
+        self.intent_function: Dict[str, Sentence] = {}
         self.settings = settings
         self.language = settings.home_intent.language
         self.rhasspy_api = RhasspyAPI(settings.rhasspy.url)
@@ -122,9 +122,9 @@ class HomeIntent:
             LOGGER.debug(sentence_name)
             LOGGER.debug(sentence)
             if self._enable_sentence(sentence):
-                self.intent_function[f"{intents.name}.{sentence_name}"] = partial(
-                    sentence.func, class_instance
-                )
+                # I may regret just updating func later...we shall see.
+                sentence.func = partial(sentence.func, class_instance)
+                self.intent_function[f"{intents.name}.{sentence_name}"] = sentence
 
         LOGGER.info("Sentences look good!")
         # while I am using a partial here, I keep track of the instantiated class instance for the
@@ -138,8 +138,8 @@ class HomeIntent:
             module = import_module(f"{module_name}.en")
         return module
 
-    def say(self, text):
-        notification = {"text": text, "siteId": "default"}
+    def say(self, text: str, satellite_id: str):
+        notification = {"text": text, "siteId": satellite_id}
         self.mqtt_client.publish("hermes/tts/say", json.dumps(notification))
 
     def play_audio_file(self, filename: str, language_dependent: bool = False, site_id="default"):

@@ -20,6 +20,7 @@ class Sentence:
     disabled: bool = False
     disabled_reason: str = ""
     beta: bool = False
+    needs_satellite_id: bool = False
 
 
 def _sanitize_slot(slot_name: str):
@@ -48,19 +49,11 @@ def _get_tags_from_sentences(sentences: List[str]):
 def _check_if_args_in_sentence_slots(sentences, func):
     sentence_slots = _get_slots_from_sentences(sentences)
     sentence_tags = _get_tags_from_sentences(sentences)
-
-    argument_spec = inspect.getfullargspec(func)
-
-    # first arg is 'self', the last args are optionals with defaults set
-    required_args = (
-        argument_spec.args[1 : -len(argument_spec.defaults)]
-        if argument_spec.defaults
-        else argument_spec.args[1:]
-    )
+    required_args = _get_required_args(func)
 
     # check if arg in sentence slot
     for arg in required_args:
-        valid_argument = arg in sentence_slots or arg in sentence_tags
+        valid_argument = arg in sentence_slots or arg in sentence_tags or arg == "satellite_id"
         if not valid_argument:
             if arg not in sentence_slots:
                 raise IntentException(
@@ -77,3 +70,15 @@ def _check_if_args_in_sentence_slots(sentences, func):
                 )
 
     return sentence_slots
+
+
+def _get_required_args(func):
+    argument_spec = inspect.signature(func)
+
+    required_args = [
+        name
+        for name, param in argument_spec.parameters.items()
+        if param.default == inspect._empty and name != "self"
+    ]
+
+    return required_args
