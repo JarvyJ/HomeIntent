@@ -38,6 +38,7 @@ From there, you can go to the UI on port `11102` and finish setting up and get g
 
   * [Home Assistant](https://homeintent.io/integrations/home-assistant/)
     * Climate, cover, fan, group, humidifier, light, lock, remote, shopping list, and switch are all supported!
+    * Customizable script control!
   * [Timer](https://homeintent.io/integrations/timer/)
 
 We have some ideas around more integrations, if you have any suggestions, feel free to throw it in the [GitHub Discussions](https://github.com/JarvyJ/HomeIntent/discussions).
