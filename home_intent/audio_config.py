@@ -79,7 +79,6 @@ class AudioConfig:
 def _disable_audio_at_base_station(rhasspy_config):
     del rhasspy_config["microphone"]
     del rhasspy_config["sounds"]
-    # rhasspy_config["sounds"] = {"aplay": {"device": "null"}, "system": "aplay"}
 
 
 def _log_out_audio_config(microphone_devices, sounds_devices):
