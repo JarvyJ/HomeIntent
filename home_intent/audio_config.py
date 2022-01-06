@@ -2,6 +2,8 @@ import json
 import logging
 from typing import Set
 
+from home_intent.rhasspy_api import RhasspyAPI, RhasspyError
+
 LOGGER = logging.getLogger(__name__)
 
 ISO639_1_TO_IETF_BCP_47 = {
@@ -19,27 +21,41 @@ class AudioConfigException(Exception):
 
 class AudioConfig:
     def __init__(self, rhasspy_api, settings, get_file):
-        self.rhasspy_api = rhasspy_api
+        self.rhasspy_api: RhasspyAPI = rhasspy_api
         self.settings = settings
         self.get_file = get_file
 
     def add_audio_settings_to_config(self, rhasspy_config):
-        microphone_devices = self.rhasspy_api.get("/api/microphones")
-        sounds_devices = self.rhasspy_api.get("/api/speakers")
+        if self.settings.rhasspy.disable_audio_at_base_station is False:
+            try:
+                microphone_devices = self.rhasspy_api.get("/api/microphones")
+                sounds_devices = self.rhasspy_api.get("/api/speakers")
+            except RhasspyError as exception:
+                # we assume that we're on a base station with a microphone
+                # if it fails to load, we'll simply disable audio and continue on.
+                if "AudioServerException: Microphone disabled." in str(exception):
+                    self.settings.rhasspy.disable_audio_at_base_station = True
+                else:
+                    raise
 
-        config_microphone_device = self.settings.rhasspy.microphone_device
-        config_sounds_device = self.settings.rhasspy.sounds_device
+        if self.settings.rhasspy.disable_audio_at_base_station:
+            _disable_audio_at_base_station(rhasspy_config)
 
-        _log_out_audio_config(microphone_devices, sounds_devices)
-        _setup_microphone_device(config_microphone_device, microphone_devices, rhasspy_config)
-        _setup_sounds_device(config_sounds_device, sounds_devices, rhasspy_config)
+        else:
+            config_microphone_device = self.settings.rhasspy.microphone_device
+            config_sounds_device = self.settings.rhasspy.sounds_device
+
+            _log_out_audio_config(microphone_devices, sounds_devices)
+            _setup_microphone_device(config_microphone_device, microphone_devices, rhasspy_config)
+            _setup_sounds_device(config_sounds_device, sounds_devices, rhasspy_config)
+
+            if self.settings.home_intent.beeps:
+                self.setup_beeps(rhasspy_config)
+
         if self.settings.home_intent.language in ISO639_1_TO_IETF_BCP_47:
             _setup_nanotts_language(self.settings.home_intent.language, rhasspy_config)
         else:
             _setup_espeak_language(self.settings.home_intent.language, rhasspy_config)
-
-        if self.settings.home_intent.beeps:
-            self.setup_beeps(rhasspy_config)
 
         if self.settings.rhasspy.satellite_ids:
             _setup_satellite_ids(self.settings.rhasspy.satellite_ids, rhasspy_config)
@@ -55,6 +71,12 @@ class AudioConfig:
                 "wake": str(beep_high.resolve()),
             }
             rhasspy_config["sounds"].update(beep_config)
+
+
+def _disable_audio_at_base_station(rhasspy_config):
+    del rhasspy_config["microphone"]
+    del rhasspy_config["sounds"]
+    # rhasspy_config["sounds"] = {"aplay": {"device": "null"}, "system": "aplay"}
 
 
 def _log_out_audio_config(microphone_devices, sounds_devices):
