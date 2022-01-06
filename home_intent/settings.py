@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Set
 
 from pydantic import AnyHttpUrl, BaseModel, BaseSettings, Field
 import yaml
@@ -44,6 +44,7 @@ class RhasspySettings(BaseModel):
     microphone_device: Optional[str] = None
     sounds_device: Optional[str] = None
     externally_managed: bool = False
+    satellite_ids: Optional[Set[str]] = None
 
 
 def get_env_language() -> str:

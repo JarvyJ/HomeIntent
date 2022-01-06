@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import Set
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,8 +37,12 @@ class AudioConfig:
             _setup_nanotts_language(self.settings.home_intent.language, rhasspy_config)
         else:
             _setup_espeak_language(self.settings.home_intent.language, rhasspy_config)
+
         if self.settings.home_intent.beeps:
             self.setup_beeps(rhasspy_config)
+
+        if self.settings.rhasspy.satellite_ids:
+            _setup_satellite_ids(self.settings.rhasspy.satellite_ids, rhasspy_config)
 
     def setup_beeps(self, rhasspy_config):
         beep_high = self.get_file("beep-high.wav", language_dependent=False)
@@ -137,3 +142,15 @@ def _setup_espeak_language(language, rhasspy_config):
             rhasspy_config["text_to_speech"].update({"espeak": {"voice": language}})
     else:
         LOGGER.warning("Can only auto-setup language if 'text_to_speech' is set in profile.json")
+
+
+def _setup_satellite_ids(satellite_ids: Set[str], rhasspy_config):
+    satellite_ids_string = ",".join(satellite_ids)
+    if "dialogue" in rhasspy_config:
+        rhasspy_config["dialogue"]["satellite_site_ids"] = satellite_ids_string
+    if "intent" in rhasspy_config:
+        rhasspy_config["intent"]["satellite_site_ids"] = satellite_ids_string
+    if "speech_to_text" in rhasspy_config:
+        rhasspy_config["speech_to_text"]["satellite_site_ids"] = satellite_ids_string
+    if "text_to_speech" in rhasspy_config:
+        rhasspy_config["text_to_speech"]["satellite_site_ids"] = satellite_ids_string
