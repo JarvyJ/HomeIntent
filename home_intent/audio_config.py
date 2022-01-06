@@ -34,6 +34,9 @@ class AudioConfig:
                 # we assume that we're on a base station with a microphone
                 # if it fails to load, we'll simply disable audio and continue on.
                 if "AudioServerException: Microphone disabled." in str(exception):
+                    LOGGER.warning(
+                        "No microphone device connected. Continuing as base station with audio disabled."
+                    )
                     self.settings.rhasspy.disable_audio_at_base_station = True
                 else:
                     raise
