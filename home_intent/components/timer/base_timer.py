@@ -53,7 +53,7 @@ class BaseTimer:
         return human_timer_duration
 
     def complete_timer(self, human_timer_duration: str, timer_done_message: str, satellite_id: str):
-        self.home_intent.play_audio_file("timer/alarm.wav")
+        self.home_intent.play_audio_file("timer/alarm.wav", satellite_id)
         self.home_intent.say(timer_done_message.format(human_timer_duration), satellite_id)
 
 

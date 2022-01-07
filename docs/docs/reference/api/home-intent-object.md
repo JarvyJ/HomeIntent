@@ -63,5 +63,5 @@ Have Home Intent say something to the user. This method takes in a `satellite_id
     ):
 ```
 
-## `home_intent.play_audio_file(filename, language_dependent=False)`
-This will load a `.wav` file from the filename using the [`get_file`](./home-intent-object.md#home_intentget_filefilename-language_dependenttrue) and play it back using Home Intent. It can also take in the `language_dependent` flag (but defaults to `False`) to load audio files specific to a language if needed.
+## `home_intent.play_audio_file(filename, satellite_id, language_dependent=False)`
+This will load a `.wav` file from the filename using the [`get_file`](./home-intent-object.md#home_intentget_filefilename-language_dependenttrue) and play it back using Home Intent. It can take in the `language_dependent` flag (but defaults to `False`) to load audio files specific to a language if needed. It can also playback at a specified `satellite_id`. See the `home_intent.say()` method above on how to get the `satellite_id`.
