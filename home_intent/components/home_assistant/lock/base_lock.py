@@ -30,16 +30,16 @@ class BaseLock:
         return slots
 
     def _lock_the_lock(self, lock):
-        self.ha.api.call_service("lock", "lock", {"entity_id": lock})
-        response = self.ha.api.get_entity(lock)
+        response = self.ha.api.call_service("lock", "lock", {"entity_id": lock})
+        response = self.ha.api.get_entity(lock, response)
         return response
 
     def _unlock_the_lock(self, lock):
-        self.ha.api.call_service("lock", "unlock", {"entity_id": lock})
-        response = self.ha.api.get_entity(lock)
+        response = self.ha.api.call_service("lock", "unlock", {"entity_id": lock})
+        response = self.ha.api.get_entity(lock, response)
         return response
 
     def _open_the_lock(self, lock_open_entity):
-        self.ha.api.call_service("lock", "open", {"entity_id": lock_open_entity})
-        response = self.ha.api.get_entity(lock_open_entity)
+        response = self.ha.api.call_service("lock", "open", {"entity_id": lock_open_entity})
+        response = self.ha.api.get_entity(lock_open_entity, response)
         return response

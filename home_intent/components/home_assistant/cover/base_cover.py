@@ -94,59 +94,69 @@ class BaseCover:
 
     def _open_cover(self, cover_open):
         if SupportedFeatures.SUPPORT_OPEN in self.cover_features[cover_open]:
-            self.ha.api.call_service("cover", "open_cover", {"entity_id": cover_open})
+            response = self.ha.api.call_service("cover", "open_cover", {"entity_id": cover_open})
         elif SupportedFeatures.SUPPORT_OPEN_TILT in self.cover_features[cover_open]:
-            self.ha.api.call_service("cover", "open_cover_tilt", {"entity_id": cover_open})
-        response = self.ha.api.get_entity(cover_open)
+            response = self.ha.api.call_service(
+                "cover", "open_cover_tilt", {"entity_id": cover_open}
+            )
+        response = self.ha.api.get_entity(cover_open, response)
         return response
 
     def _close_cover(self, cover_close):
         if SupportedFeatures.SUPPORT_CLOSE in self.cover_features[cover_close]:
-            self.ha.api.call_service("cover", "close_cover", {"entity_id": cover_close})
+            response = self.ha.api.call_service("cover", "close_cover", {"entity_id": cover_close})
         elif SupportedFeatures.SUPPORT_CLOSE_TILT in self.cover_features[cover_close]:
-            self.ha.api.call_service("cover", "close_cover_tilt", {"entity_id": cover_close})
-        response = self.ha.api.get_entity(cover_close)
+            response = self.ha.api.call_service(
+                "cover", "close_cover_tilt", {"entity_id": cover_close}
+            )
+        response = self.ha.api.get_entity(cover_close, response)
         return response
 
     def _stop_cover(self, cover_stop):
         if SupportedFeatures.SUPPORT_STOP in self.cover_features[cover_stop]:
-            self.ha.api.call_service("cover", "stop_cover", {"entity_id": cover_stop})
+            response = self.ha.api.call_service("cover", "stop_cover", {"entity_id": cover_stop})
         if SupportedFeatures.SUPPORT_STOP_TILT in self.cover_features[cover_stop]:
-            self.ha.api.call_service("cover", "stop_cover_tilt", {"entity_id": cover_stop})
-        response = self.ha.api.get_entity(cover_stop)
+            response = self.ha.api.call_service(
+                "cover", "stop_cover_tilt", {"entity_id": cover_stop}
+            )
+        response = self.ha.api.get_entity(cover_stop, response)
         return response
 
     def _open_cover_tilt(self, cover_open_tilt):
-        self.ha.api.call_service("cover", "open_cover_tilt", {"entity_id": cover_open_tilt})
-        response = self.ha.api.get_entity(cover_open_tilt)
+        response = self.ha.api.call_service(
+            "cover", "open_cover_tilt", {"entity_id": cover_open_tilt}
+        )
+        response = self.ha.api.get_entity(cover_open_tilt, response)
         return response
 
     def _close_cover_tilt(self, cover_close_tilt):
-        self.ha.api.call_service("cover", "close_cover_tilt", {"entity_id": cover_close_tilt})
-        response = self.ha.api.get_entity(cover_close_tilt)
+        response = self.ha.api.call_service(
+            "cover", "close_cover_tilt", {"entity_id": cover_close_tilt}
+        )
+        response = self.ha.api.get_entity(cover_close_tilt, response)
         return response
 
     def _set_cover_position(self, cover_set_position, cover_positions):
         if SupportedFeatures.SUPPORT_SET_POSITION:
-            self.ha.api.call_service(
+            response = self.ha.api.call_service(
                 "cover",
                 "set_cover_position",
                 {"entity_id": cover_set_position, "position": cover_positions},
             )
         elif SupportedFeatures.SUPPORT_SET_TILT_POSITION:
-            self.ha.api.call_service(
+            response = self.ha.api.call_service(
                 "cover",
                 "set_cover_tilt_position",
                 {"entity_id": cover_set_position, "position": cover_positions},
             )
-        response = self.ha.api.get_entity(cover_set_position)
+        response = self.ha.api.get_entity(cover_set_position, response)
         return response
 
     def _set_cover_tilt_position(self, cover_set_tilt_position, cover_positions):
-        self.ha.api.call_service(
+        response = self.ha.api.call_service(
             "cover",
             "set_cover_tilt_position",
             {"entity_id": cover_set_tilt_position, "tilt_position": cover_positions},
         )
-        response = self.ha.api.get_entity(cover_set_tilt_position)
+        response = self.ha.api.get_entity(cover_set_tilt_position, response)
         return response

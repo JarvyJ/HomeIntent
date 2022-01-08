@@ -32,30 +32,34 @@ class BaseHumidifier:
         return humidifier_modes
 
     def _toggle_humidifier(self, humidifier):
-        self.ha.api.call_service("humidifier", "toggle", {"entity_id": humidifier})
-        response = self.ha.api.get_entity(humidifier)
+        response = self.ha.api.call_service("humidifier", "toggle", {"entity_id": humidifier})
+        response = self.ha.api.get_entity(humidifier, response)
         return response
 
     def _turn_off(self, humidifier):
-        self.ha.api.call_service("humidifier", "turn_off", {"entity_id": humidifier})
-        response = self.ha.api.get_entity(humidifier)
+        response = self.ha.api.call_service("humidifier", "turn_off", {"entity_id": humidifier})
+        response = self.ha.api.get_entity(humidifier, response)
         return response
 
     def _turn_on(self, humidifier):
-        self.ha.api.call_service("humidifier", "turn_on", {"entity_id": humidifier})
-        response = self.ha.api.get_entity(humidifier)
+        response = self.ha.api.call_service("humidifier", "turn_on", {"entity_id": humidifier})
+        response = self.ha.api.get_entity(humidifier, response)
         return response
 
     def _change_humidity(self, humidifier, humidity):
-        self.ha.api.call_service(
-            "humidifier", "set_humidity", {"entity_id": humidifier, "humidity": humidity},
+        response = self.ha.api.call_service(
+            "humidifier",
+            "set_humidity",
+            {"entity_id": humidifier, "humidity": humidity},
         )
-        response = self.ha.api.get_entity(humidifier)
+        response = self.ha.api.get_entity(humidifier, response)
         return response
 
     def _set_mode(self, humidifier, humidifier_mode):
-        self.ha.api.call_service(
-            "humidifier", "set_mode", {"entity_id": humidifier, "mode": humidifier_mode},
+        response = self.ha.api.call_service(
+            "humidifier",
+            "set_mode",
+            {"entity_id": humidifier, "mode": humidifier_mode},
         )
-        response = self.ha.api.get_entity(humidifier)
+        response = self.ha.api.get_entity(humidifier, response)
         return response

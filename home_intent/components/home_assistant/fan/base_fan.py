@@ -75,55 +75,65 @@ class BaseFan:
         return slots
 
     def _toggle_fan(self, fan):
-        self.ha.api.call_service("fan", "toggle", {"entity_id": fan})
-        response = self.ha.api.get_entity(fan)
+        response = self.ha.api.call_service("fan", "toggle", {"entity_id": fan})
+        response = self.ha.api.get_entity(fan, response)
         return response
 
     def _turn_off(self, fan):
-        self.ha.api.call_service("fan", "turn_off", {"entity_id": fan})
-        response = self.ha.api.get_entity(fan)
+        response = self.ha.api.call_service("fan", "turn_off", {"entity_id": fan})
+        response = self.ha.api.get_entity(fan, response)
         return response
 
     def _turn_on(self, fan):
-        self.ha.api.call_service("fan", "turn_on", {"entity_id": fan})
-        response = self.ha.api.get_entity(fan)
+        response = self.ha.api.call_service("fan", "turn_on", {"entity_id": fan})
+        response = self.ha.api.get_entity(fan, response)
         return response
 
     def _oscillate_fan(self, oscillating_fan):
         response = self.ha.api.get_entity(oscillating_fan)
         oscillation_change = not response["attributes"]["oscillating"]
-        self.ha.api.call_service(
-            "fan", "oscillate", {"entity_id": oscillating_fan, "oscillating": oscillation_change,},
+        response = self.ha.api.call_service(
+            "fan",
+            "oscillate",
+            {
+                "entity_id": oscillating_fan,
+                "oscillating": oscillation_change,
+            },
         )
-        response = self.ha.api.get_entity(oscillating_fan)
+        response = self.ha.api.get_entity(oscillating_fan, response)
         return response
 
     def _set_preset(self, preset_fan, preset_mode):
-        self.ha.api.call_service(
+        response = self.ha.api.call_service(
             "fan", "set_preset_mode", {"entity_id": preset_fan, "preset_mode": preset_mode}
         )
-        response = self.ha.api.get_entity(preset_fan)
-        return f"Setting the {response['attributes']['friendly_name']} to {preset_mode}"
+        response = self.ha.api.get_entity(preset_fan, response)
+        return response
 
     def _reverse_airflow(self, directional_fan):
         response = self.ha.api.get_entity(directional_fan)
         forward_or_reverse = (
             "reverse" if response["attributes"]["direction"] == "reverse" else "forward"
         )
-        self.ha.api.call_service(
+        response = self.ha.api.call_service(
             "fan",
             "set_direction",
-            {"entity_id": directional_fan, "direction": forward_or_reverse,},
+            {
+                "entity_id": directional_fan,
+                "direction": forward_or_reverse,
+            },
         )
-        response = self.ha.api.get_entity(directional_fan)
+        response = self.ha.api.get_entity(directional_fan, response)
         return response
 
     def _set_fan_speed(self, speed_fan, fan_speed):
-        self.ha.api.call_service(
-            "fan", "set_speed", {"entity_id": speed_fan, "speed": fan_speed},
+        response = self.ha.api.call_service(
+            "fan",
+            "set_speed",
+            {"entity_id": speed_fan, "speed": fan_speed},
         )
-        response = self.ha.api.get_entity(speed_fan)
-        return f"Setting the {response['attributes']['friendly_name']} to {fan_speed}"
+        response = self.ha.api.get_entity(speed_fan, response)
+        return response
 
     def _increase_fan_speed(self, speed_fan, fan_speed_list):
         response = self.ha.api.get_entity(speed_fan)
@@ -138,10 +148,12 @@ class BaseFan:
         else:
             new_fan_speed = fan_speed_list[current_fan_speed_index + 1]
 
-        self.ha.api.call_service(
-            "fan", "set_speed", {"entity_id": speed_fan, "speed": new_fan_speed},
+        response = self.ha.api.call_service(
+            "fan",
+            "set_speed",
+            {"entity_id": speed_fan, "speed": new_fan_speed},
         )
-        response = self.ha.api.get_entity(speed_fan)
+        response = self.ha.api.get_entity(speed_fan, response)
         return response, new_fan_speed
 
     def _decrease_fan_speed(self, speed_fan, fan_speed_list):
@@ -154,8 +166,10 @@ class BaseFan:
         else:
             new_fan_speed = fan_speed_list[current_fan_speed_index - 1]
 
-        self.ha.api.call_service(
-            "fan", "set_speed", {"entity_id": speed_fan, "speed": new_fan_speed},
+        response = self.ha.api.call_service(
+            "fan",
+            "set_speed",
+            {"entity_id": speed_fan, "speed": new_fan_speed},
         )
-        response = self.ha.api.get_entity(speed_fan)
+        response = self.ha.api.get_entity(speed_fan, response)
         return response, new_fan_speed

@@ -1,3 +1,7 @@
+import json
+from pathlib import Path
+from time import sleep
+
 import requests
 from requests import Session
 from requests.adapters import HTTPAdapter
@@ -9,7 +13,7 @@ class HomeAssistantAPIException(Exception):
 
 
 class HomeAssistantAPI:
-    def __init__(self, url, bearer_token):
+    def __init__(self, url, bearer_token, language):
         self.session = Session()
         self.session.headers.update(
             {
@@ -23,6 +27,20 @@ class HomeAssistantAPI:
         self.session.mount("http://", HTTPAdapter(max_retries=retries))
         self.session.mount("https://", HTTPAdapter(max_retries=retries))
 
+        # Setup the language stuff, the HA API returns state in English, so we need to translate it on our end
+        # to make life a bit easier
+        self.language = language
+        api_translation_file = Path(__file__).parent / f"./api_translations/{language}.json"
+        if language != "en":
+            if api_translation_file.is_file():
+                self.translation = json.load(api_translation_file.open())
+            else:
+                raise HomeAssistantAPIException(
+                    f"API Translation file for language '{language}' doesn't exist. "
+                    f"You will need to create one in components/home_assistant/api_translations/{language}.json"
+                )
+
+        # Make a test call to see if everything works
         try:
             self.get("/api/")
         except requests.exceptions.ConnectionError:
@@ -43,7 +61,27 @@ class HomeAssistantAPI:
         response.raise_for_status()
         return response.json()
 
-    def get_entity(self, entity):
+    def get_entity(self, entity, service_response=None):
+        entity = self._get_entity(entity, service_response)
+
+        if self.language != "en":
+            if "state" in entity:
+                entity["state"] = self.translation[entity["state"]]
+
+        return entity
+
+    def _get_entity(self, entity, service_response=None):
+        if isinstance(service_response, list):
+            # call_service in HA returns a list of entities.
+            # There's a bug where sometimes it returns an empty list
+            # you have to wait ~1s to actually get the new state
+            if service_response:
+                try:
+                    return _extract_from_list(service_response, entity)
+                except EntityIdNotFoundInList:
+                    pass
+            print("sleeping")
+            sleep(1)
         return self.get(f"/api/states/{entity}")
 
     def post(self, url, body):
@@ -53,3 +91,16 @@ class HomeAssistantAPI:
 
     def call_service(self, domain, service, body):
         return self.post(f"/api/services/{domain}/{service}", body)
+
+
+class EntityIdNotFoundInList(LookupError):
+    pass
+
+
+def _extract_from_list(service_response, entity_id):
+    for entity in service_response:
+        if entity["entity_id"] == entity_id:
+            print("extracted from list!")
+            return entity
+
+    raise EntityIdNotFoundInList()

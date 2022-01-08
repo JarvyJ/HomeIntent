@@ -14,16 +14,16 @@ class BaseRemote:
         return slots
 
     def _toggle_remote(self, remote):
-        self.ha.api.call_service("remote", "toggle", {"entity_id": remote})
-        response = self.ha.api.get_entity(remote)
+        response = self.ha.api.call_service("remote", "toggle", {"entity_id": remote})
+        response = self.ha.api.get_entity(remote, response)
         return response
 
     def _turn_off(self, remote):
-        self.ha.api.call_service("remote", "turn_off", {"entity_id": remote})
-        response = self.ha.api.get_entity(remote)
+        response = self.ha.api.call_service("remote", "turn_off", {"entity_id": remote})
+        response = self.ha.api.get_entity(remote, response)
         return response
 
     def _turn_on(self, remote):
-        self.ha.api.call_service("remote", "turn_on", {"entity_id": remote})
-        response = self.ha.api.get_entity(remote)
+        response = self.ha.api.call_service("remote", "turn_on", {"entity_id": remote})
+        response = self.ha.api.get_entity(remote, response)
         return response

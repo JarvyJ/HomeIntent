@@ -18,16 +18,16 @@ class BaseSwitch:
         return slots
 
     def _toggle_switch(self, switch):
-        self.ha.api.call_service("switch", "toggle", {"entity_id": switch})
-        response = self.ha.api.get_entity(switch)
+        response = self.ha.api.call_service("switch", "toggle", {"entity_id": switch})
+        response = self.ha.api.get_entity(switch, response)
         return response
 
     def _turn_off(self, switch):
-        self.ha.api.call_service("switch", "turn_off", {"entity_id": switch})
-        response = self.ha.api.get_entity(switch)
+        response = self.ha.api.call_service("switch", "turn_off", {"entity_id": switch})
+        response = self.ha.api.get_entity(switch, response)
         return response
 
     def _turn_on(self, switch):
-        self.ha.api.call_service("switch", "turn_on", {"entity_id": switch})
-        response = self.ha.api.get_entity(switch)
+        response = self.ha.api.call_service("switch", "turn_on", {"entity_id": switch})
+        response = self.ha.api.get_entity(switch, response)
         return response

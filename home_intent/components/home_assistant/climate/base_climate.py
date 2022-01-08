@@ -106,20 +106,20 @@ class BaseClimate:
             return self._turn_off(climate)
 
     def _turn_off(self, climate):
-        self.ha.api.call_service("climate", "turn_off", {"entity_id": climate})
-        response = self.ha.api.get_entity(climate)
+        response = self.ha.api.call_service("climate", "turn_off", {"entity_id": climate})
+        response = self.ha.api.get_entity(climate, response)
         return response
 
     def _turn_on(self, climate):
-        self.ha.api.call_service("climate", "turn_on", {"entity_id": climate})
-        response = self.ha.api.get_entity(climate)
+        response = self.ha.api.call_service("climate", "turn_on", {"entity_id": climate})
+        response = self.ha.api.get_entity(climate, response)
         return response
 
     def _set_hvac_mode(self, climate, climate_hvac_mode):
-        self.ha.api.call_service(
+        response = self.ha.api.call_service(
             "climate", "set_hvac_mode", {"entity_id": climate, "hvac_mode": climate_hvac_mode}
         )
-        response = self.ha.api.get_entity(climate)
+        response = self.ha.api.get_entity(climate, response)
         return response
 
     def _set_target_temperature(self, climate_target_temperature_entity, temperature: float):
@@ -127,12 +127,12 @@ class BaseClimate:
             SupportedFeatures.SUPPORT_TARGET_TEMPERATURE
             in self.climate_device_features[climate_target_temperature_entity]
         ):
-            self.ha.api.call_service(
+            response = self.ha.api.call_service(
                 "climate",
                 "set_temperature",
                 {"entity_id": climate_target_temperature_entity, "temperature": temperature},
             )
-        response = self.ha.api.get_entity(climate_target_temperature_entity)
+        response = self.ha.api.get_entity(climate_target_temperature_entity, response)
         return response
 
     def _set_target_temperature_high(
@@ -143,7 +143,7 @@ class BaseClimate:
             in self.climate_device_features[climate_target_temperature_range_entity]
         ):
             response = self.ha.api.get_entity(climate_target_temperature_range_entity)
-            self.ha.api.call_service(
+            response = self.ha.api.call_service(
                 "climate",
                 "set_temperature",
                 {
@@ -152,7 +152,7 @@ class BaseClimate:
                     "target_temp_high": temperature,
                 },
             )
-        response = self.ha.api.get_entity(climate_target_temperature_range_entity)
+        response = self.ha.api.get_entity(climate_target_temperature_range_entity, response)
         return response
 
     def _set_target_temperature_low(
@@ -163,7 +163,7 @@ class BaseClimate:
             in self.climate_device_features[climate_target_temperature_range_entity]
         ):
             response = self.ha.api.get_entity(climate_target_temperature_range_entity)
-            self.ha.api.call_service(
+            response = self.ha.api.call_service(
                 "climate",
                 "set_temperature",
                 {
@@ -172,7 +172,7 @@ class BaseClimate:
                     "target_temp_high": response["attributes"]["target_temp_high"],
                 },
             )
-        response = self.ha.api.get_entity(climate_target_temperature_range_entity)
+        response = self.ha.api.get_entity(climate_target_temperature_range_entity, response)
         return response
 
     def _set_humidity(self, climate_target_humidity_entity, humidity: int):
@@ -180,12 +180,12 @@ class BaseClimate:
             SupportedFeatures.SUPPORT_TARGET_HUMIDITY
             in self.climate_device_features[climate_target_humidity_entity]
         ):
-            self.ha.api.call_service(
+            response = self.ha.api.call_service(
                 "climate",
                 "set_humidity",
                 {"entity_id": climate_target_humidity_entity, "humidity": humidity},
             )
-        response = self.ha.api.get_entity(climate_target_humidity_entity)
+        response = self.ha.api.get_entity(climate_target_humidity_entity, response)
         return response
 
     def _set_preset_mode(self, climate_preset_mode_entity, climate_preset_mode):
@@ -193,12 +193,12 @@ class BaseClimate:
             SupportedFeatures.SUPPORT_PRESET_MODE
             in self.climate_device_features[climate_preset_mode_entity]
         ):
-            self.ha.api.call_service(
+            response = self.ha.api.call_service(
                 "climate",
                 "set_preset_mode",
                 {"entity_id": climate_preset_mode_entity, "preset_mode": climate_preset_mode},
             )
-        response = self.ha.api.get_entity(climate_preset_mode_entity)
+        response = self.ha.api.get_entity(climate_preset_mode_entity, response)
         return response
 
     def _toggle_aux_heat(self, climate_aux_heat_entity):
@@ -209,15 +209,15 @@ class BaseClimate:
             return self._turn_off(climate_aux_heat_entity)
 
     def _turn_aux_off(self, climate_aux_heat_entity):
-        self.ha.api.call_service(
+        response = self.ha.api.call_service(
             "climate", "set_aux_heat", {"entity_id": climate_aux_heat_entity, "aux_heat": False}
         )
-        response = self.ha.api.get_entity(climate_aux_heat_entity)
+        response = self.ha.api.get_entity(climate_aux_heat_entity, response)
         return response
 
     def _turn_aux_on(self, climate_aux_heat_entity):
-        self.ha.api.call_service(
+        response = self.ha.api.call_service(
             "climate", "set_aux_heat", {"entity_id": climate_aux_heat_entity, "aux_heat": True}
         )
-        response = self.ha.api.get_entity(climate_aux_heat_entity)
+        response = self.ha.api.get_entity(climate_aux_heat_entity, response)
         return response

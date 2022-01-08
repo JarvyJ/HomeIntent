@@ -53,60 +53,60 @@ class BaseLight:
         return color_temperatures
 
     def _toggle_light(self, light):
-        self.ha.api.call_service("light", "toggle", {"entity_id": light})
-        response = self.ha.api.get_entity(light)
+        response = self.ha.api.call_service("light", "toggle", {"entity_id": light})
+        response = self.ha.api.get_entity(light, response)
         return response
 
     def _turn_on(self, light):
-        self.ha.api.call_service("light", "turn_on", {"entity_id": light})
-        response = self.ha.api.get_entity(light)
+        response = self.ha.api.call_service("light", "turn_on", {"entity_id": light})
+        response = self.ha.api.get_entity(light, response)
         return response
 
     def _turn_off(self, light):
-        self.ha.api.call_service("light", "turn_off", {"entity_id": light})
-        response = self.ha.api.get_entity(light)
+        response = self.ha.api.call_service("light", "turn_off", {"entity_id": light})
+        response = self.ha.api.get_entity(light, response)
         return response
 
     def _change_color(self, light, color):
-        self.ha.api.call_service(
+        response = self.ha.api.call_service(
             "light", "turn_on", {"entity_id": light, "rgb_color": color_to_hex(color)}
         )
-        response = self.ha.api.get_entity(light)
+        response = self.ha.api.get_entity(light, response)
         color_name = self.color_value_to_name[color]
         return response, color_name
 
     def _change_color_brightness(self, light, color, brightness):
-        self.ha.api.call_service(
+        response = self.ha.api.call_service(
             "light",
             "turn_on",
             {"entity_id": light, "rgb_color": color_to_hex(color), "brightness_pct": brightness},
         )
-        response = self.ha.api.get_entity(light)
+        response = self.ha.api.get_entity(light, response)
         color_name = self.color_value_to_name[color]
         return response, color_name
 
     def _change_brightness(self, light, brightness):
-        self.ha.api.call_service(
+        response = self.ha.api.call_service(
             "light", "turn_on", {"entity_id": light, "brightness_pct": brightness}
         )
-        response = self.ha.api.get_entity(light)
+        response = self.ha.api.get_entity(light, response)
         return response
 
     def _change_color_temperature(self, light, color_temperature):
-        self.ha.api.call_service(
+        response = self.ha.api.call_service(
             "light", "turn_on", {"entity_id": light, "kelvin": color_temperature}
         )
-        response = self.ha.api.get_entity(light)
+        response = self.ha.api.get_entity(light, response)
         color_name = self.color_temp_to_name[int(color_temperature)]
         return response, color_name
 
     def _change_color_temperature_brightness(self, light, color_temperature, brightness):
-        self.ha.api.call_service(
+        response = self.ha.api.call_service(
             "light",
             "turn_on",
             {"entity_id": light, "kelvin": color_temperature, "brightness_pct": brightness},
         )
-        response = self.ha.api.get_entity(light)
+        response = self.ha.api.get_entity(light, response)
         color_name = self.color_temp_to_name[int(color_temperature)]
         return response, color_name
 
