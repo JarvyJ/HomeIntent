@@ -45,6 +45,7 @@ class RhasspySettings(BaseModel):
     sounds_device: Optional[str] = None
     externally_managed: bool = False
     satellite_ids: Optional[Set[str]] = None
+    disable_audio_at_base_station = False
 
 
 def get_env_language() -> str:
