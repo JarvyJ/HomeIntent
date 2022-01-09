@@ -27,19 +27,8 @@ class AudioConfig:
 
     def add_audio_settings_to_config(self, rhasspy_config):
         if self.settings.rhasspy.disable_audio_at_base_station is False:
-            try:
-                microphone_devices = self.rhasspy_api.get("/api/microphones")
-                sounds_devices = self.rhasspy_api.get("/api/speakers")
-            except RhasspyError as exception:
-                # we assume that we're on a base station with a microphone
-                # if it fails to load, we'll simply disable audio and continue on.
-                if "AudioServerException: Microphone disabled." in str(exception):
-                    LOGGER.warning(
-                        "No microphone device connected. Continuing as base station with audio disabled."
-                    )
-                    self.settings.rhasspy.disable_audio_at_base_station = True
-                else:
-                    raise
+            microphone_devices = self.rhasspy_api.get("/api/microphones")
+            sounds_devices = self.rhasspy_api.get("/api/speakers")
 
         if self.settings.rhasspy.disable_audio_at_base_station:
             _disable_audio_at_base_station(rhasspy_config)
