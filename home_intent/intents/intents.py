@@ -119,14 +119,11 @@ class Intents(IntentCustomizationMixin):
 
         self.all_sentences[func.__name__].needs_satellite_id = True
 
-        def inner(func):
-            @wraps(func)
-            def wrapper(*arg, **kwargs):
-                return func(*arg, **kwargs)
+        @wraps(func)
+        def wrapper(*arg, **kwargs):
+            return func(*arg, **kwargs)
 
-            return wrapper
-
-        return inner
+        return wrapper
 
     def default_disable(self, reason: str):
         def inner(func):
