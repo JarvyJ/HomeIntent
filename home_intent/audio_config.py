@@ -26,14 +26,13 @@ class AudioConfig:
         self.get_file = get_file
 
     def add_audio_settings_to_config(self, rhasspy_config):
-        if self.settings.rhasspy.disable_audio_at_base_station is False:
-            microphone_devices = self.rhasspy_api.get("/api/microphones")
-            sounds_devices = self.rhasspy_api.get("/api/speakers")
-
         if self.settings.rhasspy.disable_audio_at_base_station:
             _disable_audio_at_base_station(rhasspy_config)
 
         else:
+            microphone_devices = self.rhasspy_api.get("/api/microphones")
+            sounds_devices = self.rhasspy_api.get("/api/speakers")
+
             config_microphone_device = self.settings.rhasspy.microphone_device
             config_sounds_device = self.settings.rhasspy.sounds_device
 
