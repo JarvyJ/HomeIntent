@@ -195,7 +195,7 @@ class HomeIntent:
     def _initialize_rhasspy(self):
         self.startup_messenger.update("Setting up Rhasspy...")
         if self.settings.rhasspy.externally_managed:
-            LOGGER.info("Externally Managed Setting enabled - skipping rhasspy profile processing")
+            LOGGER.info("Externally Managed Setting enabled - skipping Rhasspy profile processing")
             return
         LOGGER.info("Checking profile")
         rhasspy_profile = self._load_rhasspy_profile_file()
