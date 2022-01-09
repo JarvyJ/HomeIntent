@@ -53,8 +53,8 @@ class HomeAssistantSettings(BaseModel):
 
 
 class HomeAssistantComponent:
-    def __init__(self, config: HomeAssistantSettings):
-        self.api = HomeAssistantAPI(config.url, config.bearer_token)
+    def __init__(self, config: HomeAssistantSettings, language: str):
+        self.api = HomeAssistantAPI(config.url, config.bearer_token, language)
         self.services = self.api.get("/api/services")
         all_entities = self.api.get("/api/states")
         self.entities = [x for x in all_entities if x["entity_id"] not in config.ignore_entities]
@@ -67,7 +67,9 @@ class HomeAssistantComponent:
 def setup(home_intent):
     # only needed if there are additional settings!
     config = home_intent.get_config(HomeAssistantSettings)
-    home_assistant_component = HomeAssistantComponent(config)
+    home_assistant_component = HomeAssistantComponent(
+        config, home_intent.settings.home_intent.language
+    )
 
     if "climate" in home_assistant_component.domains and "climate" not in config.ignore_domains:
         climate = home_intent.import_module(f"{__name__}.climate")

@@ -18,16 +18,16 @@ class BaseGroup:
         return slots
 
     def _toggle_group(self, group):
-        self.ha.api.call_service("homeassistant", "toggle", {"entity_id": group})
-        response = self.ha.api.get_entity(group)
+        response = self.ha.api.call_service("homeassistant", "toggle", {"entity_id": group})
+        response = self.ha.api.get_entity(group, response)
         return response
 
     def _turn_on_group(self, group):
-        self.ha.api.call_service("homeassistant", "turn_on", {"entity_id": group})
-        response = self.ha.api.get_entity(group)
+        response = self.ha.api.call_service("homeassistant", "turn_on", {"entity_id": group})
+        response = self.ha.api.get_entity(group, response)
         return response
 
     def _turn_off_group(self, group):
-        self.ha.api.call_service("homeassistant", "turn_off", {"entity_id": group})
-        response = self.ha.api.get_entity(group)
+        response = self.ha.api.call_service("homeassistant", "turn_off", {"entity_id": group})
+        response = self.ha.api.get_entity(group, response)
         return response
