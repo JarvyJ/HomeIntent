@@ -26,25 +26,13 @@ class AudioConfig:
         self.get_file = get_file
 
     def add_audio_settings_to_config(self, rhasspy_config):
-        if self.settings.rhasspy.disable_audio_at_base_station is False:
-            try:
-                microphone_devices = self.rhasspy_api.get("/api/microphones")
-                sounds_devices = self.rhasspy_api.get("/api/speakers")
-            except RhasspyError as exception:
-                # we assume that we're on a base station with a microphone
-                # if it fails to load, we'll simply disable audio and continue on.
-                if "AudioServerException: Microphone disabled." in str(exception):
-                    LOGGER.warning(
-                        "No microphone device connected. Continuing as base station with audio disabled."
-                    )
-                    self.settings.rhasspy.disable_audio_at_base_station = True
-                else:
-                    raise
-
         if self.settings.rhasspy.disable_audio_at_base_station:
             _disable_audio_at_base_station(rhasspy_config)
 
         else:
+            microphone_devices = self.rhasspy_api.get("/api/microphones")
+            sounds_devices = self.rhasspy_api.get("/api/speakers")
+
             config_microphone_device = self.settings.rhasspy.microphone_device
             config_sounds_device = self.settings.rhasspy.sounds_device
 
@@ -52,8 +40,8 @@ class AudioConfig:
             _setup_microphone_device(config_microphone_device, microphone_devices, rhasspy_config)
             _setup_sounds_device(config_sounds_device, sounds_devices, rhasspy_config)
 
-            if self.settings.home_intent.beeps:
-                self.setup_beeps(rhasspy_config)
+        if self.settings.home_intent.beeps:
+            self.setup_beeps(rhasspy_config)
 
         if self.settings.home_intent.language in ISO639_1_TO_IETF_BCP_47:
             _setup_nanotts_language(self.settings.home_intent.language, rhasspy_config)
@@ -67,13 +55,15 @@ class AudioConfig:
         beep_high = self.get_file("beep-high.wav", language_dependent=False)
         beep_low = self.get_file("beep-low.wav", language_dependent=False)
         error = self.get_file("error.wav", language_dependent=False)
+        beep_config = {
+            "error": str(error.resolve()),
+            "recorded": str(beep_low.resolve()),
+            "wake": str(beep_high.resolve()),
+        }
         if "sounds" in rhasspy_config:
-            beep_config = {
-                "error": str(error.resolve()),
-                "recorded": str(beep_low.resolve()),
-                "wake": str(beep_high.resolve()),
-            }
             rhasspy_config["sounds"].update(beep_config)
+        else:
+            rhasspy_config["sounds"] = beep_config
 
 
 def _disable_audio_at_base_station(rhasspy_config):
