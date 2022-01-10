@@ -80,7 +80,6 @@ class HomeAssistantAPI:
                     return _extract_from_list(service_response, entity)
                 except EntityIdNotFoundInList:
                     pass
-            print("sleeping")
             sleep(1)
         return self.get(f"/api/states/{entity}")
 
@@ -100,7 +99,6 @@ class EntityIdNotFoundInList(LookupError):
 def _extract_from_list(service_response, entity_id):
     for entity in service_response:
         if entity["entity_id"] == entity_id:
-            print("extracted from list!")
             return entity
 
     raise EntityIdNotFoundInList()

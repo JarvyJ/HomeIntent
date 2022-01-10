@@ -114,7 +114,16 @@ class IntentCustomizationMixin:
                     alias_function = getattr(class_instance, intent).__func__
                 setattr(class_instance, funcname, alias_function)
                 sentence_slots = _get_slots_from_sentences(sentences)
-                self.all_sentences[funcname] = Sentence(sentences, alias_function, sentence_slots)
+                orignal_sentence = self.all_sentences[intent]
+                self.all_sentences[funcname] = Sentence(
+                    sentences,
+                    alias_function,
+                    sentence_slots,
+                    disabled=orignal_sentence.disabled,
+                    disabled_reason=orignal_sentence.disabled_reason,
+                    beta=orignal_sentence.beta,
+                    needs_satellite_id=orignal_sentence.needs_satellite_id,
+                )
 
     def _enable_intent(self, sentence_func: Union[Callable, str]):
         if isinstance(sentence_func, str):

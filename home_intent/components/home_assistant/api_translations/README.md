@@ -2,4 +2,4 @@ The Home Assistant API returns certain attributes/states in english, that a user
 
 This includes things like "on" and "off" as well as "high", "medium", and "low".
 
-The json file will get auto-loaded based on language and is available in the `home_assistant` component (usually `self.ha` in all the domains)
+The json file will get auto-loaded based on language and is used in the HA API code to handle the translation.
