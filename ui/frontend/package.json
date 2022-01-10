@@ -15,7 +15,7 @@
     "@sveltejs/kit": "^1.0.0-next.213",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
-    "autoprefixer": "^10.4.1",
+    "autoprefixer": "^10.4.2",
     "cssnano": "^5.0.14",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.1.0",
