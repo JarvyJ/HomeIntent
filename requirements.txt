@@ -3,7 +3,7 @@ requests==2.27.1
 paho-mqtt==1.6.1
 pydantic==1.9.0
 PyYAML==6.0
-humanize==3.13.1 ## needed for the timer
+humanize==4.0.0 ## needed for the timer
 
 # for the ui
 uvicorn[standard]==0.16.0
