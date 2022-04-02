@@ -1,6 +1,6 @@
 # Satellites
 
-Home Intent now has basic satellite support (releases as of 4/2022)! It's a bit more of a manual setup at the moment, so experience with Rhasspy is recommended.
+Home Intent now has basic satellite support (released as of 4/2022)! It's a bit more of a manual setup at the moment, so experience with Rhasspy is recommended.
 
 
 ## Setting up the Satellite
