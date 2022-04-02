@@ -17,7 +17,7 @@ Regardless, Home Intent relies on a lot of different underlying software to keep
 ## What else is planned?
 We're also excited about "stop" words, so the user can say "cancel" or "nevermind" and Home Intent will just stop trying to execute on an intent. This will definitely come in a future version. **1/2022 Update:** We tried this out and with default settings, it slowed down intent recognition to below acceptable levels. We'll try it again in the future and spend some time tweaking it to see what happens!
 
-Apart from intent handling, we want to create a UI to make it easier to set up and get going like helping to choose microphone/speakers, edit settings, and maybe even support some of the wilder custmization options. **1/2022 Update:** the UI can now set mic/speakers and edit component settings!
+Apart from intent handling, we want to create a UI to make it easier to set up and get going like helping to choose microphone/speakers, edit settings, and maybe even support some of the wilder customization options. **1/2022 Update:** the UI can now set mic/speakers and edit component settings!
 
 Eventually we'll have Satellite support and make Home Intent installable as a hass.io addon. This will allow a lot of folks to easily get up and running and create a whole home voice automation solution.
 
