@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Set
+from typing import Set, Dict, Any
 
 from home_intent.rhasspy_api import RhasspyAPI, RhasspyError
 
@@ -50,6 +50,71 @@ class AudioConfig:
 
         if self.settings.rhasspy.satellite_ids:
             _setup_satellite_ids(self.settings.rhasspy.satellite_ids, rhasspy_config)
+
+    def setup_audio(self):
+        installed_profile = self.rhasspy_api.get("/api/profile?layers=profile")
+        config_file_path = self.get_file(
+            "rhasspy_profile.json", arch_dependent=True, language_dependent=False
+        )
+        hi_rhasspy_config = json.loads(config_file_path.read_text())
+        rhasspy_config = self.generate_config(installed_profile, hi_rhasspy_config)
+
+    def generate_config(self, installed_profile: Dict[str, Any], hi_rhasspy_config):
+        rhasspy_config = {}
+        if "dialogue" in installed_profile and "system" in installed_profile["dialogue"]:
+            rhasspy_config["dialogue"] = installed_profile["dialogue"]
+        else:
+            rhasspy_config["dialogue"] = hi_rhasspy_config["dialogue"]
+
+        if "intent" in installed_profile and "system" in installed_profile["intent"]:
+            rhasspy_config["intent"] = installed_profile["intent"]
+        else:
+            rhasspy_config["intent"] = hi_rhasspy_config["intent"]
+
+        if "microphone" in installed_profile and "system" in installed_profile["microphone"]:
+            rhasspy_config["microphone"] = installed_profile["microphone"]
+        else:
+            rhasspy_config["microphone"] = hi_rhasspy_config["microphone"]
+
+        if "sounds" in installed_profile and "system" in installed_profile["sounds"]:
+            rhasspy_config["sounds"] = installed_profile["sounds"]
+        else:
+            rhasspy_config["sounds"] = hi_rhasspy_config["sounds"]
+
+        if (
+            "speech_to_text" in installed_profile
+            and "system" in installed_profile["speech_to_text"]
+        ):
+            rhasspy_config["speech_to_text"] = installed_profile["speech_to_text"]
+        else:
+            rhasspy_config["speech_to_text"] = hi_rhasspy_config["speech_to_text"]
+
+        if (
+            "text_to_speech" in installed_profile
+            and "system" in installed_profile["text_to_speech"]
+        ):
+            rhasspy_config["text_to_speech"] = installed_profile["text_to_speech"]
+        else:
+            rhasspy_config["text_to_speech"] = hi_rhasspy_config["text_to_speech"]
+            if self.settings.home_intent.language in ISO639_1_TO_IETF_BCP_47:
+                _setup_nanotts_language(self.settings.home_intent.language, rhasspy_config)
+            else:
+                _setup_espeak_language(self.settings.home_intent.language, rhasspy_config)
+
+        if "wake" in installed_profile and "system" in installed_profile["wake"]:
+            rhasspy_config["wake"] = installed_profile["wake"]
+        else:
+            rhasspy_config["wake"] = hi_rhasspy_config["wake"]
+
+        self.setup_beeps(rhasspy_config)
+
+        if self.settings.rhasspy.disable_audio_at_base_station:
+            _disable_audio_at_base_station(rhasspy_config)
+
+        if self.settings.rhasspy.satellite_ids:
+            _setup_satellite_ids(self.settings.rhasspy.satellite_ids, rhasspy_config)
+
+        return rhasspy_config
 
     def setup_beeps(self, rhasspy_config):
         beep_high = self.get_file("beep-high.wav", language_dependent=False)

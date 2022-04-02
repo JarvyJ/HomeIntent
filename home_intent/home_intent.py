@@ -198,20 +198,24 @@ class HomeIntent:
             LOGGER.info("Externally Managed Setting enabled - skipping Rhasspy profile processing")
             return
         LOGGER.info("Checking profile")
-        rhasspy_profile = self._load_rhasspy_profile_file()
-        installed_profile = self.rhasspy_api.get("/api/profile?layers=profile")
-        if rhasspy_profile != installed_profile:
-            LOGGER.info("Installing profile")
-            self.rhasspy_api.post("/api/profile", rhasspy_profile)
+        self.audio_config.setup_audio()
+        # installed_profile = self.rhasspy_api.get("/api/profile?layers=profile")
+        # rhasspy_profile = self._load_rhasspy_profile_file()
+        # installed_profile = self.rhasspy_api.get("/api/profile?layers=profile")
+        # if rhasspy_profile != installed_profile:
+        #     LOGGER.info("Installing profile")
+        #     self.rhasspy_api.post("/api/profile", rhasspy_profile)
 
-            LOGGER.info("Restarting Rhasspy...")
-            self.rhasspy_api.post("/api/restart")
-        else:
-            LOGGER.info("Rhasspy profile matches Home Intent profile, moving on!")
+        #     LOGGER.info("Restarting Rhasspy...")
+        #     self.rhasspy_api.post("/api/restart")
+        # else:
+        #     LOGGER.info("Rhasspy profile matches Home Intent profile, moving on!")
 
         profile_meta = self.rhasspy_api.get("/api/profiles")
         if not profile_meta["downloaded"]:
-            LOGGER.info("Downloading profile (can take 30s+ first time)...")
+            LOGGER.info(
+                f"Downloading profile ({profile_meta['missing_size']}) - can take 30s+ first time..."
+            )
             self.rhasspy_api.post("/api/download-profile")
         else:
             LOGGER.info("Profile is up to date, nothing to download")
