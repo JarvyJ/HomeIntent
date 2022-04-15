@@ -72,3 +72,5 @@ def get_partial_time_duration(partial_time, hours=None, minutes=None, seconds=No
         return timedelta(**{partial_of: 0.25})
     elif partial_time == "third":
         return timedelta(**{partial_of: 1 / 3})
+    elif partial_time == "threequarters":
+        return timedelta(**{partial_of: 3 / 4})
