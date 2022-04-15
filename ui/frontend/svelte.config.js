@@ -14,10 +14,9 @@ const config = {
   kit: {
     adapter: adapter(),
     prerender: {
-      crawl: true,
-      entries: ["/settings", "/"], //enough to trigger a full crawl!
-      onError: "continue",
+      default: true
     },
+    trailingSlash: 'always',
     vite: {
       server: {
         proxy: {
