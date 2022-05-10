@@ -13,8 +13,8 @@ class Cover(BaseCover):
         response = self._open_cover(cover_open_entity)
         return f"Öffne {response['attributes']['friendly_name']}"
 
-    @intents.sentences(["Schließe (das | den | die) ($cover_open_entity)",
-                        "Mache (das | den | die) ($cover_open_entity) zu"])
+    @intents.sentences(["Schließe (das | den | die) ($cover_close_entity)",
+                        "Mache (das | den | die) ($cover_close_entity) zu"])
     def close_cover(self, cover_close_entity):
         response = self._close_cover(cover_close_entity)
         return f"Schließe {response['attributes']['friendly_name']}"
