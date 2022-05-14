@@ -48,8 +48,14 @@ class AudioConfig:
         else:
             _setup_espeak_language(self.settings.home_intent.language, rhasspy_config)
 
+        satellite_ids = set()
         if self.settings.rhasspy.satellite_ids:
-            _setup_satellite_ids(self.settings.rhasspy.satellite_ids, rhasspy_config)
+            satellite_ids.update(self.settings.rhasspy.satellite_ids)
+        if self.settings.rhasspy.managed_satellites:
+            satellite_ids.update(self.settings.rhasspy.managed_satellites.keys())
+
+        if satellite_ids:
+            _setup_satellite_ids(satellite_ids, rhasspy_config)
 
     def setup_beeps(self, rhasspy_config):
         beep_high = self.get_file("beep-high.wav", language_dependent=False)

@@ -9,7 +9,12 @@ from importlib import import_module
 import paho.mqtt.client as mqtt
 import requests
 
-from home_intent.audio_config import AudioConfig
+from home_intent.audio_config import (
+    AudioConfig,
+    _setup_microphone_device,
+    _setup_sounds_device,
+    _log_out_audio_config,
+)
 from home_intent.intent_handler import IntentHandler
 from home_intent.intents import Intents, Sentence
 from home_intent.rhasspy_api import RhasspyAPI, RhasspyError
@@ -187,6 +192,7 @@ class HomeIntent:
     def initialize(self):
         update_homeintent(self)
         self._initialize_rhasspy()
+        self._setup_satellites()
         self._write_slots_to_rhasspy()
         self._write_sentences_to_rhasspy()
         self._train()
@@ -197,6 +203,7 @@ class HomeIntent:
         if self.settings.rhasspy.externally_managed:
             LOGGER.info("Externally Managed Setting enabled - skipping Rhasspy profile processing")
             return
+        log_section("Setting up the base Rhasspy instance")
         LOGGER.info("Checking profile")
         rhasspy_profile = self._load_rhasspy_profile_file()
         installed_profile = self.rhasspy_api.get("/api/profile?layers=profile")
@@ -216,11 +223,72 @@ class HomeIntent:
         else:
             LOGGER.info("Profile is up to date, nothing to download")
 
+    def _setup_satellites(self):
+        if not self.settings.rhasspy.managed_satellites:
+            return
+
+        LOGGER.info("Setting up managed satellites")
+
+        mqtt_host = self.settings.rhasspy.shared_satellite_config.mqtt_host
+        mqtt_port = self.settings.rhasspy.shared_satellite_config.mqtt_port
+        mqtt_username = self.settings.rhasspy.shared_satellite_config.mqtt_username
+        mqtt_password = self.settings.rhasspy.shared_satellite_config.mqtt_password
+
+        # TODO: this needs to be refactored a bit, getting a little long in the tooth.
+        # also, this may need to be executed via the API, so we'll see how that influences things
+        for satellite_id, satellite_info in self.settings.rhasspy.managed_satellites.items():
+            log_section(f"Setting up satellite config for {satellite_id}")
+            try:
+                rhasspy_api = RhasspyAPI(satellite_info.url, retry=False)
+            except RhasspyError:
+                LOGGER.warning(f"Couldn't connect to Rhasspy Satellite at {satellite_info.url}")
+                continue
+
+            microphone_devices = rhasspy_api.get("/api/microphones")
+            sounds_devices = rhasspy_api.get("/api/speakers")
+
+            _log_out_audio_config(microphone_devices, sounds_devices)
+
+            config_file_path = self.get_file("satellite_profile.json", language_dependent=False)
+            satellite_config = json.loads(config_file_path.read_text(encoding="utf-8"))
+            satellite_config["mqtt"]["site_id"] = satellite_id
+
+            satellite_config["mqtt"]["host"] = mqtt_host
+            satellite_config["mqtt"]["port"] = mqtt_port
+            if mqtt_username:
+                satellite_config["mqtt"]["username"] = mqtt_username
+            if mqtt_password:
+                satellite_config["mqtt"]["password"] = mqtt_password
+
+            _setup_sounds_device(satellite_info.sounds_device, sounds_devices, satellite_config)
+            _setup_microphone_device(
+                satellite_info.microphone_device, microphone_devices, satellite_config
+            )
+
+            installed_profile = rhasspy_api.get("/api/profile?layers=profile")
+            if satellite_config != installed_profile:
+                LOGGER.info("Installing profile")
+                rhasspy_api.post("/api/profile", satellite_config)
+
+                LOGGER.info("Restarting Rhasspy...")
+                self.rhasspy_api.post("/api/restart")
+            else:
+                LOGGER.info("Rhasspy profile matches Home Intent profile, moving on!")
+
+            profile_meta = self.rhasspy_api.get("/api/profiles")
+            if not profile_meta["downloaded"]:
+                LOGGER.info("Downloading profile (can take 30s+ first time)...")
+                self.rhasspy_api.post("/api/download-profile")
+            else:
+                LOGGER.info("Profile is up to date, nothing to download")
+
+            LOGGER.info(f"Satellite config complete for {satellite_id}...\n\n\n")
+
     def _load_rhasspy_profile_file(self):
         config_file_path = self.get_file(
             "rhasspy_profile.json", arch_dependent=True, language_dependent=False
         )
-        rhasspy_config = json.loads(config_file_path.read_text())
+        rhasspy_config = json.loads(config_file_path.read_text(encoding="utf-8"))
         try:
             self.audio_config.add_audio_settings_to_config(rhasspy_config)
         except RhasspyError:
@@ -237,6 +305,7 @@ class HomeIntent:
 
     def _write_slots_to_rhasspy(self):
         self.startup_messenger.update("Updating slots in Rhasspy...")
+        log_section("Updating slots in Rhasspy")
         for registered_intent in self.registered_intents:
             LOGGER.info(f"Getting slots for {registered_intent.intent.name}")
             for slot in registered_intent.intent.all_slots:
@@ -260,6 +329,7 @@ class HomeIntent:
 
     def _write_sentences_to_rhasspy(self):
         self.startup_messenger.update("Updating sentences in Rhasspy...")
+        log_section("Updating sentences to Rhasspy")
         # this will force clear out the defaults in sentences.ini
         sentences = []
         for registered_intent in self.registered_intents:
@@ -319,3 +389,7 @@ class HomeIntent:
             return True
 
         return False
+
+
+def log_section(title):
+    LOGGER.info(f"\n\n\n{'='*100}\n{title}\n{'='*100}\n\n")
