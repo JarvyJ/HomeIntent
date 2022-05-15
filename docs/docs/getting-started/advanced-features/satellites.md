@@ -28,8 +28,8 @@ Home Intent now has basic satellite support (released as of 4/2022)! It's a bit 
 
             living_room:
               url: "http://livingroom.example.com"
-              sounds_device: 'default:CARD=USB'
-              microphone_device: '0'
+              sounds_device: "default:CARD=USB"
+              microphone_device: "0"
         ```
 
         The `mqtt_host` in `shared_satellite_config` is simply the external host that is running Home Intent/MQTT. Since Home Intent runs in a Docker container, there isn't a reliable way to get this (also affected by a custom networking setup). Regardless, this should just be the IP address (or hostname) that you use to access the frontend. Make sure the MQTT port (12183) is open so satellites can access it. This is in the default configuration in [Getting Started](../installation.md).
@@ -48,8 +48,8 @@ Home Intent now has basic satellite support (released as of 4/2022)! It's a bit 
 
             living_room:
               url: "http://livingroom.example.com"
-              sounds_device: 'default:CARD=USB'
-              microphone_device: '0'
+              sounds_device: "default:CARD=USB"
+              microphone_device: "0"
         ```
 
         `kitchen` is just a reference to the satellite's id and can be whatever unique value you want, and the `ip_address` is the externally accessible IP address that can be connected to. This is used to auto-build the Rhasspy URL, for the `kitchen` it will be `http://192.168.1.157:12101`. If you have some custom networking in place, you can also provide the Rhasspy URL by setting the `url` value (as seen in the `living_room` example).
@@ -66,16 +66,16 @@ Home Intent now has basic satellite support (released as of 4/2022)! It's a bit 
             ====================================================================================================
 
 
-            2022-05-14 19:28:16,962 INFO home_intent.rhasspy_api Trying to connect to Rhasspy at http://192.168.1.157:12101
-            2022-05-14 19:28:17,463 INFO home_intent.audio_config 
+            5/15/2022, 11:03:38 AM INFO home_intent.rhasspy_api Trying to connect to Rhasspy at http://192.168.1.157:12101
+            5/15/2022, 11:03:38 AM INFO home_intent.audio_config 
             These are the attached microphones (The default has an asterisk):
             {
              "0": "Jabra SPEAK 510 USB: Audio (hw:1,0)*"
             }
 
-            To configure a microphone, set 'microphone_device' to the corresponding number above in the 'rhasspy' section in '/config/config.yaml'
+            To configure a microphone, set 'microphone_device' to the corresponding number above in the 'rhasspy'->'managed_satellites'->'kitchen' section in '/config/config.yaml'
 
-            2022-05-14 19:28:17,466 INFO home_intent.audio_config These are the attached sounds devices:
+            5/15/2022, 11:03:38 AM INFO home_intent.audio_config These are the attached sounds devices:
             {
              "default:CARD=USB": "Default Audio Device",
              "default:CARD=vc4hdmi": "Default Audio Device",
@@ -105,14 +105,15 @@ Home Intent now has basic satellite support (released as of 4/2022)! It's a bit 
              "usbstream:CARD=vc4hdmi": "USB Stream Output"
             }
 
-            To configure a sounds device, set 'sounds_device' to the corresponding key (ex: default:CARD=Headphones) above in the 'rhasspy' section in '/config/config.yaml'. You probably want one of the 'default' devices. The plughw ones can have a fun chipmunk effect!
+            To configure a sounds device, set 'sounds_device' to the corresponding key (ex: default:CARD=Headphones) above in the 'rhasspy'->'managed_satellites'->'kitchen' section in '/config/config.yaml'. You probably want one of the 'default' devices. The plughw ones can have a fun chipmunk effect!
 
-            2022-05-14 19:28:17,470 INFO home_intent.audio_config Using default:CARD=USB for aplay device
-            2022-05-14 19:28:17,473 INFO home_intent.audio_config Microphone not set, using default microphone
+            5/15/2022, 11:03:38 AM INFO home_intent.audio_config Using default:CARD=USB for aplay device
+            5/15/2022, 11:03:38 AM INFO home_intent.audio_config Microphone not set, using default microphone
 
-            2022-05-14 19:28:17,557 INFO home_intent.home_intent Rhasspy profile matches Home Intent profile, moving on!
-            2022-05-14 19:28:17,577 INFO home_intent.home_intent Profile is up to date, nothing to download
-            2022-05-14 19:28:17,578 INFO home_intent.home_intent Satellite config complete for kitchen...
+            5/15/2022, 11:03:38 AM INFO home_intent.home_intent Installing profile
+            5/15/2022, 11:03:38 AM INFO home_intent.home_intent Restarting Satellite...
+            5/15/2022, 11:03:39 AM INFO home_intent.home_intent Profile is up to date, nothing to download
+            5/15/2022, 11:03:39 AM INFO home_intent.home_intent Satellite config complete for kitchen
             ```
 
 

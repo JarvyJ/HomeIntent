@@ -57,6 +57,32 @@ class AudioConfig:
         if satellite_ids:
             _setup_satellite_ids(satellite_ids, rhasspy_config)
 
+    def add_audio_settings_to_satellite(
+        self, satellite_api, satellite_config, satellite_id, satellite_info
+    ):
+        mqtt_host = self.settings.rhasspy.shared_satellite_config.mqtt_host
+        mqtt_port = self.settings.rhasspy.shared_satellite_config.mqtt_port
+        mqtt_username = self.settings.rhasspy.shared_satellite_config.mqtt_username
+        mqtt_password = self.settings.rhasspy.shared_satellite_config.mqtt_password
+
+        microphone_devices = satellite_api.get("/api/microphones")
+        sounds_devices = satellite_api.get("/api/speakers")
+
+        _log_out_audio_config(microphone_devices, sounds_devices, satellite_id)
+
+        satellite_config["mqtt"]["site_id"] = satellite_id
+        satellite_config["mqtt"]["host"] = mqtt_host
+        satellite_config["mqtt"]["port"] = mqtt_port
+        if mqtt_username:
+            satellite_config["mqtt"]["username"] = mqtt_username
+        if mqtt_password:
+            satellite_config["mqtt"]["password"] = mqtt_password
+
+        _setup_sounds_device(satellite_info.sounds_device, sounds_devices, satellite_config)
+        _setup_microphone_device(
+            satellite_info.microphone_device, microphone_devices, satellite_config
+        )
+
     def setup_beeps(self, rhasspy_config):
         beep_high = self.get_file("beep-high.wav", language_dependent=False)
         beep_low = self.get_file("beep-low.wav", language_dependent=False)
@@ -77,13 +103,17 @@ def _disable_audio_at_base_station(rhasspy_config):
     del rhasspy_config["sounds"]
 
 
-def _log_out_audio_config(microphone_devices, sounds_devices):
+def _log_out_audio_config(microphone_devices, sounds_devices, satellite_id=None):
+    section = "'rhasspy' section"
+    if satellite_id:
+        section = f"'rhasspy'->'managed_satellites'->'{satellite_id}'"
+
     # Figure we should always show this so people can switch without unsetting first.
     LOGGER.info(
         "\nThese are the attached microphones (The default has an asterisk):\n"
         f"{json.dumps(microphone_devices, indent=True)}\n"
         "\nTo configure a microphone, set 'microphone_device' to the corresponding number "
-        "above in the 'rhasspy' section in '/config/config.yaml'\n"
+        f"above in the {section} section in '/config/config.yaml'\n"
     )
 
     # Same reason for displaying as above.
@@ -91,7 +121,7 @@ def _log_out_audio_config(microphone_devices, sounds_devices):
         "These are the attached sounds devices:\n"
         f"{json.dumps(sounds_devices, indent=True)}\n"
         "\nTo configure a sounds device, set 'sounds_device' to the corresponding "
-        "key (ex: default:CARD=Headphones) above in the 'rhasspy' section "
+        f"key (ex: default:CARD=Headphones) above in the {section} section "
         "in '/config/config.yaml'. You probably want one of the 'default' devices. "
         "The plughw ones can have a fun chipmunk effect!\n"
     )
