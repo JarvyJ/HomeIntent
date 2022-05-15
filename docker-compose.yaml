@@ -42,6 +42,8 @@ services:
       - "./home_intent:/usr/src/app/home_intent"
       - "./docs:/usr/src/app/docs"
       - "./development-env/config:/config"
+    environment:
+      - DOCKER_DEV=True
     ports:
       - "11102:11102"
     command: python3 ui/main.py

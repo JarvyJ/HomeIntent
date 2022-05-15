@@ -8,13 +8,16 @@ from fastapi import APIRouter, File, UploadFile
 from pydantic import BaseModel
 
 import aiofiles.os
+import os
 
 from config import get_settings
 from rhasspy_api import RhasspyAPI
 
 router = APIRouter()
-RhasspyApi = RhasspyAPI(get_settings().rhasspy.url)
-
+rhasspy_url = (
+    "http://rhasspy:12101" if os.environ.get("DOCKER_DEV") == "True" else get_settings().rhasspy.url
+)
+RhasspyApi = RhasspyAPI(rhasspy_url)
 
 # this doesn't actually work...
 # maybe i'll do a status page at some point.
