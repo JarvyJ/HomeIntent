@@ -81,6 +81,15 @@ def _error(client, site_id, session_id, custom_data, input_str):
 
 
 def _say(client, text, site_id, session_id):
+    text = _remove_duplicate_word_at_end(text)
     notification = {"text": text, "siteId": site_id, "sessionId": session_id}
     LOGGER.info(text)
     client.publish("hermes/dialogueManager/endSession", json.dumps(notification))
+
+
+def _remove_duplicate_word_at_end(text):
+    split = text.rsplit(maxsplit=2)
+    if len(split) == 3 and split[-1] == split[-2]:
+        return f"{split[0]} {split[1]}"
+    else:
+        return text
