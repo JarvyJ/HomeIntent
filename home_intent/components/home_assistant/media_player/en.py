@@ -27,7 +27,7 @@ class MediaPlayer(BaseMediaPlayer):
     def volume_up(self, media_player):
         response = self._volume_up(media_player)
 #        return f"Turning up the volume of {response['attributes']['friendly_name']}"
-        return f"Yes master nicolas"
+        return f"Turning up the volume of {response['attributes']['friendly_name']}"
     @intents.sentences(["mute the volume of ($media_player)"])
     def volume_mute(self, media_player):
         response = self._volume_mute(media_player)
