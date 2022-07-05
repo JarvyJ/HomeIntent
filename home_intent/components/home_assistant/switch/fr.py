@@ -2,6 +2,14 @@ from .base_switch import BaseSwitch, intents
 
 
 class Switch(BaseSwitch):
+    @intents.on_event("register_sentences")
+    def handle_prefer_toggle(self):
+        if self.ha.prefer_toggle:
+            intents.disable_intent(self.turn_on)
+            intents.disable_intent(self.turn_off)
+        else:
+            intents.disable_intent(self.toggle_switch)
+            
     @intents.sentences(["Basculer [le] ($switch)", "(activerr | désactiver) [le] ($switch)"])
     def toggle_switch(self, switch):
         response = self._toggle_switch(switch)
