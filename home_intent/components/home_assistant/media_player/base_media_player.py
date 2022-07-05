@@ -4,6 +4,7 @@ class BaseMediaPlayer:
     def __init__(self, home_assistant):
         self.ha = home_assistant
         self.entities = [x for x in self.ha.entities if x["entity_id"].startswith("media_player.")]
+####################### TO CHECK #########################
 #    @intents.slots
 #    def volume_level(self):
 #        volume_level_file = self.home_intent.get_file("home_assistant/volume_level.txt")
@@ -36,6 +37,7 @@ class BaseMediaPlayer:
         response = self.ha.api.call_service("media_player", "volume_mute", {"entity_id": media_player})
         response = self.ha.api.get_entity(media_player, response)
         return response
+ ########################## TO CHECK ################################
  #   def _volume_set(self, media_player):
  #       response = self.ha.api.call_service("media_player", "volume_set", {"volume_level": volume_level}, {"entity>
  #       response = self.ha.api.get_entity(media_player, response)
