@@ -4,11 +4,10 @@ class BaseMediaPlayer:
     def __init__(self, home_assistant):
         self.ha = home_assistant
         self.entities = [x for x in self.ha.entities if x["entity_id"].startswith("media_player.")]
-####################### TO CHECK #########################
-#    @intents.slots
-#    def volume_level(self):
-#        volume_level_file = self.home_intent.get_file("home_assistant/volume_level.txt")
-#        return volume_level_file.read_text().strip().split("\n")
+    @intents.slots
+    def volume_level(self):
+        volume_level_file = self.home_intent.get_file("home_assistant/volume_level.txt")
+        return volume_level_file.read_text().strip().split("\n")
     @intents.dictionary_slots
     def media_player(self):
         slots = {f"{x['attributes'].get('friendly_name')}": x["entity_id"] for x in self.entities}
