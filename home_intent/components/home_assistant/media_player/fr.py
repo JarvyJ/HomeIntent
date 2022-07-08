@@ -7,15 +7,15 @@ class MediaPlayer(BaseMediaPlayer):
     @intents.sentences(["basculer l'alimentation [de] ($media_player)", "turn (on | off) [the] ($media_player)"])
     def toggle_media_player(self, media_player):
         response = self._toggle_media_player(media_player)
-        return f"basculer l'alimentation de {response['attributes']['friendly_name']}"
+        return f"Bascule de {response['attributes']['friendly_name']} à {response['state']}"
     @intents.sentences(["éteindre [le] [la] ($media_player)"])
     def turn_off(self, media_player):
         response = self._turn_off(media_player)
-        return f"Éteindre le {response['attributes']['friendly_name']}"
+        return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
     @intents.sentences(["allumer [le] [la]($media_player)"])
     def turn_on(self, media_player):
         response = self._turn_on(media_player)
-        return f"Allumer {response['attributes']['friendly_name']}"
+        return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
     @intents.sentences(["baisser le volume [de] ($media_player)"])
     def volume_down(self, media_player):
         response = self._volume_down(media_player)
