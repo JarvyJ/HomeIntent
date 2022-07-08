@@ -1,5 +1,8 @@
 from .base_media_player import BaseMediaPlayer, intents
 class MediaPlayer(BaseMediaPlayer):
+    def volume_level(self):
+        slots = {"100": 1,00}, {"95": 0,95},  {"90": 0,90}, {"85": 0,85}, {"80": 0,80}, {"75": 0,75}, {"70": 0,70}, {"65": 0,65}, {"60": 0,60}, {"55": 0,55}, {"50": 0,50}, {"45": 0,45},  {"40": 0,40}, {"35": 0,35}, {"30": 0,30}, {"25": 0,25}, {"20": 0,20}, {"15": 0,15}, {"10": 0,10}, {"5": 0,05}, {"0": 0,00}
+        return slots
     @intents.on_event("register_sentences")
     def handle_prefer_toggle(self):
         if self.ha.prefer_toggle:
