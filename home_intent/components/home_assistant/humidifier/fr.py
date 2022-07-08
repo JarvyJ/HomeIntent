@@ -13,17 +13,17 @@ class Humidifier(BaseHumidifier):
     @intents.sentences(["Basculer l'état de ($humidifier)", "(allumer | éteindre) [le] ($humidifier)"])
     def toggle_humidifier(self, humidifier):
         response = self._toggle_humidifier(humidifier)
-        return f"Bascule de l'état de {response['attributes']['friendly_name']}"
+        return f"Bascule de l'état de {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(["éteindre [le] ($humidifier)"])
     def turn_off(self, humidifier):
         response = self._turn_off(humidifier)
-        return f"Extinction de {response['attributes']['friendly_name']}"
+        return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(["allumer [le] ($humidifier)"])
     def turn_on(self, humidifier):
         response = self._turn_on(humidifier)
-        return f"Allumage de {response['attributes']['friendly_name']}"
+        return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(
         ["(régler | changer | ajuster) [le] ($humidifier) à (0..100){humidity} [pourcent] [d'humidité]]"]
