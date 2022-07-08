@@ -5,9 +5,11 @@ class Timer(BaseTimer):
     @intents.dictionary_slots
     def timer_partial_time(self):
         return {
-            "un demi": "half",
-            "un quart": "quarter",
-            "un tiers": "third",
+            "demi": "half",
+            "quart": "quarter",
+            "tiers": "third",
+            "deuxtiers": "twothirds"
+            "troisquarts": "threequarters"   
         }
 
     @intents.satellite_id
