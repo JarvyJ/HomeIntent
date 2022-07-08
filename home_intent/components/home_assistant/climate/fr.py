@@ -13,17 +13,17 @@ class Climate(BaseClimate):
     @intents.sentences(["Basculer l'état de ($climate)", "(allumer | éteindre) [le] ($climate)"])
     def toggle_climate(self, climate):
         response = self._toggle_climate(climate)
-        return f"Bascule de l'état de {response['attributes']['friendly_name']}"
+        return f"Bascule de l'état de {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(["éteindre [le] ($climate)"])
     def turn_off(self, climate):
         response = self._turn_off(climate)
-        return f"éteindre le {response['attributes']['friendly_name']}"
+        return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(["Allumer [le] ($climate)"])
     def turn_on(self, climate):
         response = self._turn_on(climate)
-        return f"allumer le {response['attributes']['friendly_name']}"
+        return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(["(régler | changer | ajuster) le ($climate) à ($climate_hvac_mode)"])
     def set_hvac_mode(self, climate, climate_hvac_mode):
