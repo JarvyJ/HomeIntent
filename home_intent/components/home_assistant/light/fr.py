@@ -13,17 +13,17 @@ class Light(BaseLight):
     @intents.sentences(["Basculer [la | le] [lumière] [de | du] ($light)", " (allumer | éteindre) [la | le] [lumière] [de | du] ($light)"])
     def toggle_light(self, light):
         response = self._toggle_light(light)
-        return f"Bascule de la lumière {response['attributes']['friendly_name']}"
+        return f"Bascule de la lumière {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(["Allumer [la | le] lumière ($light)"])
     def turn_on(self, light):
         response = self._turn_on(light)
-        return f"Allumage de la lumière {response['attributes']['friendly_name']}"
+        return f"Réglage de la lumière {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(["éteindre [la | le] lumière ($light)"])
     def turn_off(self, light):
         response = self._turn_off(light)
-        return f"Extinction de la lumière {response['attributes']['friendly_name']}"
+        return f"Réglage de la lumière {response['attributes']['friendly_name']} à  {response['state']}"
 
     @intents.sentences(["(régler | changer | mettre) [la | le] [lumière] ($light) [à] ($light_color)"])
     def change_color(self, light, light_color):
