@@ -13,14 +13,14 @@ class Remote(BaseRemote):
     @intents.sentences(["Basculer [le | la] ($remote)", "(activer | désactiver) [le | la] ($remote)"])
     def toggle_remote(self, remote):
         response = self._toggle_remote(remote)
-        return f"Bascule de {response['attributes']['friendly_name']}"
+        return f"Bascule de {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(["Désactiver [le | la] ($remote)"])
     def turn_off(self, remote):
         response = self._turn_off(remote)
-        return f"Désactivation de {response['attributes']['friendly_name']}"
+        return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(["Activer [le | la] ($remote)"])
     def turn_on(self, remote):
         response = self._turn_on(remote)
-        return f"Activation de {response['attributes']['friendly_name']}"
+        return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
