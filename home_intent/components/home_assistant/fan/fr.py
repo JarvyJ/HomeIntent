@@ -20,17 +20,17 @@ class Fan(BaseFan):
     @intents.sentences(["Basculer l'état de ($fan)", "(Allumer | éteindre) [le] ($fan)"])
     def toggle_fan(self, fan):
         response = self._toggle_fan(fan)
-        return f"Bascule de l'état de {response['attributes']['friendly_name']}"
+        return f"Bascule de l'état de {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(["éteindre [le|la] ($fan)"])
     def turn_off(self, fan):
         response = self._turn_off(fan)
-        return f"Extinction de {response['attributes']['friendly_name']}"
+        return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(["turn on [the] ($fan)"])
     def turn_on(self, fan):
         response = self._turn_on(fan)
-        return f"allumage de {response['attributes']['friendly_name']}"
+        return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
 
     @intents.sentences(
         [
