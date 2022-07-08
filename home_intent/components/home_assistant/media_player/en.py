@@ -1,5 +1,9 @@
 from .base_media_player import BaseMediaPlayer, intents
 class MediaPlayer(BaseMediaPlayer):
+    @intents.dictionary_slots
+    def volume_level(self):
+        slots = {"100": 1,00}, {"95": 0,95},  {"90": 0,90}, {"85": 0,85}, {"80": 0,80}, {"75": 0,75}, {"70": 0,70}, {"65": 0,65}, {"60": 0,60}, {"55": 0,55}, {"50": 0,50}, {"45": 0,45},  {"40": 0,40}, {"35": 0,35}, {"30": 0,30}, {"25": 0,25}, {"20": 0,20}, {"15": 0,15}, {"10": 0,10}, {"5": 0,05}, {"0": 0,00}
+        return slots
     @intents.on_event("register_sentences")
     def handle_prefer_toggle(self):
         if self.ha.prefer_toggle:
@@ -31,11 +35,10 @@ class MediaPlayer(BaseMediaPlayer):
     def volume_mute(self, media_player):
         response = self._volume_mute(media_player)
         return f"Muting the volume of {response['attributes']['friendly_name']}"
-################# TO CHECK #############################
-#    @intents.sentences(["set the volume of ($media_player) to ($volume_level)"])
-#    def volume_set(self, media_player):
-#        response = self._volume_set(media_player)
-#        return f"Setting the volume of {response['attributes']['friendly_name']} xto {response['attributes']['volu>
+    @intents.sentences(["set the volume of ($media_player) to ($volume_level)"])
+    def volume_set(self, media_player, volume_level):
+        response = self._volume_set(media_player, volume_level)
+        return f"Setting the volume level of {response['attributes']['friendly_name']} to  {volume_level}"
     @intents.sentences(["Play on ($media_player)"])
     def media_play(self, media_player):
         response = self._media_play(media_player)
