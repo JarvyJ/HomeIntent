@@ -31,11 +31,10 @@ class MediaPlayer(BaseMediaPlayer):
     def volume_mute(self, media_player):
         response = self._volume_mute(media_player)
         return f"Muting the volume of {response['attributes']['friendly_name']}"
-################# TO CHECK #############################
-#    @intents.sentences(["set the volume of ($media_player) to ($volume_level)"])
-#    def volume_set(self, media_player):
-#        response = self._volume_set(media_player)
-#        return f"Setting the volume of {response['attributes']['friendly_name']} xto {response['attributes']['volu>
+    @intents.sentences(["set the volume of ($media_player) to ($volume_level)"])
+    def volume_set(self, media_player, volume_level):
+        response = self._volume_set(media_player, volume_level)
+        return f"Setting the volume level of {response['attributes']['friendly_name']} to  {volume_level}"
     @intents.sentences(["Play on ($media_player)"])
     def media_play(self, media_player):
         response = self._media_play(media_player)
