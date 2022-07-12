@@ -9,7 +9,7 @@ class Timer(BaseTimer):
             "quart": "quarter",
             "tiers": "third",
             "deuxtiers": "twothirds",
-            "troisquarts": "threequarters"   
+            "troisquarts": "threequarters"
         }
 
     @intents.satellite_id
