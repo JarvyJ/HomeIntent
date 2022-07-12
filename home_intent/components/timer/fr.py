@@ -8,7 +8,7 @@ class Timer(BaseTimer):
             "demi": "half",
             "quart": "quarter",
             "tiers": "third",
-            "deuxtiers": "twothirds"
+            "deuxtiers": "twothirds",
             "troisquarts": "threequarters"   
         }
 
