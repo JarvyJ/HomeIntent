@@ -127,3 +127,7 @@ def setup(home_intent):
     if "weather" in home_assistant_component.domains and "weather" not in config.ignore_domains:
         weather = home_intent.import_module(f"{__name__}.weather")
         home_intent.register(weather.Weather(home_assistant_component), weather.intents)
+
+    if "media_player" in home_assistant_component.domains and "media_player" not in config.ignore_domains:
+        media_player = home_intent.import_module(f"{__name__}.media_player")
+        home_intent.register(media_player.MediaPlayer(home_assistant_component), media_player.intents)
