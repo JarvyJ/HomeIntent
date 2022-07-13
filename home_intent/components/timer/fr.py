@@ -8,25 +8,12 @@ class Timer(BaseTimer):
             "demi": "half",
             "quart": "quarter",
             "tiers": "third",
-            "deuxtiers": "twothirds"
-            "troisquarts": "threequarters"   
+            "deuxtiers": "twothirds",
+            "troisquarts": "threequarters"
         }
 
     @intents.satellite_id
     @intents.sentences(
-        [
-            "time = 0..128",
-            "Régler un minuteur [(<time>){hours} hours] [(<time>){minutes} minutes] [(<time>){seconds} seconds]",
-            "set timer (<time>){hours} [($timer_partial_time)] hours",
-            "set timer (<time>){minutes} [($timer_partial_time)] minutes",
-            "set timer (<time>){seconds} [($timer_partial_time)] seconds",
-            "set a [(<time>){hours} hour] [(<time>){minutes} minute] [(<time>){seconds} second] timer",
-            "set a (<time>){hours} [($timer_partial_time)] hour timer",
-            "set a (<time>){minutes} [($timer_partial_time)] minute timer",
-            "set a (<time>){seconds} [($timer_partial_time)] second timer",
-        ]
-    )
-
         [
             "time = $timer_number | 0..120",
             "Régler (le | un) (minuteur | Timer) à (<time>){hours} [($timer_partial_time)] secondes",
@@ -40,8 +27,7 @@ class Timer(BaseTimer):
             "Régler un (minuteur | Timer) (d'un | d'une | de) (<time>){minutes} [($timer_partial_time)] (de) minutes",
             "Régler un (minuteur | Timer) (d'un | d'une | de) (<time>){hours} [($timer_partial_time)] (d') heures",
         ]
-    )    
-
+    )
     def set_timer(
         self,
         satellite_id,

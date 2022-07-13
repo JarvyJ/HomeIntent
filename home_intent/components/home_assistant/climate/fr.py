@@ -59,7 +59,7 @@ class Climate(BaseClimate):
         response = self._set_target_temperature_high(
             climate_target_temperature_range_entity, temperature
         )
-        return f"Réglage de {response['attributes']['friendly_name']} à la température maximum de {temperature"
+        return f"Réglage de {response['attributes']['friendly_name']} à la température maximum de {temperature}"
 
     @intents.sentences(
         [

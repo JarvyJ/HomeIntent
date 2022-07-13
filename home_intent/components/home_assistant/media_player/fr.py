@@ -2,7 +2,7 @@ from .base_media_player import BaseMediaPlayer, intents
 class MediaPlayer(BaseMediaPlayer):
     @intents.dictionary_slots
     def volume_level(self):
-        slots = {"100": 1,00}, {"95": 0,95},  {"90": 0,90}, {"85": 0,85}, {"80": 0,80}, {"75": 0,75}, {"70": 0,70}, {"65": 0,65}, {"60": 0,60}, {"55": 0,55}, {"50": 0,50}, {"45": 0,45},  {"40": 0,40}, {"35": 0,35}, {"30": 0,30}, {"25": 0,25}, {"20": 0,20}, {"15": 0,15}, {"10": 0,10}, {"5": 0,05}, {"0": 0,00}
+        slots = {"cent": "1,00", "quatre vingt quinze": "0,95",  "quatre vingt dix": "0,90", "quatre vingt cinq": "0,85", "quatre vingt": "0,80", "soixante quinze": "0,75", "soixante dix": "0,70", "soixante cinq": "0,65", "soixante": "0,60", "cinquante cinq": "0,55", "cinquante": "0,50", "quarante cinq": "0,45", "quarante": "0,40", "trente cinq": "0,35", "trente": "0,30", "vingt cinq": "0,25", "vingt": "0,20", "quinze": "0,15", "dix": "0,10", "cinq": "0,05", "zero": "0,00"}
         return slots
     @intents.sentences(["basculer l'alimentation [de] ($media_player)", "turn (on | off) [the] ($media_player)"])
     def toggle_media_player(self, media_player):

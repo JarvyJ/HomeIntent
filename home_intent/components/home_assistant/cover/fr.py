@@ -12,12 +12,12 @@ class Cover(BaseCover):
         response = self._open_cover(cover_open_entity)
         return f"Ouverture de {response['attributes']['friendly_name']}"
 
-    @intents.sentences(["fermer [le | la] ($cover_open_entity)"])
+    @intents.sentences(["fermer [le | la] ($cover_close_entity)"])
     def close_cover(self, cover_close_entity):
         response = self._close_cover(cover_close_entity)
         return f"Fermeture de {response['attributes']['friendly_name']}"
 
-    @intents.sentences(["arrêter [le | la] ($cover_open_entity)($cover_stop_entity)"])
+    @intents.sentences(["arrêter [le | la] ($cover_stop_entity)"])
     def stop_cover(self, cover_stop_entity):
         response = self._stop_cover(cover_stop_entity)
         return f"Arrêt de {response['attributes']['friendly_name']}"
