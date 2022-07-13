@@ -16,9 +16,9 @@ class Timer(BaseTimer):
     @intents.sentences(
         [
             "time = 0..120",
-            "Régler (le | un) (minuteur | Timer) à (<time>){hours} [($timer_partial_time)] secondes",
-            "Régler (le | un) (minuteur | Timer) à (<time>){minutes} [($timer_partial_time)] minutes",
-            "Régler (le | un) (minuteur | Timer) à (<time>){seconds} [($timer_partial_time)] secondes",
+            "Régler (le | un) (minuteur | Timer) à (<time>){hours} (un) [($timer_partial_time)] (de) secondes",
+            "Régler (le | un) (minuteur | Timer) à (<time>){minutes} (un) [($timer_partial_time)] (de) minutes",
+            "Régler (le | un) (minuteur | Timer) à (<time>){seconds} (un) [($timer_partial_time)] (de) secondes",
             "Régler (le | un) (minuteur | Timer) à (<time>){hours} heures et (<time>){minutes} Minutes",
             "Régler (le | un) (minuteur | Timer) à (<time>){minutes} minutes et (<time>){seconds} Secondes",
             "Régler un (minuteur | Timer) (d'une | de) (<time>){hours} heures et (<time>){minutes} minutes",
