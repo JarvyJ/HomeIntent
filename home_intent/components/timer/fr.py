@@ -15,7 +15,7 @@ class Timer(BaseTimer):
     @intents.satellite_id
     @intents.sentences(
         [
-            "time = $timer_number | 0..120",
+            "time = 0..120",
             "Régler (le | un) (minuteur | Timer) à (<time>){hours} [($timer_partial_time)] secondes",
             "Régler (le | un) (minuteur | Timer) à (<time>){minutes} [($timer_partial_time)] minutes",
             "Régler (le | un) (minuteur | Timer) à (<time>){seconds} [($timer_partial_time)] secondes",
