@@ -28,7 +28,6 @@ class Timer(BaseTimer):
             "Régler un (minuteur | Timer) (d'un | d'une | de) (<time>){hours} [($timer_partial_time)] (d') heures",
         ]
     )
-
     def set_timer(
         self,
         satellite_id,
