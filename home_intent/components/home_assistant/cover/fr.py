@@ -34,7 +34,7 @@ class Cover(BaseCover):
 
     @intents.sentences(
         [
-            "(rêgler|changer|ajuster) [la] [position] ($cover_set_position_entity) [à] ($cover_positions:!int) [pour] [cent]",
+            "(régler|changer|ajuster) [la] [position] [du|de] ($cover_set_position_entity) [à] ($cover_positions:!int) [pour] [cent]",
             "(ouvrir|fermer) [le|la] ($cover_set_position_entity) [à] ($cover_positions:!int) [percent]",
         ]
     )
@@ -44,7 +44,7 @@ class Cover(BaseCover):
 
     @intents.sentences(
         [
-            "(rêgler|changer|ajuster) [la] [position] [de] ($cover_set_tilt_position_entity) [à] ($cover_positions:!int) [pour] [cent]",
+            "(régler|changer|ajuster) [la] [position] [du|de] ($cover_set_tilt_position_entity) [à] ($cover_positions:!int) [pour] [cent]",
             "(ouvrir|fermer) [le] ($cover_set_tilt_position_entity) [à] ($cover_positions:!int)  [pour] [cent]",
         ]
     )
