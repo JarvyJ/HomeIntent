@@ -28,7 +28,7 @@ class Climate(BaseClimate):
     @intents.repeatable_dictionary_slots
     def climate_hvac_mode_french(self):
         # this is used to overwrite (or add) some climate_havc_mode attributes provided by homeassistant
-        return {            
+        return {
             "ventilation": "cool",
             "chauffage": "heat",
             "éteint": "off",
