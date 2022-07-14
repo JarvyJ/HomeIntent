@@ -27,7 +27,7 @@ class Fan(BaseFan):
         response = self._turn_off(fan)
         return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
 
-    @intents.sentences(["turn on [the] ($fan)"])
+    @intents.sentences(["Allumer [le] ($fan)"])
     def turn_on(self, fan):
         response = self._turn_on(fan)
         return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
@@ -36,7 +36,7 @@ class Fan(BaseFan):
         [
             "(démarrer|arrêter) l'oscillation de ($fan_oscillate_entity)",
             "Osciller [le] ($fan_oscillate_entity)",
-            "(rélger|changer|faire) [le] ($fan_oscillate_entity) [à] [ne] [pas] osciller",
+            "(régler|changer|faire) [le] ($fan_oscillate_entity) [à] [ne] [pas] osciller",
             "(activer|désactiver) l'oscillation de ($fan_oscillate_entity)",
         ]
     )
@@ -47,7 +47,7 @@ class Fan(BaseFan):
         return f"{start_or_stop} de l'oscillation de {response['attributes']['friendly_name']}"
 
     @intents.sentences(
-        ["(rélger|changer|ajuster) [le] ($fan_preset_mode_entity) [sur] [à] ($fan_preset_mode)"]
+        ["(régler|changer|ajuster) [le] ($fan_preset_mode_entity) [sur] [à] ($fan_preset_mode)"]
     )
     def set_preset(self, fan_preset_mode_entity, fan_preset_mode):
         response = self._set_preset(fan_preset_mode_entity, fan_preset_mode)
@@ -58,7 +58,7 @@ class Fan(BaseFan):
         response = self._reverse_airflow(fan_direction_entity)
         return f"Inversion du dlux d'air de {response['attributes']['friendly_name']}"
 
-    @intents.sentences(["(rélger|changer|ajuster) le ($fan_set_speed_entity) [à] ($fan_speed)"])
+    @intents.sentences(["(régler|changer|ajuster) le ($fan_set_speed_entity) [à] ($fan_speed)"])
     def set_fan_speed(self, fan_set_speed_entity, fan_speed):
         response = self._set_fan_speed(fan_set_speed_entity, fan_speed)
         return f"réglage de {response['attributes']['friendly_name']} à {fan_speed}"

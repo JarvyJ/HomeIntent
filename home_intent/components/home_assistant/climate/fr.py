@@ -24,8 +24,17 @@ class Climate(BaseClimate):
     def turn_on(self, climate):
         response = self._turn_on(climate)
         return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"
+    
+    @intents.repeatable_dictionary_slots
+    def climate_hvac_mode_french(self):
+        # this is used to overwrite (or add) some climate_havc_mode attributes provided by homeassistant
+        return {
+            "ventilation": "cool",
+            "chauffage": "heat",
+            "éteint": "off",
+        }
 
-    @intents.sentences(["(régler | changer | ajuster) le ($climate) à ($climate_hvac_mode)"])
+    @intents.sentences(["(régler | changer | ajuster) le ($climate) à ($climate_hvac_mode | $climate_hvac_mode_french)"])
     def set_hvac_mode(self, climate, climate_hvac_mode):
         response = self._set_hvac_mode(climate, climate_hvac_mode)
         return f"Réglage de {response['attributes']['friendly_name']} à {response['state']}"

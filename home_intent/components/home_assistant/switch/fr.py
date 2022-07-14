@@ -10,7 +10,7 @@ class Switch(BaseSwitch):
         else:
             intents.disable_intent(self.toggle_switch)
             
-    @intents.sentences(["Basculer [le] ($switch)", "(activerr | désactiver) [le] ($switch)"])
+    @intents.sentences(["Basculer [le] ($switch)", "(activer | désactiver) [le] ($switch)"])
     def toggle_switch(self, switch):
         response = self._toggle_switch(switch)
         return f"Bascule de {response['attributes']['friendly_name']} à {response['state']}"
