@@ -33,15 +33,20 @@ services:
     devices:
       - "/dev/snd:/dev/snd"
 ```
+The `/config` directory is where Home Intent configuration lives and the `/profiles` directory is where Rhasspy (the underlying speech system) stores its configs/downloads. The port `11102` exposes the Home Intent web interface, and `12101` exposes the Rhasspy interface.
 
-The only additional thing you can add is an environment variable to set the language. Currently only German (`de`) is supported and can be added with the following:
+
+## Setting the Language
+The two letter language code is used to set the language in an environment variable. Home Intent currently supports the following:
+
+  * Deutsche (`de`)
+  * French (`fr`) - New as of 7/22!
+
 ```yaml
-# ... everything from above ...
+# ... the yaml from above ...
     environment:
       - LANGUAGE=de
 ```
-
-The `/config` directory is where Home Intent configuration lives and the `/profiles` directory is where Rhasspy (the underlying speech system) stores its configs/downloads. The port `11102` exposes the Home Intent web interface, and `12101` exposes the Rhasspy interface.
 
 ## Setup
 
