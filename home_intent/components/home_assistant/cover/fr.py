@@ -4,7 +4,7 @@ from .base_cover import BaseCover, intents
 class Cover(BaseCover):
     @intents.dictionary_slots
     def cover_positions(self):
-        slots = {"half way": 50}
+        slots = {"moitié": 50}
         return slots
 
     @intents.sentences(["ouvrir [le | la] ($cover_open_entity)"])
