@@ -30,7 +30,7 @@ class MediaPlayer(BaseMediaPlayer):
         return slots
 
     @intents.sentences(
-        ["basculer l'alimentation [de] ($media_player)", "turn (on | off) [the] ($media_player)"]
+        ["basculer l'alimentation [de] ($media_player)", "(allumer | éteindre) [le|la] ($media_player)"]
     )
     def toggle_media_player(self, media_player):
         response = self._toggle_media_player(media_player)
