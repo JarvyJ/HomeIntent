@@ -1,0 +1,34 @@
+{
+    "dialogue": {
+        "system": "hermes"
+    },
+    "intent": {
+        "system": "hermes"
+    },
+    "microphone": {
+        "pyaudio": {
+            "udp_audio_host": "127.0.0.1",
+            "udp_audio_port": "12202"
+        },
+        "system": "pyaudio"
+    },
+    "mqtt": {
+        "enabled": "true"
+    },
+    "sounds": {
+        "system": "aplay"
+    },
+    "speech_to_text": {
+        "system": "hermes"
+    },
+    "text_to_speech": {
+        "system": "hermes"
+    },
+    "wake": {
+        "porcupine": {
+            "keyword_path": "jarvis_raspberry-pi.ppn",
+            "udp_audio": "127.0.0.1:12202"
+        },
+        "system": "porcupine"
+    }
+}

@@ -187,6 +187,7 @@ class HomeIntent:
     def initialize(self):
         update_homeintent(self)
         self._initialize_rhasspy()
+        self._setup_satellites()
         self._write_slots_to_rhasspy()
         self._write_sentences_to_rhasspy()
         self._train()
@@ -197,6 +198,7 @@ class HomeIntent:
         if self.settings.rhasspy.externally_managed:
             LOGGER.info("Externally Managed Setting enabled - skipping Rhasspy profile processing")
             return
+        log_section("Setting up the base Rhasspy instance")
         LOGGER.info("Checking profile")
         rhasspy_profile = self._load_rhasspy_profile_file()
         installed_profile = self.rhasspy_api.get("/api/profile?layers=profile")
@@ -216,11 +218,52 @@ class HomeIntent:
         else:
             LOGGER.info("Profile is up to date, nothing to download")
 
+    def _setup_satellites(self):
+        if not self.settings.rhasspy.managed_satellites:
+            return
+
+        LOGGER.info("Setting up managed satellites")
+
+        # TODO: this may need to be executed via the API, so we'll see how that influences things
+        for satellite_id, satellite_info in self.settings.rhasspy.managed_satellites.items():
+            log_section(f"Setting up satellite config for {satellite_id}")
+            try:
+                satellite_api = RhasspyAPI(satellite_info.url, retry=False)
+            except RhasspyError:
+                LOGGER.warning(f"Couldn't connect to Rhasspy Satellite at {satellite_info.url}")
+                continue
+
+            config_file_path = self.get_file("satellite_profile.json", language_dependent=False)
+            satellite_config = json.loads(config_file_path.read_text(encoding="utf-8"))
+
+            self.audio_config.add_audio_settings_to_satellite(
+                satellite_api, satellite_config, satellite_id, satellite_info
+            )
+
+            installed_profile = satellite_api.get("/api/profile?layers=profile")
+            if satellite_config != installed_profile:
+                LOGGER.info("Installing profile")
+                satellite_api.post("/api/profile", satellite_config)
+
+                LOGGER.info("Restarting Satellite...")
+                satellite_api.post("/api/restart")
+            else:
+                LOGGER.info("Satellite profile matches Home Intent profile, moving on!")
+
+            profile_meta = satellite_api.get("/api/profiles")
+            if not profile_meta["downloaded"]:
+                LOGGER.info("Downloading profile (can take 30s+ first time)...")
+                satellite_api.post("/api/download-profile")
+            else:
+                LOGGER.info("Profile is up to date, nothing to download")
+
+            LOGGER.info(f"Satellite config complete for {satellite_id}\n\n\n")
+
     def _load_rhasspy_profile_file(self):
         config_file_path = self.get_file(
             "rhasspy_profile.json", arch_dependent=True, language_dependent=False
         )
-        rhasspy_config = json.loads(config_file_path.read_text())
+        rhasspy_config = json.loads(config_file_path.read_text(encoding="utf-8"))
         try:
             self.audio_config.add_audio_settings_to_config(rhasspy_config)
         except RhasspyError:
@@ -237,6 +280,7 @@ class HomeIntent:
 
     def _write_slots_to_rhasspy(self):
         self.startup_messenger.update("Updating slots in Rhasspy...")
+        log_section("Updating slots in Rhasspy")
         for registered_intent in self.registered_intents:
             LOGGER.info(f"Getting slots for {registered_intent.intent.name}")
             for slot in registered_intent.intent.all_slots:
@@ -260,6 +304,7 @@ class HomeIntent:
 
     def _write_sentences_to_rhasspy(self):
         self.startup_messenger.update("Updating sentences in Rhasspy...")
+        log_section("Updating sentences to Rhasspy")
         # this will force clear out the defaults in sentences.ini
         sentences = []
         for registered_intent in self.registered_intents:
@@ -319,3 +364,7 @@ class HomeIntent:
             return True
 
         return False
+
+
+def log_section(title):
+    LOGGER.info(f"\n\n\n{'='*100}\n{title}\n{'='*100}\n\n")

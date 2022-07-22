@@ -5,14 +5,14 @@
 
   import DocsIcon from "$lib/icons/journal-richtext.svelte";
   import SettingsIcon from "$lib/icons/gear-fill.svelte";
-  // import SatellitesIcon from "$lib/icons/speaker.svelte";
+  import SatellitesIcon from "$lib/icons/speaker.svelte";
   // import CustomizeIcon from "$lib/icons/tools.svelte";
   import LogsIcon from "$lib/icons/card-list.svelte";
 
   const pagesMeta = [
     { title: "Settings", url: "/settings/", icon: SettingsIcon },
     // {title: "Customize", url: "/customize", icon: CustomizeIcon},
-    // {title: "Satellites", url: "/satellites", icon: SatellitesIcon},
+    //{title: "Satellites", url: "/satellites", icon: SatellitesIcon},
     { title: "Logs", url: "/logs/", icon: LogsIcon },
   ];
 </script>

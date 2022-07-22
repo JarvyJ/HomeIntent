@@ -13,22 +13,23 @@ class RhasspyError(Exception):
 
 
 class RhasspyAPI:
-    def __init__(self, url):
+    def __init__(self, url, retry=True):
         self.session = Session()
         self.session.headers.update(
             {"Content-Type": "application/json", "accept": "application/json"}
         )
         self.base_url = url
 
-        retries = Retry(backoff_factor=1)
-        self.session.mount("http://", HTTPAdapter(max_retries=retries))
-        self.session.mount("https://", HTTPAdapter(max_retries=retries))
+        if retry:
+            retries = Retry(backoff_factor=1)
+            self.session.mount("http://", HTTPAdapter(max_retries=retries))
+            self.session.mount("https://", HTTPAdapter(max_retries=retries))
 
         LOGGER.info(f"Trying to connect to Rhasspy at {url}")
         try:
             self.get("/api/version")
         except requests.exceptions.ConnectionError:
-            raise Exception(
+            raise RhasspyError(
                 f"Unable to connect to Rhasspy server at {url} - "
                 "Ensure it is running and try again!"
             )
