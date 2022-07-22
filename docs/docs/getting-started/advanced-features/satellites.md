@@ -10,9 +10,6 @@ Home Intent now has basic satellite support (released as of 4/2022)! It's a bit 
 
     You can follow the Rhasspy site's [installation](https://rhasspy.readthedocs.io/en/latest/installation/) page to get the satellite installed on a Raspberry Pi. I've successfully used satellites on Raspberry Pi 0, 3, and 4. After it's been installed, the satellite needs to be configured to point at the main Home Intent instance. If you know the IP Address of the new instance, you can setup Home Intent to configure the Rhasspy satellite for you.
 
-    === "UI"
-
-        The UI might be coming soon! Check back later.
 
     === "config.yaml"
 
@@ -116,6 +113,9 @@ Home Intent now has basic satellite support (released as of 4/2022)! It's a bit 
             5/15/2022, 11:03:39 AM INFO home_intent.home_intent Satellite config complete for kitchen
             ```
 
+    === "UI"
+
+        The UI for auto satellite setup has not been completed yet.
 
 === "Manual Rhasspy"
 
@@ -193,4 +193,4 @@ There is also the option to disable audio at the base station (`disable_audio_at
 
 
 ## Future of Satellites
-We'll likely get around to adding satellite id names and disabling the audio from the base station in the UI. From there I really wanted to have Home Intent do more auto-setup of Satellites (and even started creating a [dedicated OS](https://github.com/JarvyJ/Rhasspy-Satellite) for a Rhasspy base station), but with the changes coming to Rhasspy, I've dropped the dedicated OS for now. I may still go back and do auto-configuring of satellites at some point.
+We'll likely get around to adding satellite id names and disabling the audio from the base station in the UI. From there I really wanted to have Home Intent do more configuration of Satellites from the UI, and even started creating a [dedicated OS](https://github.com/JarvyJ/Rhasspy-Satellite) for a Rhasspy base station. But with the changes coming to Rhasspy, I've dropped the dedicated OS for now. I may resurrect it again in the future.
