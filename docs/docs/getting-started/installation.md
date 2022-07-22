@@ -20,7 +20,7 @@ version: "3.9"
 
 services:
   homeintent:
-    image: "ghcr.io/jarvyj/homeintent:latest"
+    image: "ghcr.io/jarvyj/homeintent:main"
     restart: unless-stopped
     volumes:
       - "/PATH_TO_CONFIG/rhasspy:/profiles"
