@@ -1,0 +1,195 @@
+Abricot
+Ail
+Airelle
+Amande
+Ananas
+Artichaut
+Asperge blanche
+Asperge verte
+Aubergine
+Avocat
+Banane
+Bette
+Betterave rouge
+Brocoli
+Carotte
+Cassis
+Catalonia
+Céleri
+Céleri branche
+Céleri rave
+Cerise
+Châtaigne
+Chou blanc
+Chou de Bruxelles
+Chou frisé
+Chou Romanesco
+Chou rouge
+Chou-chinois
+Chou-fleur
+Chou-rave
+Cima di Rapa
+Citron
+Citrouille
+Clémentine
+Coing
+Concombre
+Courge
+Courgette
+Cresson
+Datte
+Endive
+Epinard
+Fenouil
+Figue fraîche
+Fraise
+Fraise des bois
+Framboise
+Fruit de la passion
+Grenade
+Groseille
+Groseille à maquereau
+Haricot
+Kaki
+Kiwi
+Kumquat
+Laitue romaine
+Litchi
+Mâche
+Maïs
+Mandarine
+Mangue
+Marron
+Melon
+Mirabelle
+Mûre
+Myrtille
+Navet
+Nectarine
+Noisette
+Noix
+Oignon
+Orange
+Orange sanguine
+Pamplemousse
+Panais
+Papaye
+Pastèque
+Pâtisson
+Pêche
+Petit oignon blanc
+Petit pois
+Poire
+Poireau
+Pois mange-tout
+Poivron
+Pomme
+Pomme de terre
+Potimarron
+Potiron
+Prune
+Quetsche
+Radis
+Radis long
+Raisin
+Reine-claude
+Rhubarbe
+Salsifis
+Tomate
+Tomate charnue
+Tomate Peretti
+Topinambour
+eau
+eau minérale
+eau pétillante
+vin
+vin blanc
+vin rouge
+vin rosé
+champagne
+vodka
+rhum
+tequila
+whiskey
+jus d'orange
+jus de pomme
+jus d'ananas
+jus de cranberry
+lait
+lait d'amande
+lait d'avoine
+lait de soja
+coca
+coca cola
+perrier
+quezac
+bière
+cidre
+ginger beer
+fromage
+yaourt
+fromage blanc
+compote
+crème fraiche
+beurre
+fromage rappé
+parmesan
+mozarella
+poisson
+viande
+saumon
+saumon fumé
+boeuf
+veau
+poulet
+fruits de mer
+charcuterie
+jambon
+jambon blanc
+jambon fumé
+saucisse
+chipolata
+merguez
+crêpe
+pomme de terre
+oignon
+ail
+oignon rouge
+salade
+apéritif
+gâteau
+chips
+cacaouhèetes
+pistaches
+amandes
+noix de cajou
+pain
+pain blanc
+pain aux céréales
+baguette
+tradition
+pain de mie
+bagels
+surgelé
+céréales
+muesli
+chocolat
+nutella
+confiture
+bonbons
+sucre
+farine
+farine de blé
+sucre en morceau
+café
+thé
+infusion
+papier
+papier toilette
+sopalin
+lititère
+croquettes
+croquettes pour chat
+paté
+paté pour chat
+patisserie
