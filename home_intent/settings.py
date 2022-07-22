@@ -53,7 +53,7 @@ class ManagedSatelliteSettings(BaseModel):
 
 class SharedSatelliteSettings(BaseModel):
     mqtt_host: str = Field(
-        ...,
+        None,
         description="The externally accessible MQTT host. "
         "It should be the same _host_ as is used when accessing the UI under the default configuration.",
     )

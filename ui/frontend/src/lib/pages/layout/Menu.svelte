@@ -12,7 +12,7 @@
   const pagesMeta = [
     { title: "Settings", url: "/settings/", icon: SettingsIcon },
     // {title: "Customize", url: "/customize", icon: CustomizeIcon},
-    {title: "Satellites", url: "/satellites", icon: SatellitesIcon},
+    //{title: "Satellites", url: "/satellites", icon: SatellitesIcon},
     { title: "Logs", url: "/logs/", icon: LogsIcon },
   ];
 </script>

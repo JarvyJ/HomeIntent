@@ -95,7 +95,7 @@
 
         <ArrayInput
           title="Unmanaged Satellite IDs"
-          description="A list of site ids for any satellites that are not managed by Home Intent. This could be for microcontrollers or a custom Rhasspy setup"
+          description="A list of satellite ids for any satellites that are not managed by Home Intent. This could be for microcontrollers or a custom Rhasspy setup"
           value={["esp32_kitchen"]}
         />
       {/if}
