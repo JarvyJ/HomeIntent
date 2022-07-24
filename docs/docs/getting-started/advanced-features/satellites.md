@@ -51,7 +51,7 @@ Home Intent now has basic satellite support (released as of 4/2022)! It's a bit 
 
         `kitchen` is just a reference to the satellite's id and can be whatever unique value you want, and the `ip_address` is the externally accessible IP address that can be connected to. This is used to auto-build the Rhasspy URL, for the `kitchen` it will be `http://192.168.1.157:12101`. If you have some custom networking in place, you can also provide the Rhasspy URL by setting the `url` value (as seen in the `living_room` example).
 
-        From there you can boot up Home Intent and check the logs (either in the console or the UI) to see if the connections were successfully established. If not, ensure that the IP address are correct and when you visit them that the Rhasspy interface loads.
+        From there you can boot up Home Intent and check the logs (either in the console or the UI) to see if the connections were successfully established. If not, ensure the IP address are correct and when you visit them that the Rhasspy interface loads.
 
         After the connections is established, you _may_ need to setup the microphone/sounds device if it's not picked up by default. In the logs it prints out all the microphone/sounds device and you can try a different one and restart as needed. You can see a `sounds_device` selected above as `default:CARD=USB`. The `microphone_device` uses the index number (as a string) as found in the log output.
         
@@ -114,7 +114,7 @@ Home Intent now has basic satellite support (released as of 4/2022)! It's a bit 
             ```
 
         ### Troubleshooting Managed Satellites
-        If you see connection timeouts in the logs, you can always try restarting Home Intent which will re-establish a connection. If after a restart, you are still experiencing issues, ensure the main host running Home Intent can connect to the ip address the satellite is at. This can be done with a simple ping test (ex: `ping 192.168.1.157`). If you are running a more custom networking setup with domain names, you may need to ensure that the host is routable from within a container. 
+        If you see connection timeouts in the logs, you can always try restarting Home Intent which will re-establish a connection. If after a restart, you are still experiencing issues, ensure that the main host running Home Intent can connect to the ip address the satellite is at. This can be done with a simple ping test (ex: `ping 192.168.1.157`). If you are running a more custom networking setup with domain names, you may need to ensure that the host is routable from within a container. 
 
     === "UI"
 
