@@ -113,8 +113,8 @@ Home Intent now has basic satellite support (released as of 4/2022)! It's a bit 
             5/15/2022, 11:03:39 AM INFO home_intent.home_intent Satellite config complete for kitchen
             ```
 
-            ### Troubleshooting Managed Satellites
-            If you see connection timeouts in the logs, you can always try restarting Home Intent which will re-establish a connection. If after a restart, you are still experiencing issues, ensure the main host running Home Intent can connect to the ip address the satellite is at. This can be done with a simple ping test (ex: `ping 192.168.1.157`). If you are running a more custom networking setup with domain names, you may need to ensure that the host is routable from within a container. 
+        ### Troubleshooting Managed Satellites
+        If you see connection timeouts in the logs, you can always try restarting Home Intent which will re-establish a connection. If after a restart, you are still experiencing issues, ensure the main host running Home Intent can connect to the ip address the satellite is at. This can be done with a simple ping test (ex: `ping 192.168.1.157`). If you are running a more custom networking setup with domain names, you may need to ensure that the host is routable from within a container. 
 
     === "UI"
 
