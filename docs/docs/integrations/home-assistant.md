@@ -39,6 +39,7 @@ Currently `prefer_toggle` is only used for the following:
   * fan
   * humidifier
   * light
+  * media player
   * remote
   * switch
 
@@ -169,6 +170,18 @@ A full list of colors can be found [in the source](https://github.com/JarvyJ/Hom
   * Unlock the kitchen door
   * Open the front gate (for locks that support opening as well)
 
+### Media Player
+
+Media Player is new as of 7/2022.
+
+  * Turn off the shield
+  * Turn on the shield
+  * Turn up/down the volume of the chromecast
+  * Mute the volume on the chromecast
+  * Set the volume of the shield to 90
+  * Play/Pause on the chromecast
+  * Play next/previous track on the chromecast audio
+
 ### Remote
 
   * Turn on the tv
@@ -208,6 +221,7 @@ The various Home Assistant sub components can also be customized further using [
   * Humidifier: `/config/customizations/home_assistant/humidifier.yaml`
   * Lights: `/config/customizations/home_assistant/light.yaml`
   * Locks: `/config/customizations/home_assistant/lock.yaml`
+  * Media Player: `/config/customization/home_assistant/media_player.yaml`
   * Remote: `/config/customizations/home_assistant/remote.yaml`
   * Shopping List: `/config/customizations/home_assistant/shopping_list.yaml`
   * Switches: `/config/customizations/home_assistant/switch.yaml`

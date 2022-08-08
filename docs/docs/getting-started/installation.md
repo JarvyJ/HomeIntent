@@ -40,7 +40,7 @@ The `/config` directory is where Home Intent configuration lives and the `/profi
 The two letter language code is used to set the language in an environment variable. Home Intent currently supports the following:
 
   * Deutsche (`de`)
-  * French (`fr`) - New as of 7/22!
+  * French (`fr`) - New as of 7/2022!
 
 ```yaml
 # ... the yaml from above ...
