@@ -172,7 +172,7 @@ A full list of colors can be found [in the source](https://github.com/JarvyJ/Hom
 
 ### Media Player
 
-Thanks to @nyok92 for the contribution of the media player attributes!
+Media Player is new as of 7/2022.
 
   * Turn off the shield
   * Turn on the shield
