@@ -48,7 +48,7 @@ By default Home Intent uses the English language. The ISO 639-1 two letter langu
       - LANGUAGE=de
 ```
 
-If you would like to submit a translation, check out our page on [translating components](../../reference/translations/translating-components/). 
+If you would like to submit a translation, check out our page on [translating components](../../reference/translations/translating-components.md). 
 
 ## Setup
 
