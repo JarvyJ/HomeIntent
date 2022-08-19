@@ -143,6 +143,3 @@ I'm sure this will affect other languages. If they follow the `prefer_toggle` co
 
 ### Others
 I'm sure while translating we may come across other language considerations that can be used to further improve the quality of Home Intent. Feel free to start a discussion or open an issue to discuss. We'd love to hear about it!
-
-
-TODO: fix the timer the code to not hardcode english...
