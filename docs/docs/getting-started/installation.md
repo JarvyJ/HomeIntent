@@ -37,7 +37,7 @@ The `/config` directory is where Home Intent configuration lives and the `/profi
 
 
 ## Setting the Language
-By default Home Intent's voice interface uses the English language. The ISO 639-1 two letter language code can be used to set the voice interface to a different language using the environment variable `LANGUAGE`. Home Intent currently supports the following:
+By default Home Intent uses the English language. The ISO 639-1 two letter language code can be used to change the voice interface to a different language using the `LANGUAGE` environment variable. Home Intent currently supports the following:
 
   * Deutsche (`de`)
   * French (`fr`) - New as of 7/2022!
@@ -48,7 +48,7 @@ By default Home Intent's voice interface uses the English language. The ISO 639-
       - LANGUAGE=de
 ```
 
-If you would like to submit a translation, check out our page on [translating components](../reference/translations/translating-components/). 
+If you would like to submit a translation, check out our page on [translating components](../../reference/translations/translating-components/). 
 
 ## Setup
 
