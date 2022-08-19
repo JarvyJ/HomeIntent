@@ -1,5 +1,5 @@
 # Translating a Component
-Currently only English is supported in Home Intent. We've designed the [structure](./developing-translations.md) of the code to support multiple languages and hope that people can contribute.
+Currently only a few languages are supported in Home Intent. We've designed the [structure](./developing-translations.md) of the code to support multiple languages and hope that people can contribute.
 
 Currently translating requires a bit of Docker, docker-compose, and git knowledge. We know this is a high bar for contributing, but have decided to go for it to allow Python to be fully used in the translation environment. Knowing Python is not strictly needed to help with translations, but it would be useful as translators may have to refer back to the base classes during translation. 
 
