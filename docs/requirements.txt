@@ -1,2 +1,2 @@
-mkdocs-material==8.3.9
+mkdocs-material==8.4.4
 mkdocs-awesome-pages-plugin==2.8.0
