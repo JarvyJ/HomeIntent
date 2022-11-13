@@ -26,6 +26,7 @@ ENV PATH="/venv/bin:$PATH"
 
 RUN python -m venv /venv --copies
 COPY requirements.txt ./
+RUN pip3 install -U pip setuptools wheel
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 
