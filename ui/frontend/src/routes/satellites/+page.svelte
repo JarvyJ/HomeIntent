@@ -3,7 +3,7 @@
 
   import RestartButton from "$lib/pages/settings/RestartButton.svelte";
   import SaveButton from "$lib/pages/satellites/SaveButton.svelte";
-  import PageLayout from "./PageLayout.svelte";
+  import PageLayout from "$lib/PageLayout.svelte";
   import SettingsTitle from "$lib/pages/settings/SettingsTitle.svelte";
   import SettingsList from "$lib/pages/settings/SettingsList.svelte";
   import BooleanInput from "$lib/pages/settings/form_elements/boolean.svelte";

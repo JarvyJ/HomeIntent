@@ -6,7 +6,7 @@
   import NoSettings from "$lib/pages/settings/NoSettings.svelte";
   import SaveButton from "$lib/pages/settings/SaveButton.svelte";
   import { mergeDeep } from "$lib/util/merge.js";
-  import PageLayout from "./PageLayout.svelte";
+  import PageLayout from "$lib/PageLayout.svelte";
   import RestartButton from "$lib/pages/settings/RestartButton.svelte";
   import ComponentListMenu from "$lib/pages/settings/ComponentListMenu.svelte";
 
