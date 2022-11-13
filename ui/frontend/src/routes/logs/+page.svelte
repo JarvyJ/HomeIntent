@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
 
-  import PageLayout from "./PageLayout.svelte";
+  import PageLayout from "$lib/PageLayout.svelte";
   import Checkbox from "$lib/components/Checkbox.svelte";
 
   let word_wrap = false;
