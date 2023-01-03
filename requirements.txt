@@ -11,4 +11,4 @@ fastapi==0.86.0
 aiofiles==0.8.0
 python-multipart==0.0.5
 ruamel-yaml==0.17.21
-httpx==0.23.0
+httpx==0.23.2
