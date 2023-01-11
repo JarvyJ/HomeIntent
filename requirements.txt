@@ -7,7 +7,7 @@ humanize==4.4.0 ## needed for the timer
 
 # for the ui
 uvicorn[standard]==0.19.0
-fastapi==0.86.0
+fastapi==0.89.1
 aiofiles==0.8.0
 python-multipart==0.0.5
 ruamel-yaml==0.17.21
